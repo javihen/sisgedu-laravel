@@ -26,6 +26,7 @@
             display: flex;
             align-items: center;
             color: #fff;
+
         }
 
         .nav__link:hover {
@@ -33,8 +34,13 @@
         }
 
         .nav__link:hover::before {
-            content: "";
-            border: 1px solid white;
+            content: ".";
+            display: block;
+            position: relative;
+            top: 0;
+            left: -1px;
+            border: 1px solid #fff;
+            width: 1px;
 
         }
 
@@ -79,7 +85,8 @@
 
     </header>
 
-    <div class="nav fixed top-0 px-4 py-4  h-screen bg-[#334155] z-10" id="navbar">
+    <div class="nav fixed top-0 px-4 py-4 h-screen bg-[#334155] z-10 w-14 hover:w-52 transition-all duration-300"
+        id="navbar">
         <nav class="nav__container h-screen flex-col justify-between pb-12 overflow-auto scroll-w ">
             <div>
                 <a href="#" class="nav__link nav__logo font-semibold mb-10 flex align-items-center text-white">
@@ -155,10 +162,6 @@
                             <i class='bx bx-data nav__icon'></i>
                             <span class="nav__name">Importar datos</span>
                         </a>
-
-
-
-
                     </div>
                 </div>
             </div>
