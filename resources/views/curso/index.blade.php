@@ -158,5 +158,106 @@
                 </div>
             </div>
         </div>
+        <div class="fixed bottom-16 right-5 animate-bounce ">
+            <a href="#" id="openModal"
+                class="px-5 py-2 text-blue-600 border border-blue-600 bg-white rounded-lg hover:text-white hover:bg-blue-700 text-md transition-all">
+                Nuevo
+                curso </a>
+        </div>
+
+        <div id="modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+
+            <!-- Contenedor del modal -->
+            <div id="modalContent"
+                class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-95 opacity-0">
+
+                <!-- Título -->
+                <h2 class="text-md font-semibold mb-2 text-left">Nuevo curso</h2>
+                <hr class="border border-slate-200">
+                <!-- Formulario -->
+                <form class="space-y-4">
+                    <div class="flex flex-row mt-4">
+                        <div class="basis-1/2">
+                            <img src="./images/estudents.png" alt="">
+                        </div>
+                        <div class="basis-1/2">
+                            <div>
+                                <label for="" class="text-xs block">Turno</label>
+                                <select name="" id=""
+                                    class="text-md w-full mt-2 p-2 block h-11 border border-slate-500 rounded">
+                                    <option value=""> Seleccione ...</option>
+                                    <option value="M">MANANA</option>
+                                    <option value="T">TARDE</option>
+                                </select>
+                                <label for="" class="text-xs block mt-2">Nivel</label>
+                                <select name="" id=""
+                                    class=" text-md w-full mt-2 p-2 block h-11 border border-slate-500 rounded">
+                                    <option value=""> Seleccione ...</option>
+                                    <option value="M">INICIAL EN FAMILIA COMUNITARIA</option>
+                                    <option value="T">PRIMARIA COMUNITARIA VOCACIONAL</option>
+                                    <option value="T">SECUNDARIA COMUNITARIA PRODUCTIVA</option>
+                                </select>
+                                <label for="" class="text-xs block mt-2">Grado</label>
+                                <select name="" id=""
+                                    class="text-md w-full mt-2 p-2 block h-11 border border-slate-500 rounded">
+                                    <option value=""> Seleccione ...</option>
+                                    <option value="M">PRIMERO</option>
+                                    <option value="T">SEGUNDO</option>
+                                    <option value="T">TERCERO</option>
+                                    <option value="T">CUARTO</option>
+                                    <option value="T">QUINTO</option>
+                                    <option value="T">SEXTO</option>
+                                </select>
+                                <label for="" class="text-xs block mt-2">Paralelo</label>
+                                <select name="" id=""
+                                    class="text-md w-full mt-2 p-2 block h-11 border border-slate-500 rounded">
+                                    <option value=""> Seleccione ...</option>
+                                    <option value="M">A</option>
+                                    <option value="T">B</option>
+                                    <option value="T">C</option>
+                                    <option value="T">D</option>
+                                    <option value="T">E</option>
+                                    <option value="T">F</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <hr class="border-slate-200 border">
+                    <!-- Botones -->
+                    <div class="flex justify-end space-x-2  ">
+                        <button type="button" id="closeModal"
+                            class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white w-1/2 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            const openBtn = document.getElementById('openModal');
+            const closeBtn = document.getElementById('closeModal');
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modalContent');
+
+            // Abrir modal
+            openBtn.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modalContent.classList.remove('opacity-0', 'scale-95');
+                    modalContent.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            });
+
+            // Cerrar modal
+            closeBtn.addEventListener('click', () => {
+                modalContent.classList.remove('opacity-100', 'scale-100');
+                modalContent.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 200);
+            });
+        </script>
+
     </div>
 @endsection
