@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cursos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre_curso');
-            $table->strint('turno');
+            $table->string('turno');
             $table->integer('nivel');
             $table->string('grado');
             $table->string('paralelo');
