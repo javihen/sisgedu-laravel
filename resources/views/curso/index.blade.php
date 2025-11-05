@@ -183,14 +183,14 @@
                         <div class="basis-1/2">
                             <div>
                                 <label for="" class="text-xs block">Turno</label>
-                                <select name="" id=""
+                                <select name="turno" id="turno"
                                     class="text-md w-full mt-2 p-2 block h-11 border border-slate-500 rounded">
                                     <option value=""> Seleccione ...</option>
                                     <option value="M">MANANA</option>
                                     <option value="T">TARDE</option>
                                 </select>
                                 <label for="" class="text-xs block mt-2">Nivel</label>
-                                <select name="" id=""
+                                <select name="nivel" id="nivel"
                                     class=" text-md w-full mt-2 p-2 block h-11 border border-slate-500 rounded">
                                     <option value=""> Seleccione ...</option>
                                     <option value="M">INICIAL EN FAMILIA COMUNITARIA</option>
@@ -198,7 +198,7 @@
                                     <option value="T">SECUNDARIA COMUNITARIA PRODUCTIVA</option>
                                 </select>
                                 <label for="" class="text-xs block mt-2">Grado</label>
-                                <select name="" id=""
+                                <select name="grado" id="grado"
                                     class="text-md w-full mt-2 p-2 block h-11 border border-slate-500 rounded">
                                     <option value=""> Seleccione ...</option>
                                     <option value="M">PRIMERO</option>
@@ -209,7 +209,7 @@
                                     <option value="T">SEXTO</option>
                                 </select>
                                 <label for="" class="text-xs block mt-2">Paralelo</label>
-                                <select name="" id=""
+                                <select name="paralelo" id="paralelo"
                                     class="text-md w-full mt-2 p-2 block h-11 border border-slate-500 rounded">
                                     <option value=""> Seleccione ...</option>
                                     <option value="M">A</option>
