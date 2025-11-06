@@ -31,16 +31,27 @@ class CursoController extends Controller
     {
         /* Validamos las entradas del formulario puesto que deben de estar completas */
         $request->validate([
-            'nombre_curso' => 'required',
             'turno' => 'required',
             'nivel' => 'required|integer',
-            'grado' => 'required',
+            'grado' => 'required|integer',
             'paralelo' => 'required',
         ]);
         /* Subimos los datos a la tabla Curso usando el modelo Curso */
-        Curso::create($request->all());
+        //Curso::create($request->all());
         //return redirect()->route('curso.index')->with('success', 'Post created successfully.');
-        return redirect()->route('curso.index');
+        try {
+            Curso::create([
+                'id' =>  $request->nivel . '' . $request->grado . '' . $request->paralelo,
+                'nombre_curso' => $request->turno . '' . $request->nivel . '' . $request->grado . '' . $request->paralelo,
+                'turno' => $request->turno,
+                'nivel' => $request->nivel,
+                'grado' => $request->grado,
+                'paralelo' => $request->paralelo,
+            ]);
+            return redirect()->route('curso.index')->with('success', 'El curso se creo satisfactoriamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('curso.index')->with('error', 'Hubo un error al crear el curso.');
+        }
     }
 
     /**
