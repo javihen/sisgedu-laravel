@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Curso;
 
 class CursoController extends Controller
 {
@@ -11,7 +12,8 @@ class CursoController extends Controller
      */
     public function index()
     {
-        return view('curso.index');
+        $cursos = curso::all();                  /* Obtiene todas las tuplas de la tabla Cursos de la BD */
+        return view('curso.index');              /* Retorna el frontend de curso */
     }
 
     /**
@@ -27,7 +29,18 @@ class CursoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        /* Validamos las entradas del formulario puesto que deben de estar completas */
+        $request->validate([
+            'nombre_curso' => 'required',
+            'turno' => 'required',
+            'nivel' => 'required|integer',
+            'grado' => 'required',
+            'paralelo' => 'required',
+        ]);
+        /* Subimos los datos a la tabla Curso usando el modelo Curso */
+        Curso::create($request->all());
+        //return redirect()->route('curso.index')->with('success', 'Post created successfully.');
+        return redirect()->route('curso.index');
     }
 
     /**
