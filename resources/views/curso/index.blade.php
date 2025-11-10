@@ -50,81 +50,79 @@
                         <!-- Contenido oculto que se mostrará al hacer hover -->
                         <div
                             class="flex flex-col mt-2 gap-1 bg-slate-200 p-2 rounded-sm max-h-0 overflow-hidden opacity-0 group-hover:max-h-96 group-hover:opacity-100 transition-all duration-500 ease-in-out">
+                            @foreach ($Minicial as $MI)
+                                <div class="flex flex-row gap-1">
+                                    <div
+                                        class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full hover:bg-slate-500 hover:text-white cursor-pointer">
+                                        <p class="text-[12px]">{{ $MI->display_name }}</p>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
+                                            <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <form action="{{ route('curso.destroy', $MI->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de eliminar este curso?')"
+                                                class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
 
-                            <!-- Fila 1 -->
-                            <div class="flex flex-row gap-1">
-                                <div class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full">
-                                    <p class="text-[12px]">1º SECUNDARIO - "B"</p>
-                                </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
-                                </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600">
-                                        <i class='bx bx-book'></i>
-                                    </a>
-                                </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600">
-                                        <i class='bx bx-trash'></i>
-                                    </a>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="group w-full">
+                        <!-- Botón principal -->
+                        <a href="#"
+                            class="w-full text-center flex justify-center items-center text-[12px] bg-[#3B82F5] text-white h-9 hover:bg-[#2c69cc] rounded-sm font-semibold transition-colors">
+                            TURNO TARDE
+                        </a>
 
-                            <!-- Fila 2 -->
-                            <div class="flex flex-row gap-1">
-                                <div class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full">
-                                    <p class="text-[12px]">2º SECUNDARIO - "B"</p>
+                        <!-- Contenido oculto que se mostrará al hacer hover -->
+                        <div
+                            class="flex flex-col mt-2 gap-1 bg-slate-200 p-2 rounded-sm max-h-0 overflow-hidden opacity-0 group-hover:max-h-96 group-hover:opacity-100 transition-all duration-500 ease-in-out">
+                            @foreach ($Tinicial as $TI)
+                                <div class="flex flex-row gap-1">
+                                    <div
+                                        class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full hover:bg-slate-500 hover:text-white cursor-pointer">
+                                        <p class="text-[12px]">{{ $TI->display_name }}</p>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
+                                            <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <form action="{{ route('curso.destroy', $TI->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de eliminar este curso?')"
+                                                class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
-                                </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
-                                        <i class='bx bx-book'></i>
-                                    </a>
-                                </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
-                                        <i class='bx bx-trash'></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <!-- Fila 3 -->
-                            <div class="flex flex-row gap-1">
-                                <div class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full">
-                                    <p class="text-[12px]">3º SECUNDARIO - "B"</p>
-                                </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
-                                </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600">
-                                        <i class='bx bx-book'></i>
-                                    </a>
-                                </div>
-                                <div>
-                                    <a href="#"
-                                        class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600">
-                                        <i class='bx bx-trash'></i>
-                                    </a>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
-
-
-                    <a href="#"
-                        class="mt-2 w-full text-center flex justify-center items-center text-[12px] bg-[#3B82F5] text-white h-9 hover:bg-[#2c69cc] rounded-sm font-semibold">TURNO
-                        TARDE</a>
                 </div>
             </div>
             <div class="flex-auto">
@@ -147,6 +145,92 @@
                         <p class="text-[10px]">Efectivo</p>
                     </div>
                 </div>
+                <div class="flex flex-col mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
+                    <div class="group w-full">
+                        <!-- Botón principal -->
+                        <a href="#"
+                            class="w-full text-center flex justify-center items-center text-[12px] bg-[#3B82F5] text-white h-9 hover:bg-[#2c69cc] rounded-sm font-semibold transition-colors">
+                            TURNO MAÑANA
+                        </a>
+
+                        <!-- Contenido oculto que se mostrará al hacer hover -->
+                        <div
+                            class="flex flex-col mt-2 gap-1 bg-slate-200 p-2 rounded-sm max-h-0 overflow-hidden opacity-0 group-hover:max-h-[550px] group-hover:opacity-100 transition-all duration-500 ease-in-out">
+                            @foreach ($Mprimaria as $MP)
+                                <div class="flex flex-row gap-1">
+                                    <div
+                                        class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full hover:bg-slate-500 hover:text-white cursor-pointer">
+                                        <p class="text-[12px]">{{ $MP->display_name }}</p>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
+                                            <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <form action="{{ route('curso.destroy', $MP->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de eliminar este curso?')"
+                                                class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                    </div>
+                    <div class="group w-full">
+                        <!-- Botón principal -->
+                        <a href="#"
+                            class="w-full text-center flex justify-center items-center text-[12px] bg-[#3B82F5] text-white h-9 hover:bg-[#2c69cc] rounded-sm font-semibold transition-colors">
+                            TURNO TARDE
+                        </a>
+
+                        <!-- Contenido oculto que se mostrará al hacer hover -->
+                        <div
+                            class="flex flex-col mt-2 gap-1 bg-slate-200 p-2 rounded-sm max-h-0 overflow-hidden opacity-0 group-hover:max-h-96 group-hover:opacity-100 transition-all duration-500 ease-in-out">
+                            @foreach ($Tprimaria as $TP)
+                                <div class="flex flex-row gap-1">
+                                    <div
+                                        class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full hover:bg-slate-500 hover:text-white cursor-pointer">
+                                        <p class="text-[12px]">{{ $TP->display_name }}</p>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
+                                            <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <form action="{{ route('curso.destroy', $TP->id) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de eliminar este curso?')"
+                                                class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="flex-auto">
                 <div
@@ -166,6 +250,93 @@
                     <div class="flex-auto justify-center flex flex-col items-center">
                         <p class="text-[14px] font-semibold">250</p>
                         <p class="text-[10px]">Efectivo</p>
+                    </div>
+                </div>
+                <div class="flex flex-col mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
+                    <div class="group w-full">
+                        <!-- Botón principal -->
+                        <a href="#"
+                            class="w-full text-center flex justify-center items-center text-[12px] bg-[#3B82F5] text-white h-9 hover:bg-[#2c69cc] rounded-sm font-semibold transition-colors">
+                            TURNO MAÑANA
+                        </a>
+
+                        <!-- Contenido oculto que se mostrará al hacer hover -->
+                        <div
+                            class="flex flex-col mt-2 gap-1 bg-slate-200 p-2 rounded-sm max-h-0 overflow-hidden opacity-0 group-hover:max-h-[550px] group-hover:opacity-100 transition-all duration-500 ease-in-out">
+                            @foreach ($Msecundaria as $MS)
+                                <div class="flex flex-row gap-1">
+                                    <div
+                                        class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full hover:bg-slate-500 hover:text-white cursor-pointer">
+                                        <p class="text-[12px]">{{ $MS->display_name }}</p>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
+                                            <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <form action="{{ route('curso.destroy', $MS->id) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de eliminar este curso?')"
+                                                class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                    </div>
+                    <div class="group w-full">
+                        <!-- Botón principal -->
+                        <a href="#"
+                            class="w-full text-center flex justify-center items-center text-[12px] bg-[#3B82F5] text-white h-9 hover:bg-[#2c69cc] rounded-sm font-semibold transition-colors">
+                            TURNO TARDE
+                        </a>
+
+                        <!-- Contenido oculto que se mostrará al hacer hover -->
+                        <div
+                            class="flex flex-col mt-2 gap-1 bg-slate-200 p-2 rounded-sm max-h-0 overflow-hidden opacity-0 group-hover:max-h-96 group-hover:opacity-100 transition-all duration-500 ease-in-out">
+                            @foreach ($Tsecundaria as $TS)
+                                <div class="flex flex-row gap-1">
+                                    <div
+                                        class="border bg-white border-slate-600 h-9 flex justify-center items-center w-full hover:bg-slate-500 hover:text-white cursor-pointer">
+                                        <p class="text-[12px]">{{ $TS->display_name }}</p>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                    </div>
+                                    <div>
+                                        <a href="#"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
+                                            <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <form action="{{ route('curso.destroy', $TS->id) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de eliminar este curso?')"
+                                                class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                                <i class='bx bx-trash'></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>

@@ -13,3 +13,4 @@ Route::get('/', function () {
 
 Route::get('/curso', [CursoController::class, 'index'])->name('curso.index');
 Route::post('/curso/store', [CursoController::class, 'store'])->name('curso.store');
+Route::delete('/curso/destroy/{id}', [CursoController::class, 'destroy'])->name('curso.destroy');

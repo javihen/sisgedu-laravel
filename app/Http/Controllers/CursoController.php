@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Curso;
+use Illuminate\Support\Facades\DB;
 
 class CursoController extends Controller
 {
@@ -12,8 +13,15 @@ class CursoController extends Controller
      */
     public function index()
     {
-        $cursos = curso::all();                  /* Obtiene todas las tuplas de la tabla Cursos de la BD */
-        return view('curso.index');              /* Retorna el frontend de curso */
+        //$cursos = curso::all();                  /* Obtiene todas las tuplas de la tabla Cursos de la BD */
+
+        $Minicial = Curso::where('nivel', 0)->where('turno', 'M')->orderBy('grado')->orderBy('paralelo')->get();
+        $Tinicial = Curso::where('nivel', 0)->where('turno', 'T')->orderBy('grado')->orderBy('paralelo')->get();
+        $Mprimaria = Curso::where('nivel', 1)->where('turno', 'M')->orderBy('grado')->orderBy('paralelo')->get();
+        $Tprimaria = Curso::where('nivel', 1)->where('turno', 'T')->orderBy('grado')->orderBy('paralelo')->get();
+        $Msecundaria = Curso::where('nivel', 2)->where('turno', 'M')->orderBy('grado')->orderBy('paralelo')->get();
+        $Tsecundaria = Curso::where('nivel', 2)->where('turno', 'T')->orderBy('grado')->orderBy('paralelo')->get();
+        return view('curso.index', compact('Minicial', 'Tinicial', 'Mprimaria', 'Tprimaria', 'Msecundaria', 'Tsecundaria'));              /* Retorna el frontend de curso con la variable donde se guardara todas las tuplas */
     }
 
     /**
@@ -50,7 +58,7 @@ class CursoController extends Controller
             ]);
             return redirect()->route('curso.index')->with('success', 'El curso se creo satisfactoriamente.');
         } catch (\Exception $e) {
-            return redirect()->route('curso.index')->with('error', 'Hubo un error al crear el curso.');
+            return redirect()->route('curso.index');
         }
     }
 
@@ -67,7 +75,7 @@ class CursoController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        //no sera necesario puesto que el curso no se editara sino se eliminara y se creara uno nuevo
     }
 
     /**
@@ -83,6 +91,10 @@ class CursoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $cursos = Curso::find($id);
+        $cursos->delete();
+
+        //DB::table('cursos')->where('id', $id)->delete();  otra forma de eliminar
+        return redirect()->route('curso.index')->with('success', 'El curso se elimino satisfactoriamente.');
     }
 }
