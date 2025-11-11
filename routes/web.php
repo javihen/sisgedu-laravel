@@ -11,6 +11,12 @@ Route::get('/', function () {
     return view('curso.index');
 }); */
 
+//-------------- MODULO CURSO ---------------------//
 Route::get('/curso', [CursoController::class, 'index'])->name('curso.index');
 Route::post('/curso/store', [CursoController::class, 'store'])->name('curso.store');
 Route::delete('/curso/destroy/{id}', [CursoController::class, 'destroy'])->name('curso.destroy');
+
+//-------------- MODULO ESTUDIANTE --------------------//
+Route::get('/estudiante', function () {
+    return view('estudiante.index');
+})->name('estudiante.index');
