@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('appaterno');
             $table->string('apmaterno');
             $table->char('genero', 1);
+            $table->char('estado', 1);
             $table->date('fecha_nacimiento');
             $table->string('observacion');
             $table->timestamps();

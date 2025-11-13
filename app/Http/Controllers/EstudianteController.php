@@ -12,7 +12,7 @@ class EstudianteController extends Controller
      */
     public function index()
     {
-        //
+        return view('estudiante.index');
     }
 
     /**
@@ -28,16 +28,11 @@ class EstudianteController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'rude' => 'required',
-            'ci' => 'required',
-            'nombres' => 'required',
-            'genero' => 'required',
-            'fecha_nacimiento' => 'required',
-        ]);
-        try {
+        //dd($request->all());
+         try {
             Estudiante::create([
-                'id_estudiante' => 'E' . $request->nivel . '' . $request->grado . '' . $request->paralelo,
+                'id_estudiante' => $request->codigo,
+                'estado'=> $request->estado,
                 'rude' => $request->rude,
                 'ci' => $request->ci,
                 'nombres' => $request->nombres,
@@ -49,7 +44,7 @@ class EstudianteController extends Controller
             ]);
             return redirect()->route('estudiante.index')->with('success', 'El estudiante se registro satisfactoriamente.');
         } catch (\Exception $e) {
-            return redirect()->route('estudiante.index');
+            return redirect()->route('estudiante.index')->with('success', 'Ocurrió un error al registrar el estudiante.');
         }
     }
 

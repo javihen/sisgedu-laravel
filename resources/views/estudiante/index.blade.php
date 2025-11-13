@@ -94,10 +94,10 @@
 
         {{-- Nos crearemos el formulario modal con el que podamos nosotros registras a nuevos estudiantes --}}
         <div id="modal"
-            class=" fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
             <!-- Contenedor del modal -->
             <div id="modalContent"
-                class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-100 opacity-100">
+                class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-95 opacity-0">
 
                 <!-- Título -->
                 <h2 class="text-md font-semibold mt-4 mb-6 text-left">REGISTRO DE NUEVO ESTUDIANTE</h2>
@@ -105,14 +105,6 @@
                 <!-- Formulario -->
                 <form class="space-y-4" action="{{ route('estudiante.store') }}" method="post">
                     @csrf
-                    {{-- <div class="w-full bg-slate-200 p-2">
-                        <label for="curso" class="text-xs">Curso</label>
-                        <select name="turno" id="" class="w-full border border-slate-600 bg-white p-2">
-                            <option value="">Seleccione</option>
-                            <option value="">1o PRIMARIA - "A" .:T. TARDE:.</option>
-                            <option value="">Tarde</option>
-                        </select>
-                    </div> --}}
                     <div class="flex flex-row gap-1 p-2 bg-slate-200">
                         <div class="basis-1/3 flex flex-col">
                             <label for="" class="text-xs">Turno</label>
@@ -141,40 +133,56 @@
                     </div>
                     <div class="flex flex-row mt-4 gap-1">
                         <div class="basis-1/2 ">
+                            <label for="codigo" class="text-xs relative top-3 left-3 bg-white px-2">Codigo </label>
+                            <input type="text" name="codigo" id="codigo"
+                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
+                        </div>
+                        <div class="basis-1/2 flex flex-col mt-2 ">
+                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Estado
+                            </label>
+                            <select name="genero" id="genero" class="border border-slate-600 bg-white p-2 rounded-md">
+                                <option value="E">EFECTIVO</option>
+                                <option value="R">RETIRADO</option>
+                                <option value="A">ABANDONO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex flex-row mt-4 gap-1 mt-[-25px]">
+                        <div class="basis-1/2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">R.U.D.E. </label>
-                            <input type="text" name="rude" id=""
-                                class="w-full border border-slate-700 rounded-md p-2">
+                            <input type="text" name="rude" id="rude"
+                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </div>
                         <div class="basis-1/2">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">C.I. </label>
-                            <input type="text" name="rude" id=""
-                                class="w-full border border-slate-700 rounded-md p-2">
+                            <input type="text" name="ci" id="ci"
+                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </div>
                     </div>
                     <div class="mt-[-25px]">
                         <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Nombre (s) </label>
-                        <input type="text" name="rude" id=""
-                            class="w-full border border-slate-700 rounded-md p-2">
+                        <input type="text" name="nombres" id="nombres"
+                            class="w-full border border-slate-700 rounded-md p-2 uppercase">
                     </div>
                     <div class="flex flex-row mt-[-25px] gap-1">
                         <div class="basis-1/2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Apellido paterno
                             </label>
-                            <input type="text" name="rude" id=""
-                                class="w-full border border-slate-700 rounded-md p-2">
+                            <input type="text" name="appaterno" id="appaterno"
+                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </div>
                         <div class="basis-1/2">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Apellido materno
                             </label>
-                            <input type="text" name="rude" id=""
-                                class="w-full border border-slate-700 rounded-md p-2">
+                            <input type="text" name="apmaterno" id="apmaterno"
+                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </div>
                     </div>
                     <div class="flex flex-row mt-[-25px] gap-1">
                         <div class="basis-1/2 flex flex-col mt-2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Genero
                             </label>
-                            <select name="genero" id=""
+                            <select name="genero" id="genero"
                                 class="border border-slate-600 bg-white p-2 rounded-md">
                                 <option value="">seleccione</option>
                                 <option value="M">MASCULINO</option>
@@ -184,13 +192,13 @@
                         <div class="basis-1/2">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Fecha de nacimiento
                             </label>
-                            <input type="date" name="rude" id=""
-                                class="w-full border border-slate-700 rounded-md p-2">
+                            <input type="date" name="fecha_nacimiento" id="fecha_nacimiento"
+                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </div>
                     </div>
                     <div class="mt-[-25px]">
                         <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Observaciones </label>
-                        <textarea name="rude" id="" class="w-full border border-slate-700 rounded-md p-2">
+                        <textarea name="observacion" id="observacion" class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </textarea>
                     </div>
                     <hr class="border-slate-200 border">

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CursoController;
+use App\Http\Controllers\EstudianteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,6 +20,7 @@ Route::get('/curso/{turno}/{nivel}', [CursoController::class, 'getCursos'])->nam
 
 
 //-------------- MODULO ESTUDIANTE --------------------//
-Route::get('/estudiante', function () {
-    return view('estudiante.index');
-})->name('estudiante.index');
+
+Route::get('/estudiante', [EstudianteController::class, 'index'])->name('estudiante.index');
+Route::post('/estudiante/store', [EstudianteController::class, 'store'])->name('estudiante.store');
+
