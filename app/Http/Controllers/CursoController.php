@@ -49,7 +49,7 @@ class CursoController extends Controller
         //return redirect()->route('curso.index')->with('success', 'Post created successfully.');
         try {
             Curso::create([
-                'id' =>  $request->nivel . '' . $request->grado . '' . $request->paralelo,
+                'id' => 'C' . $request->nivel . '' . $request->grado . '' . $request->paralelo,
                 'nombre_curso' => $request->turno . '' . $request->nivel . '' . $request->grado . '' . $request->paralelo,
                 'turno' => $request->turno,
                 'nivel' => $request->nivel,
@@ -96,5 +96,21 @@ class CursoController extends Controller
 
         //DB::table('cursos')->where('id', $id)->delete();  otra forma de eliminar
         return redirect()->route('curso.index')->with('success', 'El curso se elimino satisfactoriamente.');
+    }
+
+    public function getCursos($turno, $nivel)
+    {
+        // Filtramos cursos por categoría y subcategoría (ajusta los campos según tu base de datos)
+        $cursos = Curso::where('turno', $turno) //tenemos problemas subrayadospero es cuestion del editor aunque todavia estamos en la busqueda de la soucion
+            ->where('nivel', $nivel)
+            ->get()
+            ->map(function ($curso) {
+                return [
+                    'idCurso' => $curso->id,
+                    'nombreCurso' => $curso->display_name, // usa el accesor definido en el modelo
+                ];
+            });
+
+        return response()->json($cursos);
     }
 }

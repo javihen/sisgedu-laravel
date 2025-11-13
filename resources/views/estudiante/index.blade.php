@@ -94,16 +94,16 @@
 
         {{-- Nos crearemos el formulario modal con el que podamos nosotros registras a nuevos estudiantes --}}
         <div id="modal"
-            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
+            class=" fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
             <!-- Contenedor del modal -->
             <div id="modalContent"
-                class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-95 opacity-0">
+                class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-100 opacity-100">
 
                 <!-- Título -->
                 <h2 class="text-md font-semibold mt-4 mb-6 text-left">REGISTRO DE NUEVO ESTUDIANTE</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" action="{{ route('curso.store') }}" method="post">
+                <form class="space-y-4" action="{{ route('estudiante.store') }}" method="post">
                     @csrf
                     {{-- <div class="w-full bg-slate-200 p-2">
                         <label for="curso" class="text-xs">Curso</label>
@@ -116,27 +116,26 @@
                     <div class="flex flex-row gap-1 p-2 bg-slate-200">
                         <div class="basis-1/3 flex flex-col">
                             <label for="" class="text-xs">Turno</label>
-                            <select name="turno" id="" class="border border-slate-600 bg-white p-2 rounded-sm">
+                            <select name="turno" id="turno" class="border border-slate-600 bg-white p-2 rounded-sm">
                                 <option value="">- seleccione -</option>
-                                <option value="">INICIAL</option>
-                                <option value="">PRIMARIA</option>
-                                <option value="">SECUNDARIA</option>
+                                <option value="M">MANANA</option>
+                                <option value="T">TARDE</option>
                             </select>
                         </div>
                         <div class="basis-1/3 flex flex-col">
                             <label for="" class="text-xs">Nivel</label>
-                            <select name="nivel" id="" class="border border-slate-600 bg-white p-2 rounded-sm">
+                            <select name="nivel" id="nivel" class="border border-slate-600 bg-white p-2 rounded-sm">
                                 <option value="">- seleccione -</option>
-                                <option value="">Manana</option>
-                                <option value="">Tarde</option>
+                                <option value="0">INICIAL</option>
+                                <option value="1">PRIMARIA</option>
+                                <option value="2">SECUNDARIA</option>
                             </select>
                         </div>
                         <div class="basis-1/3 flex flex-col">
                             <label for="" class="text-xs">Curso</label>
-                            <select name="curso" id="" class="border border-slate-600 bg-white p-2 rounded-sm">
-                                <option value="">- seleccione -</option>
-                                <option value="">Manana</option>
-                                <option value="">Tarde</option>
+                            <select name="curso" id="curso" class="border border-slate-600 bg-white p-2 rounded-sm">
+                                <option value=""> - seleccione - </option>
+
                             </select>
                         </div>
                     </div>
@@ -226,6 +225,31 @@
                 modalContent.classList.remove('opacity-100', 'scale-100');
                 modalContent.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => modal.classList.add('hidden'), 200);
+            });
+
+            //codigo para obtener datos de un select
+            document.getElementById("nivel").addEventListener('change', function() {
+                const nivel = this.value;
+                const turno = document.getElementById('turno').value;
+                const cursoSelect = document.getElementById('curso');
+
+                cursoSelect.innerHTML = '<option value="">seleccione</option>';
+                cursoSelect.disabled = true;
+
+                if (turno && nivel) {
+                    // Cargar los cursos pasando ambos parámetros
+                    fetch(`/curso/${turno}/${nivel}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            cursoSelect.innerHTML = data.map(item =>
+                                `<option value="${item.idCurso}">${item.nombreCurso}</option>`
+                            ).join('');
+                            cursoSelect.disabled = false;
+                        })
+                        .catch(error => console.error('Error cargando de los cursos:', error));
+                }
+
+
             });
         </script>
 
