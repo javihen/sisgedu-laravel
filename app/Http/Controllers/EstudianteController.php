@@ -12,7 +12,10 @@ class EstudianteController extends Controller
      */
     public function index()
     {
-        return view('estudiante.index');
+        // Obtener todos los estudiantes ordenados ascendentemente por 'nombres'
+        $estudiantes = Estudiante::orderBy('appaterno', 'asc')->get();
+
+        return view('estudiante.index', compact('estudiantes'));
     }
 
     /**
@@ -29,22 +32,27 @@ class EstudianteController extends Controller
     public function store(Request $request)
     {
         //dd($request->all());
-         try {
+        try {
+            //si existen datos $request->curso lo insertaremos en la tabla de inscripciones
+
+            // Normalizar y convertir a mayúsculas los campos de texto
+            $toUpper = fn($v) => $v === null ? null : mb_strtoupper(trim($v), 'UTF-8');
+
             Estudiante::create([
-                'id_estudiante' => $request->codigo,
-                'estado'=> $request->estado,
-                'rude' => $request->rude,
-                'ci' => $request->ci,
-                'nombres' => $request->nombres,
-                'appaterno' => $request->appaterno,
-                'apmaterno' => $request->apmaterno,
-                'genero' => $request->genero,
+                'id_estudiante' => $toUpper($request->codigo),
+                'estado' => $toUpper($request->estado),
+                'rude' => $toUpper($request->rude),
+                'ci' => $toUpper($request->ci),
+                'nombres' => $toUpper($request->nombres),
+                'appaterno' => $toUpper($request->appaterno),
+                'apmaterno' => $toUpper($request->apmaterno),
+                'genero' => $toUpper($request->genero),
                 'fecha_nacimiento' => $request->fecha_nacimiento,
-                'observacion' => $request->observacion,
+                'observacion' => $toUpper($request->observacion),
             ]);
             return redirect()->route('estudiante.index')->with('success', 'El estudiante se registro satisfactoriamente.');
         } catch (\Exception $e) {
-            return redirect()->route('estudiante.index')->with('success', 'Ocurrió un error al registrar el estudiante.');
+            return redirect()->route('estudiante.index')->with('error', 'Ocurrió un error al registrar el estudiante.' . $e->getMessage());
         }
     }
 

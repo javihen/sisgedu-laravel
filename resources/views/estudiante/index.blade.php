@@ -22,6 +22,15 @@
                 </div>
             </div>
         @endif
+        @if (session('error'))
+            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full  my-4">
+                <div
+                    class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md flex justify-between items-center">
+                    <span>{{ session('error') }}</span>
+                    <button @click="show = false" class="ml-4 font-bold text-red-700 hover:text-red-900">&times;</button>
+                </div>
+            </div>
+        @endif
 
         <div class=" ml-3 w-full mt-2  flex gap-1 ">
             <div class="bg-white w-2/3  border border-slate-300 rounded-md">
@@ -36,28 +45,45 @@
                         <td>Estado</td>
                         <td>Opciones</td>
                     </tr>
-                    <tr class="border-b border-[#64748B] text-xs text-center ">
-                        <td class="py-3">1.</td>
-                        <td>E5A112</td>
-                        <td>ACUCHIRI</td>
-                        <td>CALLISAYA</td>
-                        <td>ARNOLD CESAR</td>
-                        <td>C4A1</td>
-                        <td>
-                            <a href="#"
-                                class="px-2 border border-green-500 bg-white text-green-500 rounded-sm hover:text-white hover:bg-green-500">Efectivo</a>
-                        </td>
-                        <td>
-                            <a href="#"
-                                class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white"><i
-                                    class='bx  bx-trash '></i></a>
-                            <a href="#"
-                                class="ml-1 p-2 border border-[#3B82F6] bg-white text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white rounded-sm"><i
-                                    class='bx  bx-edit-alt '></i>
-                                Editar</a>
-                        </td>
-                    </tr>
-
+                    @foreach ($estudiantes as $estudiante)
+                        <tr class="border-b border-[#64748B] text-xs text-center ">
+                            <td class="py-3">{{ $loop->iteration }}</td>
+                            <td>{{ $estudiante->id_estudiante }}</td>
+                            <td>{{ $estudiante->appaterno }}</td>
+                            <td>{{ $estudiante->apmaterno }}</td>
+                            <td>{{ $estudiante->nombres }}</td>
+                            <td>SIN CURSO</td>{{-- aqui debemos de buscar en la tabla inscripcion si esta registrado en algun curso sino solo colocamos SIN CURSO --}}
+                            <td>
+                                @if ($estudiante->estado === 'E')
+                                    <a href="#"
+                                        class="px-2 border border-green-500 bg-white text-green-500 rounded-sm hover:text-white hover:bg-green-500">
+                                        Efectivo
+                                    </a>
+                                @elseif ($estudiante->estado === 'R')
+                                    <a href="#"
+                                        class="px-2 border border-red-500 bg-white text-red-500 rounded-sm hover:text-white hover:bg-red-500">
+                                        Retirado
+                                    </a>
+                                @elseif ($estudiante->estado === 'A')
+                                    <a href="#"
+                                        class="px-2 border border-slate-500 bg-white text-slate-500 rounded-sm hover:text-white hover:bg-slate-500">
+                                        Abandono
+                                    </a>
+                                @else
+                                    <span class="px-2 text-sm text-gray-500">—</span>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="#"
+                                    class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white"><i
+                                        class='bx  bx-trash '></i></a>
+                                <a href="#"
+                                    class="ml-1 p-2 border border-[#3B82F6] bg-white text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white rounded-sm"><i
+                                        class='bx  bx-edit-alt '></i>
+                                    Editar</a>
+                            </td>
+                        </tr>
+                    @endforeach
                 </table>
             </div>
             <div class=" w-1/3  ">
@@ -140,7 +166,8 @@
                         <div class="basis-1/2 flex flex-col mt-2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Estado
                             </label>
-                            <select name="genero" id="genero" class="border border-slate-600 bg-white p-2 rounded-md">
+                            <select name="estado" id="estado"
+                                class="border border-slate-600 bg-white p-2 rounded-md">
                                 <option value="E">EFECTIVO</option>
                                 <option value="R">RETIRADO</option>
                                 <option value="A">ABANDONO</option>
