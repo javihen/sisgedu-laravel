@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Estudiante extends Model
 {
+    protected $primaryKey = 'id_estudiante';
     protected $keyType = 'string';
     // La clave primaria no es autoincremental
     public $incrementing = false;

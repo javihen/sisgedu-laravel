@@ -23,4 +23,5 @@ Route::get('/curso/{turno}/{nivel}', [CursoController::class, 'getCursos'])->nam
 
 Route::get('/estudiante', [EstudianteController::class, 'index'])->name('estudiante.index');
 Route::post('/estudiante/store', [EstudianteController::class, 'store'])->name('estudiante.store');
+Route::delete('/estudiante/destroy/{id}', [EstudianteController::class, 'destroy'])->name('estudiante.destroy');
 

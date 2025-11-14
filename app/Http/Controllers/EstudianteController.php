@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EstudianteController extends Controller
 {
@@ -61,7 +62,11 @@ class EstudianteController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $estudiante = Estudiante::find($id);
+        if (!$estudiante) {
+            return response()->json(['error' => 'Estudiante no encontrado'], 404);
+        }
+        return response()->json($estudiante);
     }
 
     /**
@@ -77,7 +82,36 @@ class EstudianteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'rude' => 'required',
+            'ci' => 'required',
+            'nombres' => 'required',
+            'genero' => 'required',
+            'fecha_nacimiento' => 'required',
+        ]);
+
+        try {
+            $estudiante = Estudiante::find($id);
+            if (!$estudiante) {
+                return redirect()->route('estudiante.index')->with('error', 'Estudiante no encontrado.');
+            }
+
+            $estudiante->update([
+                'estado' => $request->input('estado', 'E'),
+                'rude' => $request->rude,
+                'ci' => $request->ci,
+                'nombres' => $request->nombres,
+                'appaterno' => $request->appaterno,
+                'apmaterno' => $request->apmaterno,
+                'genero' => $request->genero,
+                'fecha_nacimiento' => $request->fecha_nacimiento,
+                'observacion' => $request->observacion,
+            ]);
+
+            return redirect()->route('estudiante.index')->with('success', 'El estudiante se actualizó satisfactoriamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('estudiante.index')->with('error', 'Ocurrió un error al actualizar el estudiante: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -85,6 +119,15 @@ class EstudianteController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $estudiante = Estudiante::find($id);
+            if (!$estudiante) {
+                return redirect()->route('estudiante.index')->with('error', 'Estudiante no encontrado.');
+            }
+            $estudiante->delete();
+            return redirect()->route('estudiante.index')->with('success', 'El estudiante fue eliminado satisfactoriamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('estudiante.index')->with('error', 'Ocurrió un error al eliminar el estudiante: ' . $e->getMessage());
+        }
     }
 }

@@ -347,24 +347,6 @@
                 Nuevo
                 curso </a>
         </div>
-
-        {{--    @if (session('success'))
-            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
-                x-transition:enter="transition transform ease-out duration-300"
-                x-transition:enter-start="translate-y-[-20px] opacity-0"
-                x-transition:enter-end="translate-y-0 opacity-100"
-                x-transition:leave="transition transform ease-in duration-300"
-                x-transition:leave-start="translate-y-0 opacity-100"
-                x-transition:leave-end="translate-y-[-20px] opacity-0" class="fixed top-20 right-5 w-full max-w-sm z-50">
-                <div
-                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md flex items-center justify-between">
-                    <span>{{ session('success') }}</span>
-                    <button @click="show = false"
-                        class="ml-4 text-green-700 hover:text-green-900 font-bold">&times;</button>
-                </div>
-            </div>
-        @endif --}}
-
         @if (session('error'))
             <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show"
                 x-transition:enter="transition transform ease-out duration-300"

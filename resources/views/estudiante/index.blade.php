@@ -13,7 +13,7 @@
             </div>
         </div>
         @if (session('success'))
-            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full  my-4">
+            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full ml-[18px] mr-4">
                 <div
                     class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md flex justify-between items-center">
                     <span>{{ session('success') }}</span>
@@ -23,7 +23,7 @@
             </div>
         @endif
         @if (session('error'))
-            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full  my-4">
+            <div x-data="{ show: true }" x-init="setTimeout(() => show = true, 4000)" x-show="show" x-transition class="w-full ml-4 mr-4">
                 <div
                     class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md flex justify-between items-center">
                     <span>{{ session('error') }}</span>
@@ -74,13 +74,18 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="#"
-                                    class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white"><i
-                                        class='bx  bx-trash '></i></a>
-                                <a href="#"
-                                    class="ml-1 p-2 border border-[#3B82F6] bg-white text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white rounded-sm"><i
-                                        class='bx  bx-edit-alt '></i>
-                                    Editar</a>
+                                <form action="{{ route('estudiante.destroy', $estudiante->id_estudiante) }}" method="POST"
+                                    class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este curso?')"
+                                        class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
+                                        <i class='bx bx-trash'></i>
+                                    </button>
+                                </form>
+                                <a href="#" onclick="editarEstudiante('{{ $estudiante->id_estudiante }}')"
+                                    class="ml-1 p-2 border border-[#3B82F6] bg-white text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white rounded-sm cursor-pointer"><i
+                                        class='bx bx-edit-alt'></i> Editar</a>
                             </td>
                         </tr>
                     @endforeach
@@ -126,14 +131,15 @@
                 class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-95 opacity-0">
 
                 <!-- Título -->
-                <h2 class="text-md font-semibold mt-4 mb-6 text-left">REGISTRO DE NUEVO ESTUDIANTE</h2>
+                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">REGISTRO DE NUEVO ESTUDIANTE</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" action="{{ route('estudiante.store') }}" method="post">
+                <form class="space-y-4" id="formularioEstudiante" action="{{ route('estudiante.store') }}" method="post">
                     @csrf
                     <div class="flex flex-row gap-1 p-2 bg-slate-200">
+                        <input type="hidden" name="id_estudiante_hidden" id="id_estudiante_hidden">
                         <div class="basis-1/3 flex flex-col">
-                            <label for="" class="text-xs">Turno</label>
+                            <label for="turno" class="text-xs">Turno</label>
                             <select name="turno" id="turno" class="border border-slate-600 bg-white p-2 rounded-sm">
                                 <option value="">- seleccione -</option>
                                 <option value="M">MANANA</option>
@@ -151,7 +157,8 @@
                         </div>
                         <div class="basis-1/3 flex flex-col">
                             <label for="" class="text-xs">Curso</label>
-                            <select name="curso" id="curso" class="border border-slate-600 bg-white p-2 rounded-sm">
+                            <select name="curso" id="curso"
+                                class="border border-slate-600 bg-white p-2 rounded-sm">
                                 <option value=""> - seleccione - </option>
 
                             </select>
@@ -259,8 +266,69 @@
             closeBtn.addEventListener('click', () => {
                 modalContent.classList.remove('opacity-100', 'scale-100');
                 modalContent.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => modal.classList.add('hidden'), 200);
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    limpiarFormulario();
+                }, 200);
             });
+
+            // Función para editar estudiante
+            function editarEstudiante(idEstudiante) {
+                fetch(`/estudiante/${idEstudiante}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Llenar el formulario con los datos
+                        document.getElementById('id_estudiante_hidden').value = data.id_estudiante;
+                        document.getElementById('turno').value = data.turno || '';
+                        document.getElementById('nivel').value = data.nivel || '';
+                        document.getElementById('estado').value = data.estado || '';
+                        document.getElementById('rude').value = data.rude || '';
+                        document.getElementById('ci').value = data.ci || '';
+                        document.getElementById('nombres').value = data.nombres || '';
+                        document.getElementById('appaterno').value = data.appaterno || '';
+                        document.getElementById('apmaterno').value = data.apmaterno || '';
+                        document.getElementById('genero').value = data.genero || '';
+                        document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento || '';
+                        document.getElementById('observacion').value = data.observacion || '';
+
+                        // Cambiar acción del formulario y título
+                        document.getElementById('formularioEstudiante').action = `/estudiante/${idEstudiante}`;
+                        const existingMethod = document.querySelector('input[name="_method"]');
+                        if (!existingMethod) {
+                            const methodInput = document.createElement('input');
+                            methodInput.type = 'hidden';
+                            methodInput.name = '_method';
+                            methodInput.value = 'PUT';
+                            document.getElementById('formularioEstudiante').appendChild(methodInput);
+                        }
+                        document.getElementById('modalTitle').textContent = 'EDITAR ESTUDIANTE';
+
+                        // Cargar cursos si existe nivel
+                        if (data.nivel) {
+                            document.getElementById('nivel').dispatchEvent(new Event('change'));
+                            setTimeout(() => {
+                                document.getElementById('curso').value = data.id_curso || '';
+                            }, 500);
+                        }
+
+                        // Abrir modal
+                        modal.classList.remove('hidden');
+                        setTimeout(() => {
+                            modalContent.classList.remove('opacity-0', 'scale-95');
+                            modalContent.classList.add('opacity-100', 'scale-100');
+                        }, 10);
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            // Limpiar formulario al cerrar modal
+            function limpiarFormulario() {
+                document.getElementById('formularioEstudiante').reset();
+                document.getElementById('formularioEstudiante').action = "{{ route('estudiante.store') }}";
+                document.getElementById('modalTitle').textContent = 'REGISTRO DE NUEVO ESTUDIANTE';
+                const metodoInput = document.querySelector('input[name="_method"]');
+                if (metodoInput) metodoInput.remove();
+            }
 
             //codigo para obtener datos de un select
             document.getElementById("nivel").addEventListener('change', function() {
