@@ -99,8 +99,8 @@
                         Nuevo
                         estudiante
                     </a>
-                    <a href="#"
-                        class="rounded-md w-1/3 flex-auto bg-slate-500 text-white text-center py-2 border-2 border-slate-500 hover:border-white text-sm"><i
+                    <a href="#" id="openModalSubir"
+                        class="rounded-md w-1/3 flex-auto bg-slate-500 text-white text-center py-2 border-2 border-slate-500 hover:border-white text-sm cursor-pointer"><i
                             class='bx bx-download'></i> Subir </a>
                 </div>
                 <div class="border border-slate-300 bg-white">
@@ -247,11 +247,69 @@
             </div>
         </div>
 
+        {{-- Modal para importar/subir estudiantes --}}
+        <div id="modalSubir"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
+            <!-- Contenedor del modal -->
+            <div id="modalSubirContent"
+                class="bg-white rounded-md shadow-lg w-[522px] p-4 transform transition-all scale-95 opacity-0">
+
+                <!-- Título -->
+                <h2 class="text-md font-semibold mt-4 mb-6 text-left">IMPORTAR ESTUDIANTES</h2>
+                <hr class="border border-slate-200 mb-4">
+                
+                <!-- Formulario -->
+                <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                        <p class="text-xs text-blue-800 mb-2">
+                            <strong>Instrucciones:</strong> Selecciona un archivo Excel o CSV con los datos de los estudiantes.
+                        </p>
+                        <p class="text-xs text-blue-700">
+                            El archivo debe contener las columnas: RUDE, C.I., Nombres, Ap. Paterno, Ap. Materno, Genero, Fecha Nacimiento
+                        </p>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="archivo" class="text-xs relative top-3 left-3 bg-white px-2">Seleccionar archivo </label>
+                        <input type="file" name="archivo" id="archivo" accept=".xlsx,.xls,.csv"
+                            class="w-full border border-slate-700 rounded-md p-2" required>
+                        <p class="text-xs text-slate-500 mt-1">Formatos permitidos: Excel (.xlsx, .xls) o CSV (.csv)</p>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <label for="curso_import" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Curso (opcional)</label>
+                        <select name="curso_import" id="curso_import" class="border border-slate-600 bg-white p-2 rounded-md">
+                            <option value="">- seleccione un curso -</option>
+                            <option value="">Sin asignar</option>
+                        </select>
+                        <p class="text-xs text-slate-500 mt-1">Si dejas vacío, los estudiantes se crearán sin curso asignado</p>
+                    </div>
+
+                    <hr class="border-slate-200 border">
+                    
+                    <!-- Botones -->
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="closeModalSubir"
+                            class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 text-white w-1/2 rounded-lg hover:bg-green-700 transition hover:cursor-pointer">Importar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <script>
             const openBtn = document.getElementById('openModal');
             const closeBtn = document.getElementById('closeModal');
             const modal = document.getElementById('modal');
             const modalContent = document.getElementById('modalContent');
+
+            const openBtnSubir = document.getElementById('openModalSubir');
+            const closeBtnSubir = document.getElementById('closeModalSubir');
+            const modalSubir = document.getElementById('modalSubir');
+            const modalSubirContent = document.getElementById('modalSubirContent');
 
             // Abrir modal
             openBtn.addEventListener('click', () => {
@@ -269,6 +327,26 @@
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     limpiarFormulario();
+                }, 200);
+            });
+
+            // Abrir modal de importación
+            openBtnSubir.addEventListener('click', (e) => {
+                e.preventDefault();
+                modalSubir.classList.remove('hidden');
+                setTimeout(() => {
+                    modalSubirContent.classList.remove('opacity-0', 'scale-95');
+                    modalSubirContent.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            });
+
+            // Cerrar modal de importación
+            closeBtnSubir.addEventListener('click', () => {
+                modalSubirContent.classList.remove('opacity-100', 'scale-100');
+                modalSubirContent.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    modalSubir.classList.add('hidden');
+                    document.getElementById('formularioImportar').reset();
                 }, 200);
             });
 

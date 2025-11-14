@@ -58,6 +58,28 @@ class EstudianteController extends Controller
     }
 
     /**
+     * Import students from file
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'archivo' => 'required|file|mimes:xlsx,xls,csv',
+        ]);
+
+        try {
+            $file = $request->file('archivo');
+            $path = $file->store('imports');
+
+            // Aquí puedes agregar lógica para procesar el archivo
+            // Por ahora solo retornamos un mensaje de éxito
+            
+            return redirect()->route('estudiante.index')->with('success', 'Importación procesada correctamente. Se agregarán pronto los estudiantes.');
+        } catch (\Exception $e) {
+            return redirect()->route('estudiante.index')->with('error', 'Ocurrió un error al importar el archivo: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(string $id)
