@@ -86,6 +86,17 @@
                                 <a href="#" onclick="editarEstudiante('{{ $estudiante->id_estudiante }}')"
                                     class="ml-1 p-2 border border-[#3B82F6] bg-white text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white rounded-sm cursor-pointer"><i
                                         class='bx bx-edit-alt'></i> Editar</a>
+                                <a href="#"
+                                    class="ml-1 p-2 edit-btn border border-[#3B82F6] bg-white text-[#3B82F6] rounded-sm"
+                                    data-id="{{ $estudiante->id_estudiante }}"
+                                    data-codigo="{{ $estudiante->id_estudiante }}" data-estado="{{ $estudiante->estado }}"
+                                    data-rude="{{ $estudiante->rude }}" data-ci="{{ $estudiante->ci }}"
+                                    data-nombres="{{ $estudiante->nombres }}"
+                                    data-appaterno="{{ $estudiante->appaterno }}"
+                                    data-apmaterno="{{ $estudiante->apmaterno }}" data-genero="{{ $estudiante->genero }}"
+                                    data-fecha="{{ $estudiante->fecha_nacimiento }}">
+                                    <i class='bx bx-edit-alt'></i> Editar
+                                </a>
                             </td>
                         </tr>
                     @endforeach
@@ -136,11 +147,13 @@
                 <!-- Formulario -->
                 <form class="space-y-4" id="formularioEstudiante" action="{{ route('estudiante.store') }}" method="post">
                     @csrf
+                    <input type="hidden" name="_method" id="formMethod" value="POST">
                     <div class="flex flex-row gap-1 p-2 bg-slate-200">
                         <input type="hidden" name="id_estudiante_hidden" id="id_estudiante_hidden">
                         <div class="basis-1/3 flex flex-col">
                             <label for="turno" class="text-xs">Turno</label>
-                            <select name="turno" id="turno" class="border border-slate-600 bg-white p-2 rounded-sm">
+                            <select name="turno" id="turno"
+                                class="border border-slate-600 bg-white p-2 rounded-sm">
                                 <option value="">- seleccione -</option>
                                 <option value="M">MANANA</option>
                                 <option value="T">TARDE</option>
@@ -148,7 +161,8 @@
                         </div>
                         <div class="basis-1/3 flex flex-col">
                             <label for="" class="text-xs">Nivel</label>
-                            <select name="nivel" id="nivel" class="border border-slate-600 bg-white p-2 rounded-sm">
+                            <select name="nivel" id="nivel"
+                                class="border border-slate-600 bg-white p-2 rounded-sm">
                                 <option value="">- seleccione -</option>
                                 <option value="0">INICIAL</option>
                                 <option value="1">PRIMARIA</option>
@@ -240,7 +254,7 @@
                     <div class="flex justify-end space-x-2  ">
                         <button type="button" id="closeModal"
                             class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
-                        <button type="submit"
+                        <button type="submit" id="submitBtn"
                             class="px-4 py-2 bg-blue-600 text-white w-1/2 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Guardar</button>
                     </div>
                 </form>
@@ -257,38 +271,45 @@
                 <!-- Título -->
                 <h2 class="text-md font-semibold mt-4 mb-6 text-left">IMPORTAR ESTUDIANTES</h2>
                 <hr class="border border-slate-200 mb-4">
-                
+
                 <!-- Formulario -->
-                <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}" method="post" enctype="multipart/form-data">
+                <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}"
+                    method="post" enctype="multipart/form-data">
                     @csrf
-                    
+
                     <div class="p-4 bg-blue-50 border border-blue-200 rounded-md">
                         <p class="text-xs text-blue-800 mb-2">
-                            <strong>Instrucciones:</strong> Selecciona un archivo Excel o CSV con los datos de los estudiantes.
+                            <strong>Instrucciones:</strong> Selecciona un archivo Excel o CSV con los datos de los
+                            estudiantes.
                         </p>
                         <p class="text-xs text-blue-700">
-                            El archivo debe contener las columnas: RUDE, C.I., Nombres, Ap. Paterno, Ap. Materno, Genero, Fecha Nacimiento
+                            El archivo debe contener las columnas: RUDE, C.I., Nombres, Ap. Paterno, Ap. Materno, Genero,
+                            Fecha Nacimiento
                         </p>
                     </div>
 
                     <div class="mt-4">
-                        <label for="archivo" class="text-xs relative top-3 left-3 bg-white px-2">Seleccionar archivo </label>
+                        <label for="archivo" class="text-xs relative top-3 left-3 bg-white px-2">Seleccionar archivo
+                        </label>
                         <input type="file" name="archivo" id="archivo" accept=".xlsx,.xls,.csv"
                             class="w-full border border-slate-700 rounded-md p-2" required>
                         <p class="text-xs text-slate-500 mt-1">Formatos permitidos: Excel (.xlsx, .xls) o CSV (.csv)</p>
                     </div>
 
                     <div class="flex flex-col">
-                        <label for="curso_import" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Curso (opcional)</label>
-                        <select name="curso_import" id="curso_import" class="border border-slate-600 bg-white p-2 rounded-md">
+                        <label for="curso_import" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Curso
+                            (opcional)</label>
+                        <select name="curso_import" id="curso_import"
+                            class="border border-slate-600 bg-white p-2 rounded-md">
                             <option value="">- seleccione un curso -</option>
                             <option value="">Sin asignar</option>
                         </select>
-                        <p class="text-xs text-slate-500 mt-1">Si dejas vacío, los estudiantes se crearán sin curso asignado</p>
+                        <p class="text-xs text-slate-500 mt-1">Si dejas vacío, los estudiantes se crearán sin curso
+                            asignado</p>
                     </div>
 
                     <hr class="border-slate-200 border">
-                    
+
                     <!-- Botones -->
                     <div class="flex justify-end space-x-2">
                         <button type="button" id="closeModalSubir"
@@ -301,34 +322,73 @@
         </div>
 
         <script>
-            const openBtn = document.getElementById('openModal');
-            const closeBtn = document.getElementById('closeModal');
-            const modal = document.getElementById('modal');
-            const modalContent = document.getElementById('modalContent');
+            document.addEventListener('DOMContentLoaded', function() {
+                const openBtn = document.getElementById('openModal'); // Nuevo estudiante
+                const modal = document.getElementById('modal');
+                const modalContent = document.getElementById('modalContent');
+                const studentForm = document.getElementById('formularioEstudiante');
+                const formMethod = document.getElementById('formMethod');
+                const submitBtn = document.getElementById('submitBtn');
+
+                // Abre modal para CREAR (limpia campos)
+                openBtn.addEventListener('click', () => {
+                    studentForm.reset();
+                    studentForm.action = "{{ route('estudiante.store') }}";
+                    formMethod.value = 'POST';
+                    submitBtn.textContent = 'Guardar';
+                    modal.classList.remove('hidden');
+                    setTimeout(() => {
+                        modalContent.classList.remove('opacity-0', 'scale-95');
+                        modalContent.classList.add('opacity-100', 'scale-100');
+                    }, 10);
+                });
+
+                // Delegación: escuchar todos los botones "edit-btn"
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const id = this.dataset.id;
+                        // llenar campos desde data-attributes
+                        document.getElementById('codigo').value = this.dataset.codigo ?? '';
+                        document.getElementById('estado').value = this.dataset.estado ?? '';
+                        document.getElementById('rude').value = this.dataset.rude ?? '';
+                        document.getElementById('ci').value = this.dataset.ci ?? '';
+                        document.getElementById('nombres').value = this.dataset.nombres ?? '';
+                        document.getElementById('appaterno').value = this.dataset.appaterno ?? '';
+                        document.getElementById('apmaterno').value = this.dataset.apmaterno ?? '';
+                        document.getElementById('genero').value = this.dataset.genero ?? '';
+                        document.getElementById('fecha_nacimiento').value = this.dataset.fecha ?? '';
+                        document.getElementById('observacion').value = this.dataset.observacion ?? '';
+
+                        // cambiar action a la ruta update (URL RESTful)
+                        studentForm.action =
+                            `/estudiante/${id}`; // o usa la ruta generada en data-url si prefieres
+                        formMethod.value = 'PUT';
+                        submitBtn.textContent = 'Actualizar';
+
+                        // abrir modal
+                        modal.classList.remove('hidden');
+                        setTimeout(() => {
+                            modalContent.classList.remove('opacity-0', 'scale-95');
+                            modalContent.classList.add('opacity-100', 'scale-100');
+                        }, 10);
+                    });
+                });
+
+                // Cerrar modal (ya tienes closeBtn)
+                const closeBtn = document.getElementById('closeModal');
+                closeBtn.addEventListener('click', () => {
+                    modalContent.classList.remove('opacity-100', 'scale-100');
+                    modalContent.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => modal.classList.add('hidden'), 200);
+                });
+            });
 
             const openBtnSubir = document.getElementById('openModalSubir');
             const closeBtnSubir = document.getElementById('closeModalSubir');
             const modalSubir = document.getElementById('modalSubir');
             const modalSubirContent = document.getElementById('modalSubirContent');
 
-            // Abrir modal
-            openBtn.addEventListener('click', () => {
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modalContent.classList.remove('opacity-0', 'scale-95');
-                    modalContent.classList.add('opacity-100', 'scale-100');
-                }, 10);
-            });
-
-            // Cerrar modal
-            closeBtn.addEventListener('click', () => {
-                modalContent.classList.remove('opacity-100', 'scale-100');
-                modalContent.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    limpiarFormulario();
-                }, 200);
-            });
 
             // Abrir modal de importación
             openBtnSubir.addEventListener('click', (e) => {

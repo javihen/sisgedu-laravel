@@ -25,4 +25,4 @@ Route::get('/estudiante', [EstudianteController::class, 'index'])->name('estudia
 Route::post('/estudiante/store', [EstudianteController::class, 'store'])->name('estudiante.store');
 Route::post('/estudiante/import', [EstudianteController::class, 'import'])->name('estudiante.import');
 Route::delete('/estudiante/destroy/{id}', [EstudianteController::class, 'destroy'])->name('estudiante.destroy');
-
+Route::put('/estudiante/{id}', [EstudianteController::class, 'update'])->name('estudiante.update');

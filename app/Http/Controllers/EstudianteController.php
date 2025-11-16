@@ -72,7 +72,7 @@ class EstudianteController extends Controller
 
             // Aquí puedes agregar lógica para procesar el archivo
             // Por ahora solo retornamos un mensaje de éxito
-            
+
             return redirect()->route('estudiante.index')->with('success', 'Importación procesada correctamente. Se agregarán pronto los estudiantes.');
         } catch (\Exception $e) {
             return redirect()->route('estudiante.index')->with('error', 'Ocurrió un error al importar el archivo: ' . $e->getMessage());
@@ -111,23 +111,24 @@ class EstudianteController extends Controller
             'genero' => 'required',
             'fecha_nacimiento' => 'required',
         ]);
+        $toUpper = fn($v) => $v === null ? null : mb_strtoupper(trim($v), 'UTF-8');
 
         try {
-            $estudiante = Estudiante::find($id);
+            $estudiante = Estudiante::where('id_estudiante', $id)->first();
             if (!$estudiante) {
                 return redirect()->route('estudiante.index')->with('error', 'Estudiante no encontrado.');
             }
 
             $estudiante->update([
-                'estado' => $request->input('estado', 'E'),
-                'rude' => $request->rude,
-                'ci' => $request->ci,
-                'nombres' => $request->nombres,
-                'appaterno' => $request->appaterno,
-                'apmaterno' => $request->apmaterno,
-                'genero' => $request->genero,
-                'fecha_nacimiento' => $request->fecha_nacimiento,
-                'observacion' => $request->observacion,
+                'estado' => $toUpper($request->estado),
+                'rude' => $toUpper($request->rude),
+                'ci' => $toUpper($request->ci),
+                'nombres' => $toUpper($request->nombres),
+                'appaterno' => $toUpper($request->appaterno),
+                'apmaterno' => $toUpper($request->apmaterno),
+                'genero' => $toUpper($request->genero),
+                'fecha_nacimiento' => $toUpper($request->fecha_nacimiento),
+                'observacion' => $toUpper($request->observacion),
             ]);
 
             return redirect()->route('estudiante.index')->with('success', 'El estudiante se actualizó satisfactoriamente.');
