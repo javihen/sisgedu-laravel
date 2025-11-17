@@ -324,7 +324,8 @@
 
                 <hr class="border-slate-200 mt-3">
 
-                <form id="formularioImportar" method="POST" enctype="multipart/form-data">
+                <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}"
+                    method="post">
                     @csrf
 
                     <!-- ÁREA DE SUBIDA -->
@@ -336,7 +337,7 @@
                         <p class="text-xs text-gray-500 mt-2 text-center">
                             Arrastra o selecciona un archivo Excel o CSV
                         </p>
-
+                        <input type="hidden" id="excelData" name="excelData">
                         <input type="file" id="archivo" name="archivo" accept=".xlsx,.xls,.csv" class="hidden"
                             required>
                     </div>
@@ -367,8 +368,8 @@
 
         <script>
             /* ----------------------------------------------------------
-                   VARIABLES
-                ---------------------------------------------------------- */
+                                                                   VARIABLES
+                                                                ---------------------------------------------------------- */
             const dropZone = document.getElementById("dropZone");
             const fileInput = document.getElementById("archivo");
             const previewContainer = document.getElementById("previewContainer");
@@ -427,7 +428,11 @@
 
                     previewTable.appendChild(tr);
                 });
+
+                // 👉 Enviar datos al back-end
+                document.getElementById("excelData").value = JSON.stringify(data);
             }
+
 
             /* ----------------------------------------------------------
                DRAG & DROP

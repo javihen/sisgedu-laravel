@@ -61,23 +61,32 @@ class EstudianteController extends Controller
      * Import students from file
      */
     public function import(Request $request)
-    {
-        $request->validate([
-            'archivo' => 'required|file|mimes:xlsx,xls,csv',
+{
+    $data = json_decode($request->excelData, true);
+
+    // Primera fila es encabezado
+    $headers = $data[0];
+    unset($data[0]); // quitar encabezados
+
+    foreach ($data as $row) {
+        if (count($row) < 7) continue; // evitar filas vacías
+
+        Estudiante::create([
+            'id_estudiante'      => $row[0] ?? null,
+            'rude'        => $row[1] ?? null,
+            'ci'   => $row[2] ?? null,
+            'nombres'=> $row[3] ?? null,
+            'appaterno'=> $row[4] ?? null,
+            'apmaterno'    => $row[5] ?? null,
+            'genero' => $row[6] ?? null,
+            'estado' => 'E',
+            'fecha_nacimiento' => $row[7] ?? null,
         ]);
-
-        try {
-            $file = $request->file('archivo');
-            $path = $file->store('imports');
-
-            // Aquí puedes agregar lógica para procesar el archivo
-            // Por ahora solo retornamos un mensaje de éxito
-
-            return redirect()->route('estudiante.index')->with('success', 'Importación procesada correctamente. Se agregarán pronto los estudiantes.');
-        } catch (\Exception $e) {
-            return redirect()->route('estudiante.index')->with('error', 'Ocurrió un error al importar el archivo: ' . $e->getMessage());
-        }
     }
+
+    return back()->with('success', 'Estudiantes importados correctamente.');
+}
+
 
     /**
      * Display the specified resource.
