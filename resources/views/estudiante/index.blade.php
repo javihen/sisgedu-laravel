@@ -35,8 +35,8 @@
         @endif
 
         <div class=" ml-3 w-full mt-2  flex gap-1 ">
-            <div class="bg-white w-2/3  border border-slate-300 rounded-md">
-                <table class="w-full">
+            <div class="bg-white w-2/3  border border-slate-300 rounded-md mb-16">
+                <table class="w-full ">
                     <tr class="bg-[#64748B] text-white text-sm text-center ">
                         <td class="py-2">Nro.</td>
                         <td>Codigo</td>
@@ -85,18 +85,17 @@
                                         <i class='bx bx-trash'></i>
                                     </button>
                                 </form>
-                                <a href="#" onclick="editarEstudiante('{{ $estudiante->id_estudiante }}')"
-                                    class="ml-1 p-2 border border-[#3B82F6] bg-white text-[#3B82F6] hover:bg-[#3B82F6] hover:text-white rounded-sm cursor-pointer"><i
-                                        class='bx bx-edit-alt'></i> Editar</a>
+
                                 <a href="#"
-                                    class="ml-1 p-2 edit-btn border border-[#3B82F6] bg-white text-[#3B82F6] rounded-sm"
+                                    class="ml-1 p-2 edit-btn border border-[#3B82F6] bg-white text-[#3B82F6] rounded-sm hover:bg-[#3B82F6] hover:text-white"
                                     data-id="{{ $estudiante->id_estudiante }}"
                                     data-codigo="{{ $estudiante->id_estudiante }}" data-estado="{{ $estudiante->estado }}"
                                     data-rude="{{ $estudiante->rude }}" data-ci="{{ $estudiante->ci }}"
                                     data-nombres="{{ $estudiante->nombres }}"
                                     data-appaterno="{{ $estudiante->appaterno }}"
                                     data-apmaterno="{{ $estudiante->apmaterno }}" data-genero="{{ $estudiante->genero }}"
-                                    data-fecha="{{ $estudiante->fecha_nacimiento }}">
+                                    data-fecha="{{ $estudiante->fecha_nacimiento }}"
+                                    data-observacion="{{ $estudiante->observacion }}">
                                     <i class='bx bx-edit-alt'></i> Editar
                                 </a>
                             </td>
@@ -154,8 +153,7 @@
                         <input type="hidden" name="id_estudiante_hidden" id="id_estudiante_hidden">
                         <div class="basis-1/3 flex flex-col">
                             <label for="turno" class="text-xs">Turno</label>
-                            <select name="turno" id="turno"
-                                class="border border-slate-600 bg-white p-2 rounded-sm">
+                            <select name="turno" id="turno" class="border border-slate-600 bg-white p-2 rounded-sm">
                                 <option value="">- seleccione -</option>
                                 <option value="M">MANANA</option>
                                 <option value="T">TARDE</option>
@@ -197,7 +195,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="flex flex-row mt-4 gap-1 mt-[-25px]">
+                    <div class="flex flex-row gap-1 mt-[-25px]">
                         <div class="basis-1/2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">R.U.D.E. </label>
                             <input type="text" name="rude" id="rude"
@@ -236,7 +234,7 @@
                                 class="border border-slate-600 bg-white p-2 rounded-md">
                                 <option value="">seleccione</option>
                                 <option value="M">MASCULINO</option>
-                                <option value="M">FEMENINO</option>
+                                <option value="F">FEMENINO</option>
                             </select>
                         </div>
                         <div class="basis-1/2">
@@ -368,8 +366,8 @@
 
         <script>
             /* ----------------------------------------------------------
-                                                                   VARIABLES
-                                                                ---------------------------------------------------------- */
+                                                                                                                                                                                                                                                           VARIABLES
+                                                                                                                                                                                                                                                        ---------------------------------------------------------- */
             const dropZone = document.getElementById("dropZone");
             const fileInput = document.getElementById("archivo");
             const previewContainer = document.getElementById("previewContainer");
@@ -395,17 +393,38 @@
                     const workbook = XLSX.read(data, {
                         type: "array"
                     });
-
                     const hoja = workbook.Sheets[workbook.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(hoja, {
-                        header: 1
-                    });
+                    // Obtener el rango real (ejemplo: "A1:H5")
+                    const rango = hoja["!ref"];
+                    const rangoDecod = XLSX.utils.decode_range(rango);
 
-                    mostrarTabla(json);
+                    const filas = [];
+                    for (let R = rangoDecod.s.r; R <= rangoDecod.e.r; R++) {
+                        const fila = [];
+
+                        for (let C = rangoDecod.s.c; C <= rangoDecod.e.c; C++) {
+                            const celdaRef = XLSX.utils.encode_cell({
+                                r: R,
+                                c: C
+                            });
+                            const celda = hoja[celdaRef];
+                            fila.push(celda ? celda.v : null);
+                        }
+
+                        // Verificar si la fila tiene al menos un valor no nulo
+                        const filaNoVacia = fila.some(celda => celda !== null && celda !== "");
+                        if (filaNoVacia) {
+                            filas.push(fila);
+                        }
+                    }
+                    console.log(filas)
+                    mostrarTabla(filas);
+                    document.getElementById("excelData").value = JSON.stringify(filas);
                 };
 
                 reader.readAsArrayBuffer(file);
             }
+
 
             /* ----------------------------------------------------------
                MOSTRAR TABLA
@@ -419,7 +438,7 @@
 
                     row.forEach(cell => {
                         let td = document.createElement(index === 0 ? "th" : "td");
-                        td.textContent = cell ?? "";
+                        td.textContent = cell === undefined ? " " : cell;
                         td.className =
                             "border px-2 py-1 text-[11px] " +
                             (index === 0 ? "bg-gray-100 font-semibold" : "");
