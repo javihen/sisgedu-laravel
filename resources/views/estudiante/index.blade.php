@@ -2,6 +2,8 @@
 
 @section('content')
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
 
     <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
         <div class=" ml-3 w-full mt-2 h-12 bg-[#3B82F6] rounded-md flex justify-between items-center pl-4 pr-2 ">
@@ -262,51 +264,36 @@
         </div>
 
         {{-- Modal para importar/subir estudiantes --}}
-        <div id="modalSubir"
-            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
+        {{-- <div id="modalSubir"
+            class=" fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
             <!-- Contenedor del modal -->
             <div id="modalSubirContent"
-                class="bg-white rounded-md shadow-lg w-[522px] p-4 transform transition-all scale-95 opacity-0">
+                class="bg-white rounded-md shadow-lg w-[522px] p-4 transform transition-all scale-100 opacity-100">
 
-                <!-- Título -->
-                <h2 class="text-md font-semibold mt-4 mb-6 text-left">IMPORTAR ESTUDIANTES</h2>
-                <hr class="border border-slate-200 mb-4">
 
-                <!-- Formulario -->
+                <h2 class="text-lg font-semibold text-gray-700"><i class='bx bx-cloud-upload mr-2'></i>IMPORTACION DE
+                    ESTUDIANTES</h2>
+                <p class="text-xs text-gray-500 mt-1">
+                    El archivo debe contener las columnas: RUDE, C.I., Nombres, Ap. Paterno, Ap. Materno,
+                    Genero, Fecha Nacimiento
+                </p>
+                <hr class="border-slate-200 border mt-2">
                 <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}"
                     method="post" enctype="multipart/form-data">
                     @csrf
+                    <!-- Área de arrastre / subida -->
+                    <label for="archivo"
+                        class="border border-gray-400 border-dashed rounded-md mt-4 p-10 grid place-items-center cursor-pointer hover:bg-gray-50 transition">
+                        <img src="./images/excel.png" class="w-14 opacity-70 m-auto" alt="">
 
-                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-md">
-                        <p class="text-xs text-blue-800 mb-2">
-                            <strong>Instrucciones:</strong> Selecciona un archivo Excel o CSV con los datos de los
-                            estudiantes.
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            Selecciona un archivo Excel o CSV con<br> los datos de los estudiantes.
                         </p>
-                        <p class="text-xs text-blue-700">
-                            El archivo debe contener las columnas: RUDE, C.I., Nombres, Ap. Paterno, Ap. Materno, Genero,
-                            Fecha Nacimiento
-                        </p>
-                    </div>
 
-                    <div class="mt-4">
-                        <label for="archivo" class="text-xs relative top-3 left-3 bg-white px-2">Seleccionar archivo
-                        </label>
-                        <input type="file" name="archivo" id="archivo" accept=".xlsx,.xls,.csv"
-                            class="w-full border border-slate-700 rounded-md p-2" required>
-                        <p class="text-xs text-slate-500 mt-1">Formatos permitidos: Excel (.xlsx, .xls) o CSV (.csv)</p>
-                    </div>
-
-                    <div class="flex flex-col">
-                        <label for="curso_import" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Curso
-                            (opcional)</label>
-                        <select name="curso_import" id="curso_import"
-                            class="border border-slate-600 bg-white p-2 rounded-md">
-                            <option value="">- seleccione un curso -</option>
-                            <option value="">Sin asignar</option>
-                        </select>
-                        <p class="text-xs text-slate-500 mt-1">Si dejas vacío, los estudiantes se crearán sin curso
-                            asignado</p>
-                    </div>
+                        <!-- input hidden -->
+                        <input type="file" id="archivo" name="archivo" class="hidden" accept=".xlsx, .xls, .csv"
+                            required>
+                    </label>
 
                     <hr class="border-slate-200 border">
 
@@ -317,9 +304,178 @@
                         <button type="submit"
                             class="px-4 py-2 bg-green-600 text-white w-1/2 rounded-lg hover:bg-green-700 transition hover:cursor-pointer">Importar</button>
                     </div>
+
+                </form>
+            </div>
+        </div> --}}
+        <div id="modalSubir"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+
+            <div id="modalSubirContent" class="bg-white rounded-md shadow-lg w-[600px] p-5 transform transition-all">
+
+                <h2 class="text-lg font-semibold text-gray-700 flex items-center">
+                    <i class='bx bx-cloud-upload mr-2'></i> IMPORTACIÓN DE ESTUDIANTES
+                </h2>
+
+                <p class="text-xs text-gray-500 mt-1">
+                    El archivo debe contener las columnas: RUDE, CI, Nombres, Ap. Paterno, Ap. Materno, Género, Fecha
+                    Nacimiento
+                </p>
+
+                <hr class="border-slate-200 mt-3">
+
+                <form id="formularioImportar" method="POST" enctype="multipart/form-data">
+                    @csrf
+
+                    <!-- ÁREA DE SUBIDA -->
+                    <div id="dropZone"
+                        class="border border-gray-400 border-dashed rounded-md mt-4 p-10 grid place-items-center cursor-pointer transition">
+
+                        <img src="./images/excel.png" class="w-14 opacity-70" alt="">
+
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            Arrastra o selecciona un archivo Excel o CSV
+                        </p>
+
+                        <input type="file" id="archivo" name="archivo" accept=".xlsx,.xls,.csv" class="hidden"
+                            required>
+                    </div>
+
+                    <!-- TABLA DE PREVISUALIZACIÓN -->
+                    <div id="previewContainer" class="hidden mt-4 max-h-64 overflow-auto border rounded">
+                        <table class="w-full text-xs text-left border-collapse" id="previewTable"></table>
+                    </div>
+
+                    <hr class="border-slate-200 mt-4">
+
+                    <!-- BOTONES -->
+                    <div class="flex justify-end space-x-2 mt-4">
+                        <button type="button" id="closeModalSubir"
+                            class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white transition">
+                            Cancelar
+                        </button>
+
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 text-white w-1/2 rounded-lg hover:bg-green-700 transition">
+                            Importar
+                        </button>
+                    </div>
+
                 </form>
             </div>
         </div>
+
+        <script>
+            /* ----------------------------------------------------------
+                   VARIABLES
+                ---------------------------------------------------------- */
+            const dropZone = document.getElementById("dropZone");
+            const fileInput = document.getElementById("archivo");
+            const previewContainer = document.getElementById("previewContainer");
+            const previewTable = document.getElementById("previewTable");
+            const modal = document.getElementById("modalSubir");
+            const closeModal = document.getElementById("closeModalSubir");
+
+            /* ----------------------------------------------------------
+               ABRIR MODAL (llámalo desde un botón externo)
+            ---------------------------------------------------------- */
+            function abrirModalSubir() {
+                modal.classList.remove("hidden");
+            }
+
+            /* ----------------------------------------------------------
+               LEER EXCEL O CSV
+            ---------------------------------------------------------- */
+            function procesarArchivo(file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {
+                        type: "array"
+                    });
+
+                    const hoja = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(hoja, {
+                        header: 1
+                    });
+
+                    mostrarTabla(json);
+                };
+
+                reader.readAsArrayBuffer(file);
+            }
+
+            /* ----------------------------------------------------------
+               MOSTRAR TABLA
+            ---------------------------------------------------------- */
+            function mostrarTabla(data) {
+                previewTable.innerHTML = "";
+                previewContainer.classList.remove("hidden");
+
+                data.forEach((row, index) => {
+                    let tr = document.createElement("tr");
+
+                    row.forEach(cell => {
+                        let td = document.createElement(index === 0 ? "th" : "td");
+                        td.textContent = cell ?? "";
+                        td.className =
+                            "border px-2 py-1 text-[11px] " +
+                            (index === 0 ? "bg-gray-100 font-semibold" : "");
+                        tr.appendChild(td);
+                    });
+
+                    previewTable.appendChild(tr);
+                });
+            }
+
+            /* ----------------------------------------------------------
+               DRAG & DROP
+            ---------------------------------------------------------- */
+            dropZone.addEventListener("click", () => fileInput.click());
+
+            dropZone.addEventListener("dragover", e => {
+                e.preventDefault();
+                dropZone.classList.add("bg-emerald-50", "border-emerald-500");
+            });
+
+            dropZone.addEventListener("dragleave", () => {
+                dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
+            });
+
+            dropZone.addEventListener("drop", e => {
+                e.preventDefault();
+                dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
+
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    fileInput.files = e.dataTransfer.files;
+                    procesarArchivo(file);
+                }
+            });
+
+            fileInput.addEventListener("change", () => {
+                const file = fileInput.files[0];
+                if (file) procesarArchivo(file);
+            });
+
+            /* ----------------------------------------------------------
+               BOTÓN CANCELAR → REINICIAR MODAL
+            ---------------------------------------------------------- */
+            closeModal.addEventListener("click", () => {
+                modal.classList.add("hidden");
+
+                // reset
+                fileInput.value = "";
+                previewContainer.classList.add("hidden");
+                previewTable.innerHTML = "";
+                dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
+            });
+        </script>
+
+
+
+
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {

@@ -105,11 +105,10 @@ class EstudianteController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'rude' => 'required',
-            'ci' => 'required',
+            'codigo' => 'required',
             'nombres' => 'required',
-            'genero' => 'required',
-            'fecha_nacimiento' => 'required',
+            'appaterno' => 'required',
+            'apmaterno' => 'required',
         ]);
         $toUpper = fn($v) => $v === null ? null : mb_strtoupper(trim($v), 'UTF-8');
 
