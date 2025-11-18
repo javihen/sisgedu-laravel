@@ -22,4 +22,9 @@ class Estudiante extends Model
         'fecha_nacimiento',
         'observacion',
     ];
+
+    //esta funcion nos recupera todas las inscripciones de un estudiante
+    public function inscripciones(){
+        return $this->hasmany(Inscripcion::class);
+    }
 }

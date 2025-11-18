@@ -260,52 +260,6 @@
                 </form>
             </div>
         </div>
-
-        {{-- Modal para importar/subir estudiantes --}}
-        {{-- <div id="modalSubir"
-            class=" fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
-            <!-- Contenedor del modal -->
-            <div id="modalSubirContent"
-                class="bg-white rounded-md shadow-lg w-[522px] p-4 transform transition-all scale-100 opacity-100">
-
-
-                <h2 class="text-lg font-semibold text-gray-700"><i class='bx bx-cloud-upload mr-2'></i>IMPORTACION DE
-                    ESTUDIANTES</h2>
-                <p class="text-xs text-gray-500 mt-1">
-                    El archivo debe contener las columnas: RUDE, C.I., Nombres, Ap. Paterno, Ap. Materno,
-                    Genero, Fecha Nacimiento
-                </p>
-                <hr class="border-slate-200 border mt-2">
-                <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}"
-                    method="post" enctype="multipart/form-data">
-                    @csrf
-                    <!-- Área de arrastre / subida -->
-                    <label for="archivo"
-                        class="border border-gray-400 border-dashed rounded-md mt-4 p-10 grid place-items-center cursor-pointer hover:bg-gray-50 transition">
-                        <img src="./images/excel.png" class="w-14 opacity-70 m-auto" alt="">
-
-                        <p class="text-xs text-gray-500 mt-2 text-center">
-                            Selecciona un archivo Excel o CSV con<br> los datos de los estudiantes.
-                        </p>
-
-                        <!-- input hidden -->
-                        <input type="file" id="archivo" name="archivo" class="hidden" accept=".xlsx, .xls, .csv"
-                            required>
-                    </label>
-
-                    <hr class="border-slate-200 border">
-
-                    <!-- Botones -->
-                    <div class="flex justify-end space-x-2">
-                        <button type="button" id="closeModalSubir"
-                            class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-green-600 text-white w-1/2 rounded-lg hover:bg-green-700 transition hover:cursor-pointer">Importar</button>
-                    </div>
-
-                </form>
-            </div>
-        </div> --}}
         <div id="modalSubir"
             class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
 

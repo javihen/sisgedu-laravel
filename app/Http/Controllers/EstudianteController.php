@@ -62,6 +62,8 @@ class EstudianteController extends Controller
      */
     public function import(Request $request)
 {
+    //capturamos el valor de idcurso del select en el formulario
+    $idCurso = $request->input('idCurso');
     $data = json_decode($request->excelData, true);
 
     // Primera fila es encabezado
@@ -83,8 +85,18 @@ class EstudianteController extends Controller
             'fecha_nacimiento' => $row[7] ?? null,
         ]);
     }
+    foreach ($data as $row) {
+        if (count($row) < 1) continue; // evitar filas vacías
 
-    return back()->with('success', 'Estudiantes importados correctamente.');
+        // Insertar inscripción usando el idCurso capturado
+        DB::table('inscripciones')->insert([
+            'id_estudiante' => $row[0] ?? null,
+            'id_curso' => $idCurso,
+            'gestion' => date('Y'), // o cualquier otro valor predeterminado
+        ]);
+    }
+
+    return back()->with('success', 'Estudiantes importados e inscritos correctamente.');
 }
 
 
