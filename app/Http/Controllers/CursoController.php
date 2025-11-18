@@ -113,4 +113,19 @@ class CursoController extends Controller
 
         return response()->json($cursos);
     }
+
+    /**
+     * Devuelve todos los cursos (id y nombre) en JSON.
+     */
+    public function listAll()
+    {
+        $cursos = Curso::orderBy('nivel')->orderBy('grado')->orderBy('paralelo')->get()->map(function ($curso) {
+            return [
+                'idCurso' => $curso->id,
+                'nombreCurso' => $curso->display_name,
+            ];
+        });
+
+        return response()->json($cursos);
+    }
 }

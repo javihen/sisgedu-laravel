@@ -325,6 +325,13 @@
                 <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}"
                     method="post">
                     @csrf
+                    <div id="selectCurso" class="basis-1/2 flex flex-col mt-2 w-full hidden">
+                        <label for="idCurso" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Asignar a curso
+                        </label>
+                        <select name="idCurso" id="idCurso" class="border border-slate-600 bg-white p-2 rounded-md">
+                            <option value="">- seleccione un curso -</option>
+                        </select>
+                    </div>
 
                     <!-- ÁREA DE SUBIDA -->
                     <div id="dropZone"
@@ -365,26 +372,18 @@
         </div>
 
         <script>
-            /* ----------------------------------------------------------
-                                                                                                                                                                                                                                                           VARIABLES
-                                                                                                                                                                                                                                                        ---------------------------------------------------------- */
             const dropZone = document.getElementById("dropZone");
             const fileInput = document.getElementById("archivo");
             const previewContainer = document.getElementById("previewContainer");
             const previewTable = document.getElementById("previewTable");
             const modal = document.getElementById("modalSubir");
             const closeModal = document.getElementById("closeModalSubir");
+            const selectCurso = document.getElementById("selectCurso");
 
-            /* ----------------------------------------------------------
-               ABRIR MODAL (llámalo desde un botón externo)
-            ---------------------------------------------------------- */
             function abrirModalSubir() {
                 modal.classList.remove("hidden");
             }
-
-            /* ----------------------------------------------------------
-               LEER EXCEL O CSV
-            ---------------------------------------------------------- */
+            /* ---------LEER EXCEL O CSV ---------------------------- */
             function procesarArchivo(file) {
                 const reader = new FileReader();
 
@@ -417,7 +416,6 @@
                             filas.push(fila);
                         }
                     }
-                    console.log(filas)
                     mostrarTabla(filas);
                     document.getElementById("excelData").value = JSON.stringify(filas);
                 };
@@ -432,6 +430,8 @@
             function mostrarTabla(data) {
                 previewTable.innerHTML = "";
                 previewContainer.classList.remove("hidden");
+                selectCurso.classList.remove("hidden");
+                dropZone.classList.add("hidden");
 
                 data.forEach((row, index) => {
                     let tr = document.createElement("tr");
@@ -450,6 +450,24 @@
 
                 // 👉 Enviar datos al back-end
                 document.getElementById("excelData").value = JSON.stringify(data);
+
+                // Cargar todos los cursos y poblar el select #idCurso
+                (function populateAllCursos() {
+                    const idCursoSelect = document.getElementById('idCurso');
+                    if (!idCursoSelect) return;
+                    fetch('/cursos')
+                        .then(res => res.json())
+                        .then(list => {
+                            idCursoSelect.innerHTML = '<option value="">- seleccione un curso -</option>' + list.map(
+                                c => `<option value="${c.idCurso}">${c.nombreCurso}</option>`).join('');
+                            // mostrar el bloque de asignación si hay cursos
+                            const selectCursoBlock = document.getElementById('selectCurso');
+                            if (selectCursoBlock) selectCursoBlock.classList.remove('hidden');
+                        })
+                        .catch(err => {
+                            console.error('Error cargando cursos:', err);
+                        });
+                })();
             }
 
 
@@ -492,6 +510,8 @@
                 // reset
                 fileInput.value = "";
                 previewContainer.classList.add("hidden");
+                selectCurso.classList.add("hidden");
+                dropZone.classList.remove("hidden");
                 previewTable.innerHTML = "";
                 dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
             });
