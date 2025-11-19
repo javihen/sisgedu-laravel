@@ -54,7 +54,8 @@
                             <td>{{ $estudiante->appaterno }}</td>
                             <td>{{ $estudiante->apmaterno }}</td>
                             <td>{{ $estudiante->nombres }}</td>
-                            <td>SIN CURSO</td>{{-- aqui debemos de buscar en la tabla inscripcion si esta registrado en algun curso sino solo colocamos SIN CURSO --}}
+                            <td>{{ $estudiante->inscripciones->first()?->curso?->display_name ?? 'SIN CURSO' }}</td>
+                            {{-- aqui debemos de buscar en la tabla inscripcion si esta registrado en algun curso sino solo colocamos SIN CURSO --}}
                             <td>
                                 @if ($estudiante->estado === 'E')
                                     <a href="#"
@@ -95,7 +96,8 @@
                                     data-appaterno="{{ $estudiante->appaterno }}"
                                     data-apmaterno="{{ $estudiante->apmaterno }}" data-genero="{{ $estudiante->genero }}"
                                     data-fecha="{{ $estudiante->fecha_nacimiento }}"
-                                    data-observacion="{{ $estudiante->observacion }}">
+                                    data-observacion="{{ $estudiante->observacion }}"
+                                    data-id_curso="{{ $estudiante->id_curso ?? 'SIN CURSO' }}">
                                     <i class='bx bx-edit-alt'></i> Editar
                                 </a>
                             </td>
@@ -149,34 +151,13 @@
                 <form class="space-y-4" id="formularioEstudiante" action="{{ route('estudiante.store') }}" method="post">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
-                    <div class="flex flex-row gap-1 p-2 bg-slate-200">
-                        <input type="hidden" name="id_estudiante_hidden" id="id_estudiante_hidden">
-                        <div class="basis-1/3 flex flex-col">
-                            <label for="turno" class="text-xs">Turno</label>
-                            <select name="turno" id="turno" class="border border-slate-600 bg-white p-2 rounded-sm">
-                                <option value="">- seleccione -</option>
-                                <option value="M">MANANA</option>
-                                <option value="T">TARDE</option>
-                            </select>
-                        </div>
-                        <div class="basis-1/3 flex flex-col">
-                            <label for="" class="text-xs">Nivel</label>
-                            <select name="nivel" id="nivel"
-                                class="border border-slate-600 bg-white p-2 rounded-sm">
-                                <option value="">- seleccione -</option>
-                                <option value="0">INICIAL</option>
-                                <option value="1">PRIMARIA</option>
-                                <option value="2">SECUNDARIA</option>
-                            </select>
-                        </div>
-                        <div class="basis-1/3 flex flex-col">
-                            <label for="" class="text-xs">Curso</label>
-                            <select name="curso" id="curso"
-                                class="border border-slate-600 bg-white p-2 rounded-sm">
-                                <option value=""> - seleccione - </option>
 
-                            </select>
-                        </div>
+                    <div id="selectCursoCreate" class="basis-1/2 flex flex-col mt-2 w-full ">
+                        <label for="id_curso" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Asignar a curso
+                        </label>
+                        <select name="id_curso" id="id_curso" class="border border-slate-600 bg-white p-2 rounded-md">
+                            <option value="">- seleccione un curso -</option>
+                        </select>
                     </div>
                     <div class="flex flex-row mt-4 gap-1">
                         <div class="basis-1/2 ">
@@ -279,7 +260,7 @@
                 <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}"
                     method="post">
                     @csrf
-                    <div id="selectCurso" class="basis-1/2 flex flex-col mt-2 w-full hidden">
+                    <div id="selectCursoImport" class="basis-1/2 flex flex-col mt-2 w-full hidden">
                         <label for="idCurso" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Asignar a curso
                         </label>
                         <select name="idCurso" id="idCurso" class="border border-slate-600 bg-white p-2 rounded-md">
@@ -332,7 +313,7 @@
             const previewTable = document.getElementById("previewTable");
             const modal = document.getElementById("modalSubir");
             const closeModal = document.getElementById("closeModalSubir");
-            const selectCurso = document.getElementById("selectCurso");
+            const selectCurso = document.getElementById("selectCursoImport");
 
             function abrirModalSubir() {
                 modal.classList.remove("hidden");
@@ -384,7 +365,7 @@
             function mostrarTabla(data) {
                 previewTable.innerHTML = "";
                 previewContainer.classList.remove("hidden");
-                selectCurso.classList.remove("hidden");
+                if (selectCurso) selectCurso.classList.remove("hidden");
                 dropZone.classList.add("hidden");
 
                 data.forEach((row, index) => {
@@ -464,7 +445,7 @@
                 // reset
                 fileInput.value = "";
                 previewContainer.classList.add("hidden");
-                selectCurso.classList.add("hidden");
+                if (selectCurso) selectCurso.classList.add("hidden");
                 dropZone.classList.remove("hidden");
                 previewTable.innerHTML = "";
                 dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
@@ -476,6 +457,21 @@
 
 
         <script>
+            llenaSelectCursos();
+
+            function llenaSelectCursos() {
+                const idCursoSelect = document.getElementById('id_curso');
+                if (!idCursoSelect) return;
+                fetch('/cursos')
+                    .then(res => res.json())
+                    .then(list => {
+                        idCursoSelect.innerHTML = '<option value="">- seleccione un curso -</option>' + list.map(
+                            c => `<option value="${c.idCurso}">${c.nombreCurso}</option>`).join('');
+                    })
+                    .catch(err => {
+                        console.error('Error cargando cursos:', err);
+                    });
+            }
             document.addEventListener('DOMContentLoaded', function() {
                 const openBtn = document.getElementById('openModal'); // Nuevo estudiante
                 const modal = document.getElementById('modal');
@@ -495,6 +491,7 @@
                         modalContent.classList.remove('opacity-0', 'scale-95');
                         modalContent.classList.add('opacity-100', 'scale-100');
                     }, 10);
+                    //llenaSelectCursos();
                 });
 
                 // Delegación: escuchar todos los botones "edit-btn"
@@ -513,7 +510,7 @@
                         document.getElementById('genero').value = this.dataset.genero ?? '';
                         document.getElementById('fecha_nacimiento').value = this.dataset.fecha ?? '';
                         document.getElementById('observacion').value = this.dataset.observacion ?? '';
-
+                        document.getElementById('id_curso').value = this.dataset.id_curso ?? '';
                         // cambiar action a la ruta update (URL RESTful)
                         studentForm.action =
                             `/estudiante/${id}`; // o usa la ruta generada en data-url si prefieres
@@ -583,24 +580,19 @@
                         document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento || '';
                         document.getElementById('observacion').value = data.observacion || '';
 
-                        // Cambiar acción del formulario y título
+                        // Cambiar acción del formulario y método
                         document.getElementById('formularioEstudiante').action = `/estudiante/${idEstudiante}`;
-                        const existingMethod = document.querySelector('input[name="_method"]');
-                        if (!existingMethod) {
-                            const methodInput = document.createElement('input');
-                            methodInput.type = 'hidden';
-                            methodInput.name = '_method';
-                            methodInput.value = 'PUT';
-                            document.getElementById('formularioEstudiante').appendChild(methodInput);
-                        }
+                        document.getElementById('formMethod').value = 'PUT';
                         document.getElementById('modalTitle').textContent = 'EDITAR ESTUDIANTE';
 
-                        // Cargar cursos si existe nivel
-                        if (data.nivel) {
-                            document.getElementById('nivel').dispatchEvent(new Event('change'));
+                        // Llenar el select de cursos
+                        llenaSelectCursos();
+
+                        // Pre-seleccionar el curso actual si existe
+                        if (data.id_curso) {
                             setTimeout(() => {
-                                document.getElementById('curso').value = data.id_curso || '';
-                            }, 500);
+                                document.getElementById('id_curso').value = data.id_curso;
+                            }, 300);
                         }
 
                         // Abrir modal
@@ -617,9 +609,9 @@
             function limpiarFormulario() {
                 document.getElementById('formularioEstudiante').reset();
                 document.getElementById('formularioEstudiante').action = "{{ route('estudiante.store') }}";
+                document.getElementById('formMethod').value = 'POST';
                 document.getElementById('modalTitle').textContent = 'REGISTRO DE NUEVO ESTUDIANTE';
-                const metodoInput = document.querySelector('input[name="_method"]');
-                if (metodoInput) metodoInput.remove();
+                document.getElementById('id_curso').value = '';
             }
 
             //codigo para obtener datos de un select

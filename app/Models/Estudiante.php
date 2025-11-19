@@ -24,7 +24,14 @@ class Estudiante extends Model
     ];
 
     //esta funcion nos recupera todas las inscripciones de un estudiante
-    public function inscripciones(){
-        return $this->hasmany(Inscripcion::class);
+    public function inscripciones()
+    {
+        return $this->hasMany(Inscripcion::class, 'id_estudiante', 'id_estudiante');
+    }
+
+
+    public function getIdCursoAttribute()
+    {
+        return $this->inscripciones()->first()?->id_curso;
     }
 }
