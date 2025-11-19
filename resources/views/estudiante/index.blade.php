@@ -9,9 +9,13 @@
         <div class=" ml-3 w-full mt-2 h-12 bg-[#3B82F6] rounded-md flex justify-between items-center pl-4 pr-2 ">
             <p class="text-white text-sm ">LISTADO DE ESTUDIANTES</p>
             <div class=" h-full">
-                <i class='bx  bx-search' class="relative "></i>
-                <input class="bg-white my-2 py-2 rounded-md px-2 text-xs" type="text" name="" id=""
-                    placeholder="Buscar estudiante ...">
+                {{-- <input class="bg-white my-2 py-2 rounded-md px-2 text-xs" type="text" name="" id=""
+                    placeholder="Buscar estudiante ..."> --}}
+                <form method="GET" action="{{ route('estudiante.index') }}">
+                    <input type="text" name="buscar" id="buscar" class="bg-white my-2 py-2 rounded-md px-2 text-xs"
+                        placeholder="Buscar estudiante..." value="{{ request('buscar') }}">
+                </form>
+
             </div>
         </div>
         @if (session('success'))

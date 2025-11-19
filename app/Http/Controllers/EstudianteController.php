@@ -13,11 +13,17 @@ class EstudianteController extends Controller
      */
     public function index()
     {
+        $buscar = request()->get('buscar');
+
         // Carga inscripciones y el curso asociado para cada estudiante
         $estudiantes = Estudiante::with('inscripciones.curso')
+            ->when($buscar, function ($query, $buscar) {
+                $query->whereRaw("UPPER(CONCAT(nombres, ' ', appaterno, ' ', apmaterno)) LIKE ?", ['%' . strtoupper($buscar) . '%'])
+                    ->orWhereRaw("UPPER(id_estudiante) LIKE ?", ['%' . strtoupper($buscar) . '%'])
+                    ->orWhereRaw("UPPER(ci) LIKE ?", ['%' . strtoupper($buscar) . '%']);
+            })
             ->orderBy('appaterno', 'asc')
             ->get();
-
         return view('estudiante.index', compact('estudiantes'));
     }
 
