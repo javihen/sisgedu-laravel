@@ -41,7 +41,7 @@
         <div class=" ml-3 w-full mt-2  flex gap-1 ">
             <div class="bg-white w-2/3  border border-slate-300 rounded-md mb-16">
                 <table class="w-full ">
-                    <tr class="bg-[#64748B] text-white text-sm text-center ">
+                    <tr class="bg-[#64748B] text-white text-sm text-center sticky top-0 z-10">
                         <td class="py-2">Nro.</td>
                         <td>Codigo</td>
                         <td>Ap. Paterno</td>
@@ -124,18 +124,25 @@
                 <div class="border border-slate-300 bg-white">
                     <p class="text-center p-2">Estadistica</p>
                     <table class="w-full text-center">
-                        <tr class="bg-slate-500 text-white ">
-                            <td>Curso</td>
+                        <tr class="bg-slate-500 text-white sticky top-0 z-10">
+                            <td class="w-1/3">Curso</td>
                             <td>M</td>
                             <td>F</td>
-                            <td>Total</td>
+                            <td class="w-1/3">Total</td>
+                            <td>R</td>
+                            <td>A</td>
                         </tr>
-                        <tr class="border-b border-slate-300 text-xs">
-                            <td class="py-2">1o PRIMARIA "A"</td>
-                            <td>32</td>
-                            <td>8</td>
-                            <td>40</td>
-                        </tr>
+                        @foreach ($estadisticas as $curso)
+                            <tr class="border-b border-slate-300 text-xs hover:bg-slate-200">
+                                <td class="py-2">{{ $curso->display_name }}</td>
+                                <td>{{ $curso->hombres_efectivos }}</td>
+                                <td>{{ $curso->mujeres_efectivas }}</td>
+                                <td class="border-l border-r border-slate-300">
+                                    {{ $curso->hombres_efectivos + $curso->mujeres_efectivas }}</td>
+                                <td>{{ $curso->hombres_retirados + $curso->mujeres_retiradas }}</td>
+                                <td>{{ $curso->hombres_abandono + $curso->mujeres_abandono }}</td>
+                            </tr>
+                        @endforeach
                     </table>
                 </div>
             </div>

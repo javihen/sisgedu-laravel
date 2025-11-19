@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
+use App\Models\Curso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +16,7 @@ class EstudianteController extends Controller
     {
         $buscar = request()->get('buscar');
 
-        // Carga inscripciones y el curso asociado para cada estudiante
+        // Carga inscripciones y el curso asociado para cada estudiante ademas hacemos el filtro de busqueda
         $estudiantes = Estudiante::with('inscripciones.curso')
             ->when($buscar, function ($query, $buscar) {
                 $query->whereRaw("UPPER(CONCAT(nombres, ' ', appaterno, ' ', apmaterno)) LIKE ?", ['%' . strtoupper($buscar) . '%'])
@@ -24,7 +25,60 @@ class EstudianteController extends Controller
             })
             ->orderBy('appaterno', 'asc')
             ->get();
-        return view('estudiante.index', compact('estudiantes'));
+
+        $estadisticas = Curso::withCount([
+            // HOMBRES EFECTIVOS
+            'inscripciones as hombres_efectivos' => function ($q) {
+                $q->whereHas('estudiante', function ($q) {
+                    $q->where('genero', 'M')
+                        ->where('estado', 'E');
+                });
+            },
+
+            // MUJERES EFECTIVAS
+            'inscripciones as mujeres_efectivas' => function ($q) {
+                $q->whereHas('estudiante', function ($q) {
+                    $q->where('genero', 'F')
+                        ->where('estado', 'E');
+                });
+            },
+
+            // HOMBRES RETIRADOS
+            'inscripciones as hombres_retirados' => function ($q) {
+                $q->whereHas('estudiante', function ($q) {
+                    $q->where('genero', 'M')
+                        ->where('estado', 'R');
+                });
+            },
+
+            // MUJERES RETIRADAS
+            'inscripciones as mujeres_retiradas' => function ($q) {
+                $q->whereHas('estudiante', function ($q) {
+                    $q->where('genero', 'F')
+                        ->where('estado', 'R');
+                });
+            },
+
+            // HOMBRES ABANDONO
+            'inscripciones as hombres_abandono' => function ($q) {
+                $q->whereHas('estudiante', function ($q) {
+                    $q->where('genero', 'M')
+                        ->where('estado', 'A');
+                });
+            },
+
+            // MUJERES ABANDONO
+            'inscripciones as mujeres_abandono' => function ($q) {
+                $q->whereHas('estudiante', function ($q) {
+                    $q->where('genero', 'F')
+                        ->where('estado', 'A');
+                });
+            },
+
+        ])->get();
+
+
+        return view('estudiante.index', compact('estudiantes', 'estadisticas'));
     }
 
     /**

@@ -43,4 +43,9 @@ class Curso extends Model
 
         return implode(' ', $parts);
     }
+
+    public function inscripciones()
+    {
+        return $this->hasMany(Inscripcion::class, 'id_curso');
+    }
 }
