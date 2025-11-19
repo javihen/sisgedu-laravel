@@ -143,7 +143,7 @@
                             <i class='bx bx-group nav__icon text-[1.2rem] mr-2'></i>
                             <span class="nav__name">Profesores</span>
                         </a>
-                        <a href="estudiante_vista.php" class="nav__link">
+                        <a href="{{ route('estudiante.index') }}" class="nav__link">
                             <i class='bx bx-id-card nav__icon'></i>
                             <span class="nav__name">Estudiantes</span>
                         </a>
@@ -151,7 +151,7 @@
                             <i class='bx bx-trophy nav__icon'></i>
                             <span class="nav__name">Cuadro de honor</span>
                         </a>
-                        <a href="cursos_vista.php" class="nav__link">
+                        <a href="{{ route('curso.index') }}" class="nav__link">
                             <i class='bx bx-book-open nav__icon'></i>
                             <span class="nav__name">Cursos</span>
                         </a>

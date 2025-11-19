@@ -75,7 +75,7 @@ class EstudianteController extends Controller
                 });
             },
 
-        ])->get();
+        ])->orderBy('nivel', 'asc')->orderBy('grado', 'asc')->orderBy('paralelo', 'asc')->get();
 
 
         return view('estudiante.index', compact('estudiantes', 'estadisticas'));

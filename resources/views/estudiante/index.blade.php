@@ -41,7 +41,7 @@
         <div class=" ml-3 w-full mt-2  flex gap-1 ">
             <div class="bg-white w-2/3  border border-slate-300 rounded-md mb-16">
                 <table class="w-full ">
-                    <tr class="bg-[#64748B] text-white text-sm text-center sticky top-0 z-10">
+                    <tr class="bg-[#64748B] text-white text-sm text-center sticky top-0 z-1">
                         <td class="py-2">Nro.</td>
                         <td>Codigo</td>
                         <td>Ap. Paterno</td>
