@@ -28,3 +28,9 @@ Route::post('/estudiante/store', [EstudianteController::class, 'store'])->name('
 Route::post('/estudiante/import', [EstudianteController::class, 'import'])->name('estudiante.import');
 Route::delete('/estudiante/destroy/{id}', [EstudianteController::class, 'destroy'])->name('estudiante.destroy');
 Route::put('/estudiante/{id}', [EstudianteController::class, 'update'])->name('estudiante.update');
+
+
+//--------------- MODULO MATERIA ----------------------//
+Route::get('/materia', function(){
+    return view('materia.index');
+})->name('materia.index');

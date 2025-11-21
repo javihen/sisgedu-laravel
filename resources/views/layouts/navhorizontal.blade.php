@@ -147,6 +147,10 @@
                             <i class='bx bx-id-card nav__icon'></i>
                             <span class="nav__name">Estudiantes</span>
                         </a>
+                        <a href="{{ route('materia.index') }}" class="nav__link">
+                            <i class='bx bx-id-card nav__icon'></i>
+                            <span class="nav__name">Materias</span>
+                        </a>
                         <a href="honor_vista.php" class="nav__link">
                             <i class='bx bx-trophy nav__icon'></i>
                             <span class="nav__name">Cuadro de honor</span>

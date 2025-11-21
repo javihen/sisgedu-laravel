@@ -15,7 +15,6 @@
                     <input type="text" name="buscar" id="buscar" class="bg-white my-2 py-2 rounded-md px-2 text-xs"
                         placeholder="Buscar estudiante..." value="{{ request('buscar') }}">
                 </form>
-
             </div>
         </div>
         @if (session('success'))
