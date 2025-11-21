@@ -30,7 +30,7 @@
         {{-- Contenedores por nivel de cursos --}}
         <div class=" mx-3 mt-2 flex flex-row gap-1 w-full h-[calc(100vh-150px)]">
             <div class="w-1/4 bg-white h-fit rounded-md flex flex-col items-center border border-gray-400">
-                <a href="#"
+                <a href="#" id="openModal"
                     class="w-[calc(100%-1rem)] mx-2 text-center flex items-center justify-center
            text-white bg-blue-600  border border-transparent shadow-xs
            font-medium leading-5 rounded text-xs px-3 py-1.5 my-2">
@@ -324,6 +324,77 @@
             </div>
         </div>
 
+        <div id="modal"
+            class=" fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
+            <!-- Contenedor del modal -->
+            <div id="modalContent"
+                class="bg-white rounded-md shadow-lg w-[422px] p-4 transform transition-all scale-100 opacity-100">
+
+                <!-- Título -->
+                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Formulario materia</h2>
+                <hr class="border border-slate-200 mb-4">
+                <!-- Formulario -->
+                <form class="space-y-4" id="formMateria" action="" method="post">
+                    @csrf
+                    <div class="mt-[-25px]">
+                        <label for="rude" class="text-xs relative top-6 left-1 bg-white px-2">Codigo </label>
+                        <input type="text" name="nombres" id="nombres"
+                            class="w-full border border-slate-700 rounded-md px-2 uppercase pt-5 pb-2">
+                    </div>
+                    <div class="flex flex-row mt-[-25px] gap-1">
+                        <div class="w-full flex flex-col mt-2 ">
+                            <label for="rude"
+                                class="text-xs relative top-5 left-1 bg-white px-2 w-fit text-slate-600">Nivel
+                            </label>
+                            <select name="genero" id="genero"
+                                class="border border-slate-600 bg-white px-2 rounded-md pt-5 pb-2">
+                                <option value="">seleccione</option>
+                                <option value="F">INICIAL EN FAMILIA COMUNITARIA</option>
+                                <option value="F">PRIMARIA COMUNITARIA VOCACIONAL</option>
+                                <option value="F">SECUNDARIA COMUNITARIA PRODUCTIVA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex flex-row mt-[-25px] gap-1">
+                        <div class="w-full flex flex-col mt-2 ">
+                            <label for="rude"
+                                class="text-xs relative top-5 left-1 bg-white px-2 w-fit text-slate-600">Campo
+                            </label>
+                            <select name="genero" id="genero"
+                                class="border border-slate-600 bg-white px-2 rounded-md pt-5 pb-2">
+                                <option value="">seleccione</option>
+                                <option value="F">INICIAL EN FAMILIA COMUNITARIA</option>
+                                <option value="F">PRIMARIA COMUNITARIA VOCACIONAL</option>
+                                <option value="F">SECUNDARIA COMUNITARIA PRODUCTIVA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-[-25px]">
+                        <label for="rude" class="text-xs relative top-6 left-1 bg-white px-2">Area </label>
+                        <input type="text" name="nombres" id="nombres"
+                            class="w-full border border-slate-700 rounded-md px-2 uppercase pt-5 pb-2">
+                    </div>
+                    <div class="mt-[-25px]">
+                        <label for="rude" class="text-xs relative top-6 left-1 bg-white px-2">Abreviatura </label>
+                        <input type="text" name="nombres" id="nombres"
+                            class="w-full border border-slate-700 rounded-md px-2 uppercase pt-5 pb-2">
+                    </div>
+                    <div class="mt-[-25px]">
+                        <label for="rude" class="text-xs relative top-6 left-1 bg-white px-2">Orden </label>
+                        <input type="text" name="nombres" id="nombres"
+                            class="w-full border border-slate-700 rounded-md px-2 uppercase pt-5 pb-2">
+                    </div>
+                    <hr class="border-slate-200 border">
+                    <!-- Botones -->
+                    <div class="flex justify-end space-x-2  ">
+                        <button type="button" id="closeModal"
+                            class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
+                        <button type="submit" id="submitBtn"
+                            class="px-4 py-2 bg-blue-600 text-white w-1/2 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
@@ -379,6 +450,24 @@
                 if (tabButtons.length > 0) {
                     tabButtons[0].click();
                 }
+
+                const openBtn = document.getElementById('openModal');
+                const closeBtn = document.getElementById('closeModal');
+
+                openBtn.addEventListener('click', () => {
+                    document.getElementById('modal').classList.remove('hidden');
+                    setTimeout(() => {
+                        document.getElementById('modalContent').classList.remove('scale-95',
+                            'opacity-0');
+                    }, 10);
+                });
+                closeBtn.addEventListener('click', () => {
+                    document.getElementById('modalContent').classList.add('scale-95',
+                        'opacity-0');
+                    setTimeout(() => {
+                        document.getElementById('modal').classList.add('hidden');
+                    }, 200);
+                });
             });
         </script>
     </div>
