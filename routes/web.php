@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\MateriaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,6 +32,6 @@ Route::put('/estudiante/{id}', [EstudianteController::class, 'update'])->name('e
 
 
 //--------------- MODULO MATERIA ----------------------//
-Route::get('/materia', function(){
-    return view('materia.index');
-})->name('materia.index');
+Route::get('/materia', [MateriaController::class, 'index'])->name('materia.index');
+Route::post('/materia/store', [MateriaController::class, 'store'])->name('materia.store');
+Route::delete('/materia/destroy/{id}', [MateriaController::class, 'destroy'])->name('materia.destroy');

@@ -33,7 +33,7 @@
                 <a href="#" id="openModal"
                     class="w-[calc(100%-1rem)] mx-2 text-center flex items-center justify-center
            text-white bg-blue-600  border border-transparent shadow-xs
-           font-medium leading-5 rounded text-xs px-3 py-1.5 my-2">
+           font-medium leading-5 rounded text-xs px-3 py-1.5 my-2 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
                     <i class='bx bx-plus mr-2'></i>Nueva asignatura
                 </a>
                 <a href="#"
@@ -78,245 +78,102 @@
                 <div id="default-tab-content ">
                     <div class="tab-panel hidden p-4 rounded-base bg-neutral-secondary-soft" id="profile">
                         <ol id="sortable-list" class="relative border-s border-default">
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">1.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full"> Comunicacion y lenguajes: Lengua
-                                            castellana y
-                                            originaria</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center"> LCyO</p>
-
+                            @foreach ($inicial as $MInicial)
+                                <li class=" ms-4">
+                                    <div
+                                        class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
                                     </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5"><i
-                                            class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-                                        <div class="border border-gray-400 p-2 w-9">2.</div>
-                                        <p class="border border-gray-400 p-2 w-full"> Lengua extranjera</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">LEx</p>
+                                    <div
+                                        class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
+                                        <div class="flex flex-row gap-2 w-1/2">
+
+                                            <div class="border border-gray-400 p-2 w-9">{{ $MInicial->orden }}.</div>
+
+                                            <p class="border border-gray-400 p-2 w-full">{{ $MInicial->area }}</p>
+                                            <p class="border border-gray-400 p-2 w-16 text-center">
+                                                {{ $MInicial->abreviatura }}</p>
+                                        </div>
+                                        <div class="flex flex-row gap-1">
+                                            <a href="#"
+                                                class="text-center flex items-center justify-center text-white bg-blue-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-blue-600 hover:text-blue-600 hover:bg-white"><i
+                                                    class='bx bx-edit'></i></a>
+                                            <a href="#"
+                                                class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
+                                                    class='bx bx-trash'></i></a>
+                                            <a href="#"
+                                                class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5 hover:text-slate-600 hover:border-slate-600 hover:bg-white"><i
+                                                    class='bx bx-user-circle mr-2'></i> Docentes</a>
+                                        </div>
                                     </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5"><i
-                                            class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-                                        <div class="border border-gray-400 p-2 w-9">3.</div>
-                                        <p class="border border-gray-400 p-2 w-full">Ciencias Sociales</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center"> CS</p>
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5"><i
-                                            class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">5.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Educacion Musical</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">EM</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">6.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Artes Plasticas y Visuales</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">APyV</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">7.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Matematica</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">M</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">8.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Tecnica Tecnologica General</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">TTG</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">9.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Tecnica Tecnologica Especializada:
-                                            Sistemas Informaticos</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">TTE:SI</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">10.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Ciencias Naturales: Fisica</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">CNF</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">11.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Ciencias Naturales: Quimica</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">CNQ</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">12.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Ciencias Naturales: Biologia</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">CNB</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">13.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Valores Espiritualidad y Religiones
-                                        </p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">VEyR</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
-                            <li class=" ms-4">
-                                <div class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
-                                </div>
-                                <div
-                                    class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
-                                    <div class="flex flex-row gap-2 w-1/2">
-
-                                        <div class="border border-gray-400 p-2 w-9">14.</div>
-
-                                        <p class="border border-gray-400 p-2 w-full">Cosmovisiones y Filosofia</p>
-                                        <p class="border border-gray-400 p-2 w-16 text-center">CyF</p>
-
-                                    </div>
-                                    <a href="#"
-                                        class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5">
-                                        <i class='bx bx-user-circle mr-2'></i> Docentes</a>
-                                </div>
-                            </li>
+                                </li>
+                            @endforeach
                         </ol>
                     </div>
                     <div class="tab-panel hidden p-4 rounded-base bg-neutral-secondary-soft" id="dashboard">
-                        Dashboard...
+                        <ol id="sortable-list" class="relative border-s border-default">
+                            @foreach ($primaria as $Mprimaria)
+                                <li class=" ms-4">
+                                    <div
+                                        class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
+                                    </div>
+                                    <div
+                                        class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
+                                        <div class="flex flex-row gap-2 w-1/2">
+
+                                            <div class="border border-gray-400 p-2 w-9">{{ $Mprimaria->orden }}.</div>
+
+                                            <p class="border border-gray-400 p-2 w-full">{{ $Mprimaria->area }}</p>
+                                            <p class="border border-gray-400 p-2 w-16 text-center">
+                                                {{ $Mprimaria->abreviatura }}</p>
+                                        </div>
+                                        <div class="flex flex-row gap-1">
+                                            <a href="#"
+                                                class="text-center flex items-center justify-center text-white bg-blue-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-blue-600 hover:text-blue-600 hover:bg-white"><i
+                                                    class='bx bx-edit'></i></a>
+                                            <a href="#"
+                                                class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
+                                                    class='bx bx-trash'></i></a>
+                                            <a href="#"
+                                                class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5 hover:text-slate-600 hover:border-slate-600 hover:bg-white"><i
+                                                    class='bx bx-user-circle mr-2'></i> Docentes</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ol>
                     </div>
                     <div class="tab-panel hidden p-4 rounded-base bg-neutral-secondary-soft" id="settings">
-                        Settings...
+                        <ol id="sortable-list" class="relative border-s border-default">
+                            @foreach ($secundaria as $Msecundaria)
+                                <li class=" ms-4">
+                                    <div
+                                        class="absolute w-3 h-3 bg-white rounded-full mt-3 -start-1.5 border border-buffer">
+                                    </div>
+                                    <div
+                                        class="text-xs flex flex-row justify-between pb-1 drag-handle cursor-grab active:cursor-grabbing">
+                                        <div class="flex flex-row gap-2 w-1/2">
+
+                                            <div class="border border-gray-400 p-2 w-9">{{ $Msecundaria->orden }}.</div>
+
+                                            <p class="border border-gray-400 p-2 w-full">{{ $Msecundaria->area }}</p>
+                                            <p class="border border-gray-400 p-2 w-16 text-center">
+                                                {{ $Msecundaria->abreviatura }}</p>
+                                        </div>
+                                        <div class="flex flex-row gap-1">
+                                            <a href="#"
+                                                class="text-center flex items-center justify-center text-white bg-blue-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-blue-600 hover:text-blue-600 hover:bg-white"><i
+                                                    class='bx bx-edit'></i></a>
+                                            <a href="#"
+                                                class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
+                                                    class='bx bx-trash'></i></a>
+                                            <a href="#"
+                                                class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5 hover:text-slate-600 hover:border-slate-600 hover:bg-white"><i
+                                                    class='bx bx-user-circle mr-2'></i> Docentes</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ol>
                     </div>
                 </div>
                 {{-- <p class="absolute bottom-0 text-xs text-red-500 m-2">La posicion de la materia se replicara en todos los
@@ -325,33 +182,33 @@
         </div>
 
         <div id="modal"
-            class=" fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
             <!-- Contenedor del modal -->
             <div id="modalContent"
-                class="bg-white rounded-md shadow-lg w-[422px] p-4 transform transition-all scale-100 opacity-100">
+                class="bg-white rounded-md shadow-lg w-[422px] p-4 transform transition-all scale-95 opacity-0">
 
                 <!-- Título -->
                 <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Formulario materia</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" id="formMateria" action="" method="post">
+                <form class="space-y-4" id="formMateria" action="{{ route('materia.store') }}" method="post">
                     @csrf
                     <div class="mt-[-25px]">
                         <label for="rude" class="text-xs relative top-6 left-1 bg-white px-2">Codigo </label>
-                        <input type="text" name="nombres" id="nombres"
-                            class="w-full border border-slate-700 rounded-md px-2 uppercase pt-5 pb-2">
+                        <input type="text" name="id_materia" id="id_materia"
+                            class="w-full border border-slate-700 rounded-md px-2  pt-5 pb-2">
                     </div>
                     <div class="flex flex-row mt-[-25px] gap-1">
                         <div class="w-full flex flex-col mt-2 ">
                             <label for="rude"
                                 class="text-xs relative top-5 left-1 bg-white px-2 w-fit text-slate-600">Nivel
                             </label>
-                            <select name="genero" id="genero"
-                                class="border border-slate-600 bg-white px-2 rounded-md pt-5 pb-2">
+                            <select name="nivel" id="nivel"
+                                class="border border-slate-600 bg-white px-2  pt-5 pb-2">
                                 <option value="">seleccione</option>
-                                <option value="F">INICIAL EN FAMILIA COMUNITARIA</option>
-                                <option value="F">PRIMARIA COMUNITARIA VOCACIONAL</option>
-                                <option value="F">SECUNDARIA COMUNITARIA PRODUCTIVA</option>
+                                <option value="0">Inicial en Familia Comunitaria</option>
+                                <option value="1">Primaria Comunitaria Vocacional</option>
+                                <option value="2">Secundaria Comunitaria Productiva</option>
                             </select>
                         </div>
                     </div>
@@ -360,29 +217,30 @@
                             <label for="rude"
                                 class="text-xs relative top-5 left-1 bg-white px-2 w-fit text-slate-600">Campo
                             </label>
-                            <select name="genero" id="genero"
-                                class="border border-slate-600 bg-white px-2 rounded-md pt-5 pb-2">
+                            <select name="campo" id="campo"
+                                class="border border-slate-600 bg-white px-2  pt-5 pb-2">
                                 <option value="">seleccione</option>
-                                <option value="F">INICIAL EN FAMILIA COMUNITARIA</option>
-                                <option value="F">PRIMARIA COMUNITARIA VOCACIONAL</option>
-                                <option value="F">SECUNDARIA COMUNITARIA PRODUCTIVA</option>
+                                <option value="Comunidad y Sociedad">Comunidad y Sociedad</option>
+                                <option value="Vida, Tierra y Territorio">Vida, Tierra y Territorio</option>
+                                <option value="Ciencia, Tecnologia y produccion">Ciencia, Tecnologia y produccion</option>
+                                <option value="Cosmos y Pensamiento">Cosmos y Pensamiento</option>
                             </select>
                         </div>
                     </div>
                     <div class="mt-[-25px]">
                         <label for="rude" class="text-xs relative top-6 left-1 bg-white px-2">Area </label>
-                        <input type="text" name="nombres" id="nombres"
-                            class="w-full border border-slate-700 rounded-md px-2 uppercase pt-5 pb-2">
+                        <input type="text" name="area" id="area"
+                            class="w-full border border-slate-700 rounded-md px-2 pt-5 pb-2">
                     </div>
                     <div class="mt-[-25px]">
                         <label for="rude" class="text-xs relative top-6 left-1 bg-white px-2">Abreviatura </label>
-                        <input type="text" name="nombres" id="nombres"
-                            class="w-full border border-slate-700 rounded-md px-2 uppercase pt-5 pb-2">
+                        <input type="text" name="abreviatura" id="abreviatura"
+                            class="w-full border border-slate-700 rounded-md px-2 pt-5 pb-2">
                     </div>
                     <div class="mt-[-25px]">
                         <label for="rude" class="text-xs relative top-6 left-1 bg-white px-2">Orden </label>
-                        <input type="text" name="nombres" id="nombres"
-                            class="w-full border border-slate-700 rounded-md px-2 uppercase pt-5 pb-2">
+                        <input type="number" name="orden" id="orden"
+                            class="w-full border border-slate-700 rounded-md px-2 pt-5 pb-2">
                     </div>
                     <hr class="border-slate-200 border">
                     <!-- Botones -->
