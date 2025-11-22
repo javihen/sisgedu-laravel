@@ -35,3 +35,9 @@ Route::put('/estudiante/{id}', [EstudianteController::class, 'update'])->name('e
 Route::get('/materia', [MateriaController::class, 'index'])->name('materia.index');
 Route::post('/materia/store', [MateriaController::class, 'store'])->name('materia.store');
 Route::delete('/materia/destroy/{id}', [MateriaController::class, 'destroy'])->name('materia.destroy');
+
+
+//----------------- MODULO PROFESOR ------------------------//
+Route::get('/profesor', function () {
+    return view('profesor.index');
+})->name('profesor.index');

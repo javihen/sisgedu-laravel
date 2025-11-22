@@ -138,7 +138,7 @@
                             </div>
                         </div> -->
 
-                        <a href="profesor_vista.php"
+                        <a href="{{ route('profesor.index') }}"
                             class="nav__link flex align-items-center text-white hover:text-[#6923d0]">
                             <i class='bx bx-group nav__icon text-[1.2rem] mr-2'></i>
                             <span class="nav__name">Profesores</span>
