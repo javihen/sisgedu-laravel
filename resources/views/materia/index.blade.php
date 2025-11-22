@@ -94,12 +94,14 @@
                                                 {{ $MInicial->abreviatura }}</p>
                                         </div>
                                         <div class="flex flex-row gap-1">
-                                            <a href="#"
-                                                class="text-center flex items-center justify-center text-white bg-blue-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-blue-600 hover:text-blue-600 hover:bg-white"><i
-                                                    class='bx bx-edit'></i></a>
-                                            <a href="#"
-                                                class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
-                                                    class='bx bx-trash'></i></a>
+                                            <form action="{{ route('materia.destroy', $MInicial->id_materia) }}"
+                                                method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-2.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
+                                                        class='bx bx-trash'></i></button>
+                                            </form>
                                             <a href="#"
                                                 class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5 hover:text-slate-600 hover:border-slate-600 hover:bg-white"><i
                                                     class='bx bx-user-circle mr-2'></i> Docentes</a>
@@ -127,12 +129,15 @@
                                                 {{ $Mprimaria->abreviatura }}</p>
                                         </div>
                                         <div class="flex flex-row gap-1">
-                                            <a href="#"
-                                                class="text-center flex items-center justify-center text-white bg-blue-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-blue-600 hover:text-blue-600 hover:bg-white"><i
-                                                    class='bx bx-edit'></i></a>
-                                            <a href="#"
-                                                class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
-                                                    class='bx bx-trash'></i></a>
+
+                                            <form action="{{ route('materia.destroy', $Mprimaria->id_materia) }}"
+                                                method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-2.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
+                                                        class='bx bx-trash'></i></button>
+                                            </form>
                                             <a href="#"
                                                 class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5 hover:text-slate-600 hover:border-slate-600 hover:bg-white"><i
                                                     class='bx bx-user-circle mr-2'></i> Docentes</a>
@@ -160,12 +165,14 @@
                                                 {{ $Msecundaria->abreviatura }}</p>
                                         </div>
                                         <div class="flex flex-row gap-1">
-                                            <a href="#"
-                                                class="text-center flex items-center justify-center text-white bg-blue-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-blue-600 hover:text-blue-600 hover:bg-white"><i
-                                                    class='bx bx-edit'></i></a>
-                                            <a href="#"
-                                                class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-1.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
-                                                    class='bx bx-trash'></i></a>
+                                            <form action="{{ route('materia.destroy', $Msecundaria->id_materia) }}"
+                                                method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="text-center flex items-center justify-center text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded px-3 py-2.5 hover:border-red-600 hover:text-red-600 hover:bg-white"><i
+                                                        class='bx bx-trash'></i></button>
+                                            </form>
                                             <a href="#"
                                                 class=" text-center flex items-center justify-center text-white bg-slate-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-6 py-1.5 hover:text-slate-600 hover:border-slate-600 hover:bg-white"><i
                                                     class='bx bx-user-circle mr-2'></i> Docentes</a>

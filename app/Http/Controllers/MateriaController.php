@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Materia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MateriaController extends Controller
 {
@@ -12,14 +13,14 @@ class MateriaController extends Controller
      */
     public function index()
     {
-        $inicial = Materia::where('nivel', 0)   // FILTRA SOLO NIVEL 0
-            ->orderBy('orden', 'asc')                  // ORDENA POR "orden" ASCENDENTE
+        $inicial = Materia::where('nivel', 0)
+            ->orderBy('orden', 'asc')
             ->get();
-        $primaria = Materia::where('nivel', 1)   // FILTRA SOLO NIVEL 0
-            ->orderBy('orden', 'asc')                  // ORDENA POR "orden" ASCENDENTE
+        $primaria = Materia::where('nivel', 1)
+            ->orderBy('orden', 'asc')
             ->get();
-        $secundaria = Materia::where('nivel', 2)   // FILTRA SOLO NIVEL 0
-            ->orderBy('orden', 'asc')                  // ORDENA POR "orden" ASCENDENTE
+        $secundaria = Materia::where('nivel', 2)
+            ->orderBy('orden', 'asc')
             ->get();
 
         return view('materia.index', compact('inicial', 'primaria', 'secundaria'));
@@ -94,8 +95,15 @@ class MateriaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Materia $materia)
+    public function destroy( $id)
     {
-        //
+        try{
+        $materia = Materia::findOrFail($id);
+        if ($materia)
+        $materia->delete();
+        return redirect()->route('materia.index')->with('success', 'La materia fue eliminado satisfactoriamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('materia.index')->with('error', 'Ocurrió un error al eliminar la materia: ' . $e->getMessage());
+        }
     }
 }
