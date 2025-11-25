@@ -3,6 +3,7 @@
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\ProfesorController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,6 +39,5 @@ Route::delete('/materia/destroy/{id}', [MateriaController::class, 'destroy'])->n
 
 
 //----------------- MODULO PROFESOR ------------------------//
-Route::get('/profesor', function () {
-    return view('profesor.index');
-})->name('profesor.index');
+Route::get('/profesor', [ProfesorController::class, 'index'])->name('profesor.index');
+Route::post('/profesor/store', [ProfesorController::class, 'store'])->name('profesor.store');

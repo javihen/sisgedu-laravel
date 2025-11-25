@@ -117,15 +117,12 @@
                 <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Registrar profesor</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" id="formularioEstudiante" method="post">
+                <form class="space-y-4" id="formularioEstudiante" method="post" action="{{ route('profesor.store') }}">
                     @csrf
-                    <input type="hidden" name="_method" id="formMethod" value="POST">
-
-
                     <div class="flex flex-row gap-1 mt-[-25px]">
                         <div class="basis-1/2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">RDA </label>
-                            <input type="text" name="rude" id="rude"
+                            <input type="text" name="rda" id="rda"
                                 class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </div>
                         <div class="basis-1/2">
@@ -167,7 +164,7 @@
                         <div class="basis-1/2">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Fecha de nacimiento
                             </label>
-                            <input type="date" name="fecha_nacimiento" id="fecha_nacimiento"
+                            <input type="date" name="fechaNac" id="fechaNac"
                                 class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </div>
                     </div>
@@ -175,17 +172,18 @@
                         <div class="basis-1/2 ">
                             <label for="codigo" class="text-xs relative top-3 left-3 bg-white px-2">Grado de estudio
                             </label>
-                            <input type="text" name="codigo" id="codigo"
+                            <input type="text" name="nivelFormacion" id="nivelFormacion"
                                 class="w-full border border-slate-700 rounded-md p-2 uppercase">
                         </div>
                         <div class="basis-1/2 flex flex-col mt-2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Estado
+                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Fuente de
+                                financiamiento
                             </label>
-                            <select name="estado" id="estado"
+                            <select name="fuenteFinan" id="fuenteFinan"
                                 class="border border-slate-600 bg-white p-2 rounded-md">
-                                <option value="E">EFECTIVO</option>
-                                <option value="R">RETIRADO</option>
-                                <option value="A">ABANDONO</option>
+                                <option value="PPFF">PADRES DE FAMILIA</option>
+                                <option value="TGE">TESORO GENERAL DEL ESTADO</option>
+                                <option value="RP">RECURSOS PROPIOS</option>
                             </select>
                         </div>
                     </div>
