@@ -41,3 +41,5 @@ Route::delete('/materia/destroy/{id}', [MateriaController::class, 'destroy'])->n
 //----------------- MODULO PROFESOR ------------------------//
 Route::get('/profesor', [ProfesorController::class, 'index'])->name('profesor.index');
 Route::post('/profesor/store', [ProfesorController::class, 'store'])->name('profesor.store');
+Route::delete('/profesor/destroy/{id}', [ProfesorController::class, 'destroy'])->name('profesor.destroy');
+Route::get('/profesor/perfil', [ProfesorController::class, 'edit'])->name('profesor.perfil');

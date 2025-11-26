@@ -5,25 +5,15 @@
 
 
     <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
-        <div class=" ml-3 w-full mt-2 h-12 px-4 bg-[#38BC9B] rounded-md flex justify-between items-center ">
-            <p class="text-white text-sm ">Listado de Docentes</p>
-            <a href="#" id="openModal"
-                class=" mx-2 text-center flex items-center justify-center
-           text-white bg-blue-600  border border-transparent shadow-xs
-           font-medium leading-5 rounded text-xs px-3 py-1.5 my-2 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
-                <i class='bx bx-plus mr-2'></i>Nuevo Docente
-            </a>
-        </div>
-        <div class="">
-
+        <div class=" ml-3 w-full mt-2 h-12 px-4 bg-[#38BC9B] rounded-md flex justify-center items-center ">
+            <p class=" text-sm bg-white px-2 py-1 rounded">DATOS DEL PROFESOR: QUISPE PINTO JAVIER HENRY</p>
         </div>
         @if (session('success'))
             <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full ml-[18px] mr-4">
                 <div
                     class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md flex justify-between items-center">
                     <span>{{ session('success') }}</span>
-                    <button @click="show = false"
-                        class="ml-4 font-bold text-green-700 hover:text-green-900">&times;</button>
+                    <button @click="show = false" class="ml-4 font-bold text-green-700 hover:text-green-900">&times;</button>
                 </div>
             </div>
         @endif
@@ -38,91 +28,29 @@
         @endif
 
         {{-- Contenedores por nivel de cursos --}}
+
         <div class=" mx-3 mt-2 flex flex-row gap-1 w-full h-[calc(100vh-150px)]">
-            <div
-                class="w-full bg-white h-[calc(100%-2rem)] rounded border border-gray-400 overflow-y-scroll scrollbar-thin">
-                <table class="w-full ">
-                    <thead class="bg-gray-200 sticky top-0">
-                        <tr class="text-center text-xs text-gray-700">
-                            <th class="py-2">Nro</th>
-                            <th>CI</th>
-                            <th>Apellido Paterno</th>
-                            <th>Apellido Materno</th>
-                            <th>Nombres</th>
-                            <th>Fuente de financiamiento</th>
-                            <th>Rol</th>
-                            <th>Estado</th>
-                            <th>Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($profesores as $profesor)
-                            <tr class="text-xs text-center hover:bg-gray-100">
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $loop->iteration }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->ci }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->appaterno }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->apmaterno }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->nombres }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->fuenteFinan }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300 ">
-                                    <p
-                                        class="w-fit mx-auto py-1 px-2 border border-blue-600 text-blue-600 rounded bg-white">
-                                        Profesor
-                                    </p>
-                                </td>
-                                <td>
-                                    @if ($profesor->estado == 'A')
-                                        <p
-                                            class="w-fit mx-auto py-1 px-2 border border-green-600 text-green-600 rounded bg-white hover:bg-green-600 hover:text-white">
-                                            Activo
-                                        </p>
-                                    @else
-                                        <p
-                                            class="w-fit mx-auto py-1 px-2 border border-red-600 text-red-600 rounded bg-white hover:bg-red-600 hover:text-white">
-                                            Inactivo
-                                        </p>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-2 border-b border-gray-300 flex justify-center items-center gap-2">
-                                    <a href="#"
-                                        class="bg-slate-600 text-white py-2 px-3 border border-black rounded">Asignar
-                                        cursos</a>
-                                    <a href="#"
-                                        class="text-blue-600 hover:underline border border-blue-600 hover:bg-blue-600 hover:text-white rounded bg-white py-2 px-3"><i
-                                            class='bx bx-edit-alt'></i></a>
-                                    <form action="{{ route('profesor.destroy', $profesor->id_profesor) }}" method="POST"
-                                        class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="text-red-600 border border-red-600 cursor-pointer hover:bg-red-600 hover:text-white rounded bg-white py-2 px-3 hover:underline"
-                                            onclick="return confirm('¿Estás seguro de que deseas eliminar este docente?')"><i
-                                                class='bx bx-trash'></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                        {{-- @foreach ($profesores as $profesor)
-                            <tr class="hover:bg-gray-100">
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->id }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->nombre }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->apellido }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->email }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">
-                                    <a href="{{ route('profesor.edit', $profesor->id) }}"
-                                        class="text-blue-600 hover:underline mr-2">Editar</a>
-                                    <form action="{{ route('profesor.destroy', $profesor->id) }}" method="POST"
-                                        class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline"
-                                            onclick="return confirm('¿Estás seguro de que deseas eliminar este docente?')">Eliminar</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach --}}
-                    </tbody>
-                </table>
+            <div class="w-1/3 h-[calc(100%-2rem)] border-8 shadow-[0_0_35px_rgba(0,0,0,0.25)] border-white rounded-2xl p-2 bg-cover bg-center bg-no-repeat relative"
+                style="background-image: url('/images/perfil2.jpg');">
+                <div class="absolute bottom-0 left-0 h-1/3 w-full bg-linear-to-t from-white to-slate-500 opacity-60">
+                    <div class="flex flex-row ml-6 mt-2 ">
+                        <div class="text-white">
+                            <i class='bx bx-user-circle'></i>
+                        </div>
+                        <div class="text-white">
+                            <div class="text-xl font-bold">PROF. JAVIER HENRY QUISPE PINTO</div>
+                            <div class="text-sm text">LICENCIADO EN INFORMATICA</div>
+                        </div>
+                    </div>
+                    <p class="text-xs m-4 text-justify">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias quo
+                        beatae
+                        provident, nobis id
+                        assumenda repellendus consequatur ex quaerat, sint excepturi doloribus ipsam iste quasi!
+                        Nesciunt voluptatem quia ex aliquid!</p>
+                </div>
+            </div>
+            <div class="w-2/3 bg-white h-[calc(100%-2rem)] rounded border border-gray-400 overflow-y-scroll scrollbar-thin">
+
             </div>
         </div>
 
@@ -173,8 +101,7 @@
                         <div class="basis-1/2 flex flex-col mt-2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Genero
                             </label>
-                            <select name="genero" id="genero"
-                                class="border border-slate-600 bg-white p-2 rounded-md">
+                            <select name="genero" id="genero" class="border border-slate-600 bg-white p-2 rounded-md">
                                 <option value="">seleccione</option>
                                 <option value="M">MASCULINO</option>
                                 <option value="F">FEMENINO</option>

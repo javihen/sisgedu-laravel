@@ -12,7 +12,9 @@ class ProfesorController extends Controller
      */
     public function index()
     {
-        return view('profesor.index');
+        $profesores = Profesor::orderBy('appaterno','asc')->get();
+
+        return view('profesor.index', compact('profesores'));
     }
 
     /**
@@ -37,18 +39,19 @@ class ProfesorController extends Controller
             'genero' => 'required|in:M,F',
             'nivelFormacion' => 'required|string|max:255',
         ]);
+            $toUpper = fn($v) => $v === null ? null : mb_strtoupper(trim($v), 'UTF-8');
 
         Profesor::create([
             'ci' => $request->ci,
             'rda' => $request->rda,
-            'nombres' => $request->nombres,
-            'appaterno' => $request->appaterno,
-            'apmaterno' => $request->apmaterno,
+            'nombres' =>$toUpper($request->nombres),
+            'appaterno' => $toUpper($request->appaterno),
+            'apmaterno' => $toUpper($request->apmaterno),
             'genero' => $request->genero,
             'fechaNac' => $request->fechaNac,
             'fuenteFinan' => $request->fuenteFinan,
-            'nivelFormacion' => $request->nivelFormacion,
-            'observacion' => $request->observacion,
+            'nivelFormacion' => $toUpper($request->nivelFormacion),
+            'observacion' => $toUpper($request->observacion),
         ]);
         return redirect()->route('profesor.index')->with('success', 'Profesor creado exitosamente.');
         } catch (\Exception $e) {
@@ -69,7 +72,7 @@ class ProfesorController extends Controller
      */
     public function edit(Profesor $profesor)
     {
-        //
+        return view('profesor.perfil', compact('profesor'));
     }
 
     /**
@@ -83,8 +86,14 @@ class ProfesorController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Profesor $profesor)
+    public function destroy($profesor)
     {
-        //
+        try{
+            $prof = Profesor::findOrFail($profesor);
+            $prof->delete();
+            return redirect()->route('profesor.index')->with('success', 'Profesor eliminado exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->route('profesor.index')->with('error', 'Error al eliminar el profesor: ' . $e->getMessage());
+        }
     }
 }
