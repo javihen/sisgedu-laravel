@@ -53,8 +53,19 @@ class ProfesorController extends Controller
             'nivelFormacion' => $toUpper($request->nivelFormacion),
             'observacion' => $toUpper($request->observacion),
         ]);
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => 'Bien hecho!',
+            'text' => 'Profesor creado exitosamente.'
+        ]);
         return redirect()->route('profesor.index')->with('success', 'Profesor creado exitosamente.');
+
         } catch (\Exception $e) {
+            session()->flash('swal', [
+            'icon' => 'error',
+            'title' => 'Que mal!',
+            'text' => 'Error al crear el profesor.'
+        ]);
             return redirect()->route('profesor.index')->with('error', 'Error al crear el profesor: ' . $e->getMessage());
         }
     }
@@ -91,8 +102,18 @@ class ProfesorController extends Controller
         try{
             $prof = Profesor::findOrFail($profesor);
             $prof->delete();
+            session()->flash('swal', [
+            'icon' => 'success',
+            'title' => 'Genial!!',
+            'text' => 'Profesor eliminado exitosamente.'
+        ]);
             return redirect()->route('profesor.index')->with('success', 'Profesor eliminado exitosamente.');
         } catch (\Exception $e) {
+            session()->flash('swal', [
+            'icon' => 'error',
+            'title' => 'Que mal!',
+            'text' => 'Error al borrar el profesor.'
+        ]);
             return redirect()->route('profesor.index')->with('error', 'Error al eliminar el profesor: ' . $e->getMessage());
         }
     }

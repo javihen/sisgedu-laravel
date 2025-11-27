@@ -92,36 +92,16 @@
                                         class="text-blue-600 hover:underline border border-blue-600 hover:bg-blue-600 hover:text-white rounded bg-white py-2 px-3"><i
                                             class='bx bx-edit-alt'></i></a>
                                     <form action="{{ route('profesor.destroy', $profesor->id_profesor) }}" method="POST"
-                                        class="inline">
+                                        class="inline form-eliminar">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="text-red-600 border border-red-600 cursor-pointer hover:bg-red-600 hover:text-white rounded bg-white py-2 px-3 hover:underline"
-                                            onclick="return confirm('¿Estás seguro de que deseas eliminar este docente?')"><i
+                                            class="text-red-600 border border-red-600 cursor-pointer hover:bg-red-600 hover:text-white rounded bg-white py-2 px-3 hover:underline"><i
                                                 class='bx bx-trash'></i></button>
                                     </form>
                                 </td>
                             </tr>
                         @endforeach
-                        {{-- @foreach ($profesores as $profesor)
-                            <tr class="hover:bg-gray-100">
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->id }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->nombre }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->apellido }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $profesor->email }}</td>
-                                <td class="px-4 py-2 border-b border-gray-300">
-                                    <a href="{{ route('profesor.edit', $profesor->id) }}"
-                                        class="text-blue-600 hover:underline mr-2">Editar</a>
-                                    <form action="{{ route('profesor.destroy', $profesor->id) }}" method="POST"
-                                        class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:underline"
-                                            onclick="return confirm('¿Estás seguro de que deseas eliminar este docente?')">Eliminar</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach --}}
                     </tbody>
                 </table>
             </div>
@@ -292,6 +272,28 @@
                     setTimeout(() => {
                         document.getElementById('modal').classList.add('hidden');
                     }, 200);
+                });
+                /* Utilizamos SweetAlert para confirmar la eliminacion */
+
+                document.querySelectorAll('.form-eliminar').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault(); // Detener envío
+
+                        Swal.fire({
+                            title: "¿Estás seguro?",
+                            text: "Se eliminará el profesor de forma permanente.",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#3085d6",
+                            confirmButtonText: "Sí, eliminar",
+                            cancelButtonText: "Cancelar"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.submit(); // Enviar formulario si confirma
+                            }
+                        });
+                    });
                 });
             });
         </script>
