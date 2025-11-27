@@ -84,9 +84,10 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-2 border-b border-gray-300 flex justify-center items-center gap-2">
-                                    <a href="#"
-                                        class="bg-slate-600 text-white py-2 px-3 border border-black rounded">Asignar
-                                        cursos</a>
+                                    <a href="{{ route('profesor.perfil', $profesor->id_profesor) }}"
+                                        class="bg-slate-600 text-white py-2 px-3 border border-black shadow hover:bg-slate-700 rounded">Perfil
+                                        -
+                                        Asignacion</a>
                                     <a href="#"
                                         class="text-blue-600 hover:underline border border-blue-600 hover:bg-blue-600 hover:text-white rounded bg-white py-2 px-3"><i
                                             class='bx bx-edit-alt'></i></a>

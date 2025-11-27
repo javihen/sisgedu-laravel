@@ -43,10 +43,13 @@
 
                 <!-- CONTENIDO (sin opacidad, sobre el efecto) -->
                 <div class="absolute bottom-0 left-0 w-full  p-4 text-white">
-                    <div class="flex flex-row ml-2 mt-2">
-                        <div class="ml-2">
-                            <div class="text-xl font-bold">PROF. JAVIER HENRY QUISPE PINTO</div>
-                            <div class="text-sm">LICENCIADO EN INFORMATICA</div>
+                    <div class="flex flex-row ml-2 mt-2 w-full">
+                        <div class="ml-2 w-full">
+                            <div class="text-xl font-bold truncate w-[calc(100%-20px)]">PROF.
+                                {{ $profesor->nombres }}
+                                {{ $profesor->apmaterno }}
+                                {{ $profesor->appaterno }}</div>
+                            <div class="text-sm truncate w-[calc(100%-20px)]">{{ $profesor->nivelFormacion }}</div>
                         </div>
                     </div>
 
@@ -248,7 +251,8 @@
                             </label>
                             <input type="text" name="nombres" id="nombres"
                                 class="w-full text-center bg-slate-200 border border-slate-700 rounded-md p-2 uppercase"
-                                value="JAVIER HENRY QUISPE PINTO" disabled>
+                                value="{{ $profesor->nombres }} {{ $profesor->apmaterno }} {{ $profesor->appaterno }}"
+                                disabled>
                         </div>
                         <hr class="">
                         <div class="flex flex-row mt-[-25px] gap-1">

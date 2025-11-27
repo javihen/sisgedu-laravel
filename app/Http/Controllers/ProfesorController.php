@@ -72,7 +72,7 @@ class ProfesorController extends Controller
      */
     public function edit(Profesor $profesor)
     {
-        return view('profesor.perfil', compact('profesor'));
+        //
     }
 
     /**
@@ -95,5 +95,11 @@ class ProfesorController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('profesor.index')->with('error', 'Error al eliminar el profesor: ' . $e->getMessage());
         }
+    }
+
+    public function perfil($id)
+    {
+        $profesor = Profesor::findOrFail($id);
+        return view('profesor.perfil', compact('profesor'));
     }
 }
