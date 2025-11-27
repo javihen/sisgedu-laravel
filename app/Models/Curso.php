@@ -48,4 +48,10 @@ class Curso extends Model
     {
         return $this->hasMany(Inscripcion::class, 'id_curso');
     }
+
+    public function asignaciones()
+    {
+        /* Un curso tiene muchas (hasMany) asignaciones */
+        return $this->hasMany(Asignacion::class, 'idcurso', 'id');
+    }
 }

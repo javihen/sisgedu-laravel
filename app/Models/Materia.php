@@ -16,4 +16,9 @@ class Materia extends Model
         'abreviatura',
         'orden',
     ];
+    public function asignaciones()
+    {
+        /* Una materia tiene muchas (hasMany) asignaciones */
+        return $this->hasMany(Asignacion::class, 'id_materia', 'id_materia');
+    }
 }

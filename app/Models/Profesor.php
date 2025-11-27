@@ -21,4 +21,9 @@ class Profesor extends Model
         'estado',
         'observacion',
     ];
+    public function asignaciones()
+    {
+        /* un profesor tiene varias (hasMany) asignaciones */
+        return $this->hasMany(Asignacion::class, 'id_profesor', 'id_profesor');
+    }
 }
