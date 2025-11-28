@@ -89,9 +89,43 @@ class ProfesorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Profesor $profesor)
+    public function update(Request $request, string $id)
     {
-        //
+        try{
+            $profesor = Profesor::where('id_profesor', $id)->first();
+            if (!$profesor) {
+                return redirect()->route('profesor.index')->with('error', 'Profesor no encontrado.');
+            }
+
+            $profesor->update([
+                'ci' => $request->ci,
+                'rda' => $request->rda,
+                'nombres' => mb_strtoupper(trim($request->nombres), 'UTF-8'),
+                'appaterno' => mb_strtoupper(trim($request->appaterno), 'UTF-8'),
+                'apmaterno' => mb_strtoupper(trim($request->apmaterno), 'UTF-8'),
+                'genero' => $request->genero,
+                'fechaNac' => $request->fechaNac,
+                'fuenteFinan' => $request->fuenteFinan,
+                'nivelFormacion' => mb_strtoupper(trim($request->nivelFormacion), 'UTF-8'),
+                'observacion' => mb_strtoupper(trim($request->observacion), 'UTF-8'),
+            ]);
+            session()->flash('swal', [
+            'icon' => 'success',
+            'title' => 'Genial!!',
+            'text' => 'Profesor actualizado exitosamente.'
+        ]);
+            return redirect()->route('profesor.index')->with('success', 'Profesor actualizado exitosamente
+.');
+        } catch (\Exception $e) {
+            session()->flash('swal', [
+            'icon' => 'error',
+            'title' => 'Que mal!',
+            'text' => 'Error al actualizar el profesor.'
+        ]);
+            return redirect()->route('profesor.index')->with('error', 'Error al actualizar el
+    profesor: ' . $e->getMessage());
+
+        }
     }
 
     /**

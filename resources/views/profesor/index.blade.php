@@ -89,8 +89,17 @@
                                         -
                                         Asignacion</a>
                                     <a href="#"
-                                        class="text-blue-600 hover:underline border border-blue-600 hover:bg-blue-600 hover:text-white rounded bg-white py-2 px-3"><i
-                                            class='bx bx-edit-alt'></i></a>
+                                        class="text-blue-600 hover:underline border border-blue-600 hover:bg-blue-600 hover:text-white rounded bg-white py-2 px-3 edit-btn"
+                                        data-id="{{ $profesor->id_profesor }}" data-rda="{{ $profesor->rda }}"
+                                        data-ci="{{ $profesor->ci }}" data-appaterno="{{ $profesor->appaterno }}"
+                                        data-apmaterno="{{ $profesor->apmaterno }}"
+                                        data-nombres="{{ $profesor->nombres }}" data-genero="{{ $profesor->genero }}"
+                                        data-fecha-nac="{{ $profesor->fechaNac ?? '' }}"
+                                        data-nivel-formacion="{{ $profesor->nivelFormacion ?? '' }}"
+                                        data-fuente-finan="{{ $profesor->fuenteFinan ?? '' }}"
+                                        data-observacion="{{ $profesor->observacion ?? '' }}">
+                                        <i class='bx bx-edit-alt'></i>
+                                    </a>
                                     <form action="{{ route('profesor.destroy', $profesor->id_profesor) }}" method="POST"
                                         class="inline form-eliminar">
                                         @csrf
@@ -117,8 +126,9 @@
                 <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Registrar profesor</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" id="formularioEstudiante" method="post" action="{{ route('profesor.store') }}">
+                <form class="space-y-4" id="formularioProfesor" method="post" action="{{ route('profesor.store') }}">
                     @csrf
+                    <input type="hidden" name="_method" id="formMethod" value="POST">
                     <div class="flex flex-row gap-1 mt-[-25px]">
                         <div class="basis-1/2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">RDA </label>
@@ -210,57 +220,22 @@
         <script>
             document.addEventListener("DOMContentLoaded", () => {
 
-                const tabButtons = document.querySelectorAll('.tab-btn');
-                const tabPanels = document.querySelectorAll('.tab-panel');
 
-                tabButtons.forEach(btn => {
-                    btn.addEventListener('click', () => {
-
-                        // Remover clases activas de todos
-                        tabButtons.forEach(b => {
-                            b.classList.remove(
-                                'text-gray-600',
-                                'border-b',
-                                'border-slate-400'
-                            );
-                            b.classList.add(
-                                'text-gray-600',
-                                'bg-transparent',
-                                'border-transparent'
-                            );
-                        });
-
-                        // Agregar clases activas al botón presionado
-                        btn.classList.remove(
-                            'text-gray-600',
-                            'bg-transparent',
-                            'border-transparent'
-                        );
-                        btn.classList.add(
-                            'text-gray-600',
-                            'border-b',
-                            'border-slate-400'
-                        );
-
-                        // Ocultar todos los paneles
-                        tabPanels.forEach(panel => panel.classList.add('hidden'));
-
-                        // Mostrar panel correspondiente
-                        const target = btn.getAttribute('data-tabs-target');
-                        document.querySelector(target).classList.remove('hidden');
-                    });
-                });
-
-                // Activar el primer tab
-                if (tabButtons.length > 0) {
-                    tabButtons[0].click();
-                }
-
+                const modal = document.getElementById('modal');
                 const openBtn = document.getElementById('openModal');
                 const closeBtn = document.getElementById('closeModal');
+                const formularioProfesor = document.getElementById('formularioProfesor')
+                const formMethod = document.getElementById('formMethod');
+                const submitBtn = document.getElementById('submitBtn');
 
                 openBtn.addEventListener('click', () => {
                     document.getElementById('modal').classList.remove('hidden');
+                    formularioProfesor.reset();
+                    formularioProfesor.action = "{{ route('profesor.store') }}";
+                    formMethod.value = 'POST';
+                    submitBtn.textContent = 'Guardar';
+
+
                     setTimeout(() => {
                         document.getElementById('modalContent').classList.remove('scale-95',
                             'opacity-0');
@@ -272,6 +247,39 @@
                     setTimeout(() => {
                         document.getElementById('modal').classList.add('hidden');
                     }, 200);
+                });
+                // Editar: abrir modal y llenar campos desde data-attributes
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const id = this.dataset.id;
+                        // rellenar campos
+                        document.getElementById('rda').value = this.dataset.rda ?? '';
+                        document.getElementById('ci').value = this.dataset.ci ?? '';
+                        document.getElementById('appaterno').value = this.dataset.appaterno ?? '';
+                        document.getElementById('apmaterno').value = this.dataset.apmaterno ?? '';
+                        document.getElementById('nombres').value = this.dataset.nombres ?? '';
+                        document.getElementById('genero').value = this.dataset.genero ?? '';
+                        document.getElementById('fechaNac').value = this.dataset.fechaNac ?? '';
+                        document.getElementById('nivelFormacion').value = this.dataset.nivelFormacion ??
+                            '';
+                        document.getElementById('fuenteFinan').value = this.dataset.fuenteFinan ?? '';
+                        document.getElementById('observacion').value = this.dataset.observacion ?? '';
+
+                        // cambiar acción y método
+                        const form = document.getElementById('formularioProfesor');
+                        form.action = `/profesor/${id}`;
+                        const formMethod = document.getElementById('formMethod');
+                        if (formMethod) formMethod.value = 'PUT';
+                        document.getElementById('submitBtn').textContent = 'Actualizar';
+
+                        // abrir modal
+                        document.getElementById('modal').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('modalContent').classList.remove('scale-95',
+                                'opacity-0');
+                        }, 10);
+                    });
                 });
                 /* Utilizamos SweetAlert para confirmar la eliminacion */
 

@@ -43,3 +43,4 @@ Route::get('/profesor', [ProfesorController::class, 'index'])->name('profesor.in
 Route::post('/profesor/store', [ProfesorController::class, 'store'])->name('profesor.store');
 Route::delete('/profesor/destroy/{id}', [ProfesorController::class, 'destroy'])->name('profesor.destroy');
 Route::get('/profesor/perfil/{id}', [ProfesorController::class, 'perfil'])->name('profesor.perfil');
+Route::put('/profesor/{id}', [ProfesorController::class, 'update'])->name('profesor.update');

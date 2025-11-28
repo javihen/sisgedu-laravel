@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('appaterno');
             $table->string('apmaterno');
             $table->char('genero',1);
-            $table->date('fechaNac');
+            $table->date('fechaNac')->nullable();
             $table->string('fuenteFinan');
             $table->string('nivelFormacion');
             $table->char('estado',1)->default('A');
