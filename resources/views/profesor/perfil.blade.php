@@ -59,7 +59,14 @@
 
                     <a href="#" id="openModal"
                         class="py-[6px] px-4 bg-white/20 border border-white/40 rounded shadow ml-2 mt-3 inline-block
-                  backdrop-blur-sm hover:bg-white/30 transition text-sm">
+                  backdrop-blur-sm hover:bg-white/30 transition text-sm edit-btn"
+                        data-id="{{ $profesor->id_profesor }}" data-rda="{{ $profesor->rda }}" data-ci="{{ $profesor->ci }}"
+                        data-appaterno="{{ $profesor->appaterno }}" data-apmaterno="{{ $profesor->apmaterno }}"
+                        data-nombres="{{ $profesor->nombres }}" data-genero="{{ $profesor->genero }}"
+                        data-fecha-nac="{{ $profesor->fechaNac ?? '' }}"
+                        data-nivel-formacion="{{ $profesor->nivelFormacion ?? '' }}"
+                        data-fuente-finan="{{ $profesor->fuenteFinan ?? '' }}"
+                        data-observacion="{{ $profesor->observacion ?? '' }}">
                         <i class='bx bx-edit'></i> Actualizar
                     </a>
 
@@ -134,10 +141,12 @@
                 class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-95 opacity-0">
 
                 <!-- Título -->
-                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Registrar profesor</h2>
+                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Actualizar datos</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" id="formularioEstudiante" method="post" action="{{ route('profesor.store') }}">
+                <form class="space-y-4" id="formularioEstudiante" method="post"
+                    action="{{ route('profesor.update', $profesor->id_profesor) }}">
+                    <input type="hidden" name="_method" id="formMethod" value="PUT">
                     @csrf
                     <div class="flex flex-row gap-1 mt-[-25px]">
                         <div class="basis-1/2 ">
@@ -309,15 +318,36 @@
         <script>
             document.addEventListener("DOMContentLoaded", () => {
                 /* Eventos del modal formulamrio profesor */
-                const openBtn = document.getElementById('openModal');
                 const closeBtn = document.getElementById('closeModal');
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const id = this.dataset.id;
+                        // rellenar campos
+                        document.getElementById('rda').value = this.dataset.rda ?? '';
+                        document.getElementById('ci').value = this.dataset.ci ?? '';
+                        document.getElementById('appaterno').value = this.dataset.appaterno ?? '';
+                        document.getElementById('apmaterno').value = this.dataset.apmaterno ?? '';
+                        document.getElementById('nombres').value = this.dataset.nombres ?? '';
+                        document.getElementById('genero').value = this.dataset.genero ?? '';
+                        document.getElementById('fechaNac').value = this.dataset.fechaNac ?? '';
+                        document.getElementById('nivelFormacion').value = this.dataset.nivelFormacion ??
+                            '';
+                        document.getElementById('fuenteFinan').value = this.dataset.fuenteFinan ?? '';
+                        document.getElementById('observacion').value = this.dataset.observacion ?? '';
 
-                openBtn.addEventListener('click', () => {
-                    document.getElementById('modal').classList.remove('hidden');
-                    setTimeout(() => {
-                        document.getElementById('modalContent').classList.remove('scale-95',
-                            'opacity-0');
-                    }, 10);
+                        // cambiar acción y método
+
+
+                        document.getElementById('submitBtn').textContent = 'Actualizar';
+
+                        // abrir modal
+                        document.getElementById('modal').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.getElementById('modalContent').classList.remove('scale-95',
+                                'opacity-0');
+                        }, 10);
+                    });
                 });
                 closeBtn.addEventListener('click', () => {
                     document.getElementById('modalContent').classList.add('scale-95',
