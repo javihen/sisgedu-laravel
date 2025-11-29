@@ -49,3 +49,4 @@ Route::put('/profesor/{id}', [ProfesorController::class, 'update'])->name('profe
 
 //-------------------- MODULO ASIGNACION --------------------//
 Route::post('/asignacion/store',[AsignacionController::class, 'store'])->name('asignacion.store');
+Route::delete('/asignacion/destroy/{id}', [AsignacionController::class, 'destroy'])->name('asignacion.destroy');

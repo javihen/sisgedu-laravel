@@ -83,7 +83,6 @@
                             <td class="py-1">Nro</td>
                             <td>Curso</td>
                             <td>Turno</td>
-
                             <td>Area</td>
                             <td>Opciones</td>
                         </tr>
@@ -100,7 +99,6 @@
                                             class="border border-slate-600 px-2 py1 rounded text-xs text-slate-600">Tarde</span>
                                     @endif
                                 </td>
-
                                 <td class="">
                                     <p class="border border-slate-400 py-1 px-2 w-fit rounded m-auto text-xs bg-white">
                                         {{ $asignacion->materia->area }}
@@ -113,9 +111,15 @@
                                     <a href=""
                                         class="border border-blue-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-blue-600 hover:bg-blue-600 hover:text-white"><i
                                             class='bx bxs-book-open'></i></a>
-                                    <a href=""
-                                        class="border border-red-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-red-600 hover:bg-red-600 hover:text-white"><i
-                                            class='bx bx-trash'></i></a>
+                                    <form action="{{ route('asignacion.destroy', $asignacion->idAsignacion) }}"
+                                        method="POST" class="inline form-eliminar">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button
+                                            class="border border-red-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-red-600 hover:bg-red-600 hover:text-white"><i
+                                                class='bx bx-trash'></i></button>
+                                    </form>
+
                                 </td>
                             </tr>
                         @endforeach
@@ -406,6 +410,26 @@
                     }
                 });
 
+                /*  funcion par eliminar el registro de asigancion */
+                document.querySelectorAll('.form-eliminar').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault(); // Detener envío
+                        Swal.fire({
+                            title: "¿Estás seguro?",
+                            text: "Se eliminará la asignacion de forma permanente.",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#3085d6",
+                            confirmButtonText: "Sí, eliminar",
+                            cancelButtonText: "Cancelar"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.submit(); // Enviar formulario si confirma
+                            }
+                        });
+                    });
+                });
             });
         </script>
     </div>

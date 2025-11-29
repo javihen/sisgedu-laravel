@@ -101,8 +101,25 @@ class AsignacionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Asignacion $asignacion)
+    public function destroy($asignacion)
     {
-        //
+        $asig = Asignacion::findOrFail($asignacion);
+        $id = $asig->id_profesor;
+        try {
+            $asig->delete();
+            session()->flash('swal', [
+                'icon' => 'success',
+                'title' => 'Genial!!',
+                'text' => 'Asignacion eliminada exitosamente.'
+            ]);
+            return redirect()->route('profesor.perfil',$id);
+        } catch (\Exception $e) {
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => 'Que mal!',
+                'text' => 'Error al borrar la asignacion.'
+            ]);
+            return redirect()->route('profesor.perfil', $id)->with('error', 'Error al eliminar el profesor: ' . $e->getMessage());
+        }
     }
 }

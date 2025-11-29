@@ -171,7 +171,7 @@ class ProfesorController extends Controller
             ->with(['curso', 'materia']) // si quieres los modelos relacionados además
             ->get();
 
-            //return $asignaciones;
+        //    return $asignaciones;
 
         return view('profesor.perfil', compact('profesor', 'asignaciones'));
     }
