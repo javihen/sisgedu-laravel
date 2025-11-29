@@ -33,15 +33,11 @@
             <div class="w-1/3 h-[calc(100%-2rem)] border-8 shadow-[0_0_5px_rgba(0,0,0,0.25)]
             border-white rounded-xl p-2 bg-cover bg-center bg-no-repeat relative overflow-hidden"
                 style="background-image: url('/images/perfil2.jpg');">
-
-                <!-- Overlay degradado + blur (EFECTO NUEVO) -->
                 <div
                     class="absolute inset-x-0 bottom-0 h-1/3
                 bg-gradient-to-t from-black/80 via-black/40 to-transparent
                 backdrop-blur-md pointer-events-none">
                 </div>
-
-                <!-- CONTENIDO (sin opacidad, sobre el efecto) -->
                 <div class="absolute bottom-0 left-0 w-full  p-4 text-white">
                     <div class="flex flex-row ml-2 mt-2 w-full">
                         <div class="ml-2 w-full">
@@ -87,48 +83,42 @@
                             <td class="py-1">Nro</td>
                             <td>Curso</td>
                             <td>Turno</td>
-                            <td>Estudiantes</td>
+
                             <td>Area</td>
                             <td>Opciones</td>
                         </tr>
-                        <tr class="border-b border-slate-300 hover:bg-slate-200">
-                            <td class="py-3">1</td>
-                            <td>1ro Secundaria A</td>
-                            <td>Manana</td>
-                            <td>35</td>
-                            <td class="">
-                                <p class="border border-slate-400 py-1 px-2 w-fit rounded m-auto bg-white">Ciencias
-                                    Naturales:Biologia
-                                </p>
-                            </td>
-                            <td>
-                                <a href=""
-                                    class="border border-green-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-green-600 hover:bg-green-600 hover:text-white"><i
-                                        class='bx bx-download'></i></a>
-                                <a href=""
-                                    class="border border-blue-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-blue-600 hover:bg-blue-600 hover:text-white"><i
-                                        class='bx bxs-book-open'></i></a>
-                            </td>
-                        </tr>
-                        <tr class="border-b border-slate-300">
-                            <td class="py-3">1</td>
-                            <td>1ro Secundaria A</td>
-                            <td>Manana</td>
-                            <td>35</td>
-                            <td class="">
-                                <p class="border border-slate-400 py-1 px-2 w-fit rounded m-auto">Ciencias
-                                    Naturales:Biologia
-                                </p>
-                            </td>
-                            <td>
-                                <a href=""
-                                    class="border border-green-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-green-600 hover:bg-green-600 hover:text-white"><i
-                                        class='bx bx-download'></i></a>
-                                <a href=""
-                                    class="border border-blue-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-blue-600 hover:bg-blue-600 hover:text-white"><i
-                                        class='bx bxs-book-open'></i></a>
-                            </td>
-                        </tr>
+                        @foreach ($asignaciones as $asignacion)
+                            <tr class="border-b border-slate-300 hover:bg-slate-200">
+                                <td class="py-3">{{ $loop->iteration }}</td>
+                                <td>{{ $asignacion->curso->display_name }}</td>
+                                <td>
+                                    @if ($asignacion->curso->turno == 'M')
+                                        <span
+                                            class="border border-yellow-400 px-2 py1 rounded text-xs text-yellow-600">Manana</span>
+                                    @else
+                                        <span
+                                            class="border border-slate-600 px-2 py1 rounded text-xs text-slate-600">Tarde</span>
+                                    @endif
+                                </td>
+
+                                <td class="">
+                                    <p class="border border-slate-400 py-1 px-2 w-fit rounded m-auto text-xs bg-white">
+                                        {{ $asignacion->materia->area }}
+                                    </p>
+                                </td>
+                                <td>
+                                    <a href=""
+                                        class="border border-green-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-green-600 hover:bg-green-600 hover:text-white"><i
+                                            class='bx bx-download'></i></a>
+                                    <a href=""
+                                        class="border border-blue-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-blue-600 hover:bg-blue-600 hover:text-white"><i
+                                            class='bx bxs-book-open'></i></a>
+                                    <a href=""
+                                        class="border border-red-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-red-600 hover:bg-red-600 hover:text-white"><i
+                                            class='bx bx-trash'></i></a>
+                                </td>
+                            </tr>
+                        @endforeach
                     </table>
                 </div>
             </div>
@@ -252,9 +242,9 @@
                 <!-- Formulario -->
                 <div class="p-4">
                     <form class="space-y-4" id="formularioEstudiante" method="post"
-                        action="{{ route('profesor.store') }}">
+                        action="{{ route('asignacion.store') }}">
                         @csrf
-
+                        <input type="hidden" name="idprofesor" value="{{ $profesor->id_profesor }}">
                         <div class="mt-[-25px]">
                             <label for="rude" class="text-xs relative top-0 left-3 bg-white px-2">Profesor (a)
                             </label>
@@ -269,7 +259,7 @@
                                 <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Nivel
                                     educativo
                                 </label>
-                                <select name="genero" id="genero"
+                                <select name="idnivel" id="nivel"
                                     class="border border-slate-600 bg-white p-2 rounded-md">
                                     <option value="">seleccione</option>
                                     <option value="0">INICIAL</option>
@@ -280,24 +270,19 @@
                             <div class="basis-1/2 flex flex-col mt-2 ">
                                 <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Curso
                                 </label>
-                                <select name="genero" id="genero"
-                                    class="border border-slate-600 bg-white p-2 rounded-md">
-                                    <option value="">seleccione</option>
-                                    <option value="M">1ro Primaria A</option>
-                                    <option value="F">2do Primaria A</option>
+                                <select name="idcurso" id="curso"
+                                    class="border border-slate-600 bg-white p-2 rounded-md" disabled>
+                                    <option value="">Seleccione</option>
                                 </select>
                             </div>
-
                         </div>
                         <div class="mt-[-25px]">
                             <div class="basis-1/2 flex flex-col mt-2 ">
                                 <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Area
                                 </label>
-                                <select name="genero" id="genero"
-                                    class="border border-slate-600 bg-white p-2 rounded-md">
+                                <select name="idmateria" id="materia"
+                                    class="border border-slate-600 bg-white p-2 rounded-md" disabled>
                                     <option value="">seleccione</option>
-                                    <option value="M">COMUNICACION Y LENGUAJES: LENGUA ORIGINARIA</option>
-                                    <option value="F">FEMENINO</option>
                                 </select>
                             </div>
                         </div>
@@ -317,6 +302,10 @@
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
+                // Suponiendo que $cursos se pasa desde el controlador como un JSON
+                // Ejemplo: return view('profesor.perfil', ['cursos' => $cursos, ...]);
+                const cursos = @json($cursos ?? []);
+
                 /* Eventos del modal formulamrio profesor */
                 const closeBtn = document.getElementById('closeModal');
                 document.querySelectorAll('.edit-btn').forEach(btn => {
@@ -374,6 +363,49 @@
                         document.getElementById('modalAsignacion').classList.add('hidden');
                     }, 200);
                 });
+
+                /* Lógica para selects dependientes de nivel y curso */
+                const nivelSelect = document.getElementById('nivel');
+                const cursoSelect = document.getElementById('curso');
+                const materiaSelect = document.getElementById('materia');
+
+                nivelSelect.addEventListener('change', (e) => {
+                    const nivelId = e.target.value;
+                    if (nivelId) {
+                        cursoSelect.disabled = false;
+                        materiaSelect.disabled = false;
+                        fetch(`/cursos/nivel/${nivelId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.length > 0) {
+                                    cursoSelect.innerHTML = data.map(curso =>
+                                        `<option value="${curso.idCurso}">${curso.nombreCurso}</option>`
+                                    ).join('');
+                                } else {
+                                    cursoSelect.innerHTML =
+                                        '<option value="">No hay cursos para este nivel</option>';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error al obtener los cursos:', error);
+                            });
+                        fetch(`/materia/nivel/${nivelId}`).then(response => response.json()).then(data => {
+                            if (data.length > 0) {
+                                materiaSelect.innerHTML = data.map(materia =>
+                                    `<option value="${materia.idMateria}">${materia.nombreMateria}</option>`
+                                ).join('');
+                            } else {
+                                materiaSelect.innerHTML =
+                                    '<option value="">No hay materias para este nivel</option>';
+                            }
+                        }).catch(error => {
+                            console.error('Error al obtener las materias:', error);
+                        });
+                    } else {
+                        console.error('Tuvimos un error al seleccionar el nivel');
+                    }
+                });
+
             });
         </script>
     </div>

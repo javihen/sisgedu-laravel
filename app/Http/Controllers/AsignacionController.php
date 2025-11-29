@@ -28,7 +28,50 @@ class AsignacionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $id = $request->idprofesor;
+        $toUpper = fn($v) => $v === null ? null : mb_strtoupper(trim($v), 'UTF-8');
+        try{
+            $request->validate([
+                'idprofesor'=>'required',
+                'idcurso'=>'required',
+                'idmateria'=>'required',
+            ]);
+            $asignacion=Asignacion::where('id_profesor', $request->idprofesor)->where('idcurso',$request->idcurso)->where('id_materia',$request->idmateria)->get();
+            if($asignacion->isEmpty()){
+            Asignacion::create([
+                'id_profesor'=>$request->idprofesor,
+                'idcurso'=>$request->idcurso,
+                'id_materia'=>$request->idmateria,
+                'gestion'=>'2025',
+            ]);
+                session()->flash('swal', [
+                    'icon' => 'success',
+                    'title' => 'Bien hecho!',
+                    'text' => 'Se registro la asignacion con exito.'
+                ]);
+            return redirect()->route('profesor.perfil', $id);
+            }else{
+                $profesorAsignado = Asignacion::with('profesor')
+                ->where('idcurso', $request->idcurso)
+                ->where('id_materia', $request->idmateria)
+                ->first();
+                    $nombreProfesor = $profesorAsignado->profesor->nombres . ' ' . $profesorAsignado->profesor->appaterno.' '.$profesorAsignado->profesor->apmaterno;
+                session()->flash('swal', [
+                    'icon' => 'info',
+                    'title' => 'La materia ya fue asignada!',
+                    'text' => 'El profesor(a) '.$nombreProfesor.' da la clase de '.$toUpper($profesorAsignado->materia->area).' .'
+                ]);
+                    return redirect()->route('profesor.perfil', $id);
+
+            }
+        }catch (\Exception $e) {
+            session()->flash('swal', [
+                'icon' => 'error',
+                'title' => 'DiScUlPa!',
+                'text' => 'Tuvimos un problema al registrar la asignacion.'
+            ]);
+            return redirect()->route('profesor.perfil', $id)->with('error', $e);
+        }
     }
 
     /**

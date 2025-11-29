@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profesor;
+use App\Models\Asignacion;
 use Illuminate\Http\Request;
 
 class ProfesorController extends Controller
@@ -155,6 +156,23 @@ class ProfesorController extends Controller
     public function perfil($id)
     {
         $profesor = Profesor::findOrFail($id);
-        return view('profesor.perfil', compact('profesor'));
+        //En la consulta nos falta realizar la ordenacion por turno, nivel, grado y paralelo
+        /* $asignaciones = Asignacion::with(['curso', 'materia'])
+            ->where('id_profesor', $id)
+            ->get(); */
+
+        $asignaciones = Asignacion::select('asignaciones.*')
+            ->join('cursos', 'cursos.id', '=', 'asignaciones.idcurso')
+            ->join('materias', 'materias.id_materia', '=', 'asignaciones.id_materia') // opcional
+            ->where('asignaciones.id_profesor', $id)
+            ->orderBy('cursos.nivel', 'asc')
+            ->orderBy('cursos.turno', 'asc')
+            ->orderBy('cursos.paralelo', 'asc')
+            ->with(['curso', 'materia']) // si quieres los modelos relacionados además
+            ->get();
+
+            //return $asignaciones;
+
+        return view('profesor.perfil', compact('profesor', 'asignaciones'));
     }
 }

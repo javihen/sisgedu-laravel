@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AsignacionController;
 use App\Http\Controllers\CursoController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\MateriaController;
@@ -21,7 +22,7 @@ Route::delete('/curso/destroy/{id}', [CursoController::class, 'destroy'])->name(
 Route::get('/curso/{turno}/{nivel}', [CursoController::class, 'getCursos'])->name('curso.getCursos');
 // API: todos los cursos (para poblar selects)
 Route::get('/cursos', [CursoController::class, 'listAll'])->name('curso.listAll');
-
+Route::get('/cursos/nivel/{nivel}', [CursoController::class, 'getCursosNivel'])->name('curso.getCursosNivel');
 
 //-------------- MODULO ESTUDIANTE --------------------//
 
@@ -36,7 +37,7 @@ Route::put('/estudiante/{id}', [EstudianteController::class, 'update'])->name('e
 Route::get('/materia', [MateriaController::class, 'index'])->name('materia.index');
 Route::post('/materia/store', [MateriaController::class, 'store'])->name('materia.store');
 Route::delete('/materia/destroy/{id}', [MateriaController::class, 'destroy'])->name('materia.destroy');
-
+Route::get('/materia/nivel/{nivel}', [MateriaController::class, 'getMateriasByNivel'])->name('materia.getMateriasByNivel');
 
 //----------------- MODULO PROFESOR ------------------------//
 Route::get('/profesor', [ProfesorController::class, 'index'])->name('profesor.index');
@@ -44,3 +45,7 @@ Route::post('/profesor/store', [ProfesorController::class, 'store'])->name('prof
 Route::delete('/profesor/destroy/{id}', [ProfesorController::class, 'destroy'])->name('profesor.destroy');
 Route::get('/profesor/perfil/{id}', [ProfesorController::class, 'perfil'])->name('profesor.perfil');
 Route::put('/profesor/{id}', [ProfesorController::class, 'update'])->name('profesor.update');
+
+
+//-------------------- MODULO ASIGNACION --------------------//
+Route::post('/asignacion/store',[AsignacionController::class, 'store'])->name('asignacion.store');

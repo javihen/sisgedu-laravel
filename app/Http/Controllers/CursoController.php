@@ -128,4 +128,14 @@ class CursoController extends Controller
 
         return response()->json($cursos);
     }
+
+    public function getCursosNivel($nivel){
+        $cursos = Curso::where('nivel',$nivel)->get()->map(function($curso){
+            return [
+                'idCurso' => $curso->id,
+                'nombreCurso' => $curso->display_name,
+            ];
+        });
+        return response()->json($cursos);
+    }
 }

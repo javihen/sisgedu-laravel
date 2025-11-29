@@ -106,4 +106,14 @@ class MateriaController extends Controller
             return redirect()->route('materia.index')->with('error', 'Ocurrió un error al eliminar la materia: ' . $e->getMessage());
         }
     }
+
+    public function getMateriasByNivel($nivel){
+        $materias = Materia::where('nivel',$nivel)->get()->map(function($materia){
+            return [
+                'idMateria' => $materia->id_materia,
+                'nombreMateria' => $materia->area,
+            ];
+        });
+        return response()->json($materias);
+    }
 }
