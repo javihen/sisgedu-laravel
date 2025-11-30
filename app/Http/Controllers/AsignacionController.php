@@ -36,7 +36,8 @@ class AsignacionController extends Controller
                 'idcurso'=>'required',
                 'idmateria'=>'required',
             ]);
-            $asignacion=Asignacion::where('id_profesor', $request->idprofesor)->where('idcurso',$request->idcurso)->where('id_materia',$request->idmateria)->get();
+            $asignacion=Asignacion::where('idcurso',$request->idcurso)->where('id_materia',$request->idmateria)->get();
+
             if($asignacion->isEmpty()){
             Asignacion::create([
                 'id_profesor'=>$request->idprofesor,

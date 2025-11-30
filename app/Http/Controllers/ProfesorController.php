@@ -157,9 +157,6 @@ class ProfesorController extends Controller
     {
         $profesor = Profesor::findOrFail($id);
         //En la consulta nos falta realizar la ordenacion por turno, nivel, grado y paralelo
-        /* $asignaciones = Asignacion::with(['curso', 'materia'])
-            ->where('id_profesor', $id)
-            ->get(); */
 
         $asignaciones = Asignacion::select('asignaciones.*')
             ->join('cursos', 'cursos.id', '=', 'asignaciones.idcurso')
