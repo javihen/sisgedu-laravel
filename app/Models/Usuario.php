@@ -30,4 +30,6 @@ class Usuario extends Model
     {
         return $this->hasOne(Profesor::class, 'idUsuario');
     }
+
+
 }

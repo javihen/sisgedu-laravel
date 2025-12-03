@@ -80,7 +80,7 @@
             <div class="bg-[#E3DFE7] m-auto py-2 px-3 rounded-md text-[14px]"
                 style='font-family: "Poppins",
                 cursive;'>
-                PROF. JAVIER HENRY QUISPE PINTO
+                PROF. {{ session('usuario_nombre') }}
             </div>
         </div>
 

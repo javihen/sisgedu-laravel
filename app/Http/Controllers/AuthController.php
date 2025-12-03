@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Usuario;
+use App\Models\Profesor;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -27,11 +28,14 @@ class AuthController extends Controller
             session()->flash('swal', [
                 'icon' => 'error',
                 'title' => 'Cometiste un error!',
-                'text' => 'Las credenciales son incorrectas.'
+                'text' => 'Las credenciales son incorrectas.',
             ]);
             return back()->with('error', 'Credenciales incorrectas.');
         }
-
+        //dd($user);
+        $profesor = Profesor::find($user->id_Profesor);
+        $nombre = $profesor->nombres.' '. $profesor->appaterno.' '. $profesor->apmaterno;
+        session(['usuario_nombre' => $nombre]);
         // guardamos usuario en sesión
         session(['usuario_id' => $user->idUsuario]);
         session(['usuario_rol' => $user->idRol]); // para el middleware
