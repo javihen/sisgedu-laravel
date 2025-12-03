@@ -45,6 +45,7 @@ Route::post('/profesor/store', [ProfesorController::class, 'store'])->name('prof
 Route::delete('/profesor/destroy/{id}', [ProfesorController::class, 'destroy'])->name('profesor.destroy');
 Route::get('/profesor/perfil/{id}', [ProfesorController::class, 'perfil'])->name('profesor.perfil');
 Route::put('/profesor/{id}', [ProfesorController::class, 'update'])->name('profesor.update');
+Route::post('/profesor/cambiar-estado/{id}', [ProfesorController::class, 'cambiarEstado'])->name('profesor.cambiarEstado');
 
 
 //-------------------- MODULO ASIGNACION --------------------//

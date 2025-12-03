@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Profesor;
+use App\Models\Usuario;
 use App\Models\Asignacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class ProfesorController extends Controller
 {
@@ -49,6 +52,7 @@ class ProfesorController extends Controller
             'appaterno' => $toUpper($request->appaterno),
             'apmaterno' => $toUpper($request->apmaterno),
             'genero' => $request->genero,
+            'estado'=>'I',
             'fechaNac' => $request->fechaNac,
             'fuenteFinan' => $request->fuenteFinan,
             'nivelFormacion' => $toUpper($request->nivelFormacion),
@@ -171,5 +175,35 @@ class ProfesorController extends Controller
         //    return $asignaciones;
 
         return view('profesor.perfil', compact('profesor', 'asignaciones'));
+    }
+
+    public function cambiarEstado($id)
+    {
+        $profesor = Profesor::findOrFail($id);
+
+        // Si está ACTIVO → pasará a INACTIVO → SE CREA usuario
+        if ($profesor->estado === 'I') {
+
+            $profesor->estado = 'A';
+            $profesor->save();
+
+            // Registrar en tabla usuarios
+            Usuario::create([
+                'username' => $profesor->nombres,
+                'email' => 'nombre@mail.com',
+                'password' => Hash::make($profesor->ci),
+                'estado' => 1,
+                'idRol' => 2, // si deseas rol profesor
+                'id_profesor'=>$profesor->id_profesor
+            ]);
+        } else {
+            // Si está INACTIVO → pasará a ACTIVO → ELIMINAR usuario
+            $profesor->estado = 'I';
+            $profesor->save();
+
+            Usuario::where('id_profesor', $profesor->id_profesor)->delete();
+        }
+
+        return back()->with('success', 'Estado actualizado correctamente.');
     }
 }

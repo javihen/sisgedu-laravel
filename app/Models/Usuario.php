@@ -15,7 +15,7 @@ class Usuario extends Model
         'email',
         'password',
         'estado',
-        'idrol',
+        'idRol',
         'id_profesor'
     ];
 

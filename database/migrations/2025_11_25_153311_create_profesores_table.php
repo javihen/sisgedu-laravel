@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('fechaNac')->nullable();
             $table->string('fuenteFinan');
             $table->string('nivelFormacion');
-            $table->char('estado',1)->default('A');
+            $table->char('estado',1)->default('I');
             $table->string('observacion')->nullable();
             $table->timestamps();
         });

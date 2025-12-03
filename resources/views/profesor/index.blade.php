@@ -72,17 +72,26 @@
                                 </td>
                                 <td>
                                     @if ($profesor->estado == 'A')
-                                        <p
-                                            class="w-fit mx-auto py-1 px-2 border border-green-600 text-green-600 rounded bg-white hover:bg-green-600 hover:text-white">
-                                            Activo
-                                        </p>
+                                        <form action="{{ route('profesor.cambiarEstado', $profesor->id_profesor) }}"
+                                            method="POST">
+                                            @csrf
+                                            <button
+                                                class="w-fit mx-auto py-1 px-2 border border-green-600 text-green-600 rounded bg-white hover:bg-green-600 hover:text-white">
+                                                Activo
+                                            </button>
+                                        </form>
                                     @else
-                                        <p
-                                            class="w-fit mx-auto py-1 px-2 border border-red-600 text-red-600 rounded bg-white hover:bg-red-600 hover:text-white">
-                                            Inactivo
-                                        </p>
+                                        <form action="{{ route('profesor.cambiarEstado', $profesor->id_profesor) }}"
+                                            method="POST">
+                                            @csrf
+                                            <button
+                                                class="w-fit mx-auto py-1 px-2 border border-red-600 text-red-600 rounded bg-white hover:bg-red-600 hover:text-white">
+                                                Inactivo
+                                            </button>
+                                        </form>
                                     @endif
                                 </td>
+
                                 <td class="px-4 py-2 border-b border-gray-300 flex justify-center items-center gap-2">
                                     <a href="{{ route('profesor.perfil', $profesor->id_profesor) }}"
                                         class="bg-slate-600 text-white py-2 px-3 border border-black shadow hover:bg-slate-700 rounded">Perfil
