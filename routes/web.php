@@ -5,18 +5,20 @@ use App\Http\Controllers\CursoController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\ProfesorController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-/* Route::get('/curso', function () {
-    return view('curso.index');
-}); */
+// Login
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 //-------------- MODULO CURSO ---------------------//
-Route::get('/curso', [CursoController::class, 'index'])->name('curso.index');
+Route::get('/curso', [CursoController::class, 'index'])->name('curso.index')->middleware('role:2');
 Route::post('/curso/store', [CursoController::class, 'store'])->name('curso.store');
 Route::delete('/curso/destroy/{id}', [CursoController::class, 'destroy'])->name('curso.destroy');
 Route::get('/curso/{turno}/{nivel}', [CursoController::class, 'getCursos'])->name('curso.getCursos');

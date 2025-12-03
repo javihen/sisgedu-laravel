@@ -170,7 +170,7 @@
                     </div>
                 </div>
             </div>
-            <a href="../controller/cerrar.php" class="nav__link nav__logout fixed bottom-0 mb-4">
+            <a href="{{ route('logout') }}" class="nav__link nav__logout fixed bottom-0 mb-4">
                 <i class=' bx bx-log-out nav__icon'></i>
                 <span class="nav__name">Salir</span>
             </a>

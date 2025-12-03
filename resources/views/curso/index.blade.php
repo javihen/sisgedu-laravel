@@ -457,6 +457,8 @@
                 setTimeout(() => modal.classList.add('hidden'), 200);
             });
         </script>
-
+        <script>
+            console.log(@json(session()->all()));
+        </script>
     </div>
 @endsection
