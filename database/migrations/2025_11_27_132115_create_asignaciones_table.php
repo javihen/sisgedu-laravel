@@ -23,9 +23,10 @@ return new class extends Migration
             // 3️⃣ Coincide con profesores.id_profesor (bigIncrements = unsignedBigInteger)
             $table->unsignedBigInteger('id_profesor');
 
-            $table->integer('gestion');
+            $table->unsignedBigInteger('id_gestion');
 
             // 🔗 LLAVES FORÁNEAS
+            $table->foreign('id_gestion')->references('id_gestion')->on('gestiones')->onDelete('cascade');
             $table->foreign('id_materia')
                   ->references('id_materia')
                   ->on('materias')
