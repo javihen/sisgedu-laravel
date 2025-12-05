@@ -12,10 +12,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Login
+// ------------------------- MODULO LOGIN ------------------------//
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+//------------------------- MODULO GESTION --------------------------//
+Route::get('/panel', function(){
+    return view('panel');
+});
 
 //-------------- MODULO CURSO ---------------------//
 Route::get('/curso', [CursoController::class, 'index'])->name('curso.index')->middleware('role:2');
