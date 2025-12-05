@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('gestiones', function (Blueprint $table) {
             $table->bigIncrements('id_gestion');
             $table->integer('anio');
+            $table->date('fechaI');
+            $table->date('fechaF');
             $table->char('estado','1')->default('I');
             $table->timestamps();
         });

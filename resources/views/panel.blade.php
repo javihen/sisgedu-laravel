@@ -33,7 +33,7 @@
         {{-- Contenedores por nivel de cursos --}}
         <div class=" mx-3 mt-2 flex flex-row gap-1 w-full h-[calc(100vh-150px)]">
 
-            <div class="shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50 w-[300px] h-fit rounded-xs">
+            <div class="flex-none shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50 w-[300px] h-fit rounded-xs">
                 <p class="text-md m-4">Estadistica</p>
                 <div
                     class="mb-2 flex flex-row border border-[#26C1EB] hover:bg-[#26C1EB] cursor-pointer w-[279px] h-[89px] border-l-[25px] mx-auto bg-white rounded-md">
@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            <div class=" w-[525px]">
+            <div class="flex-1">
                 <div class="w-full h-72 shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50">
                     grafica
                 </div>
@@ -107,64 +107,43 @@
                     </div>
                 </div>
             </div>
-            <div class=" w-[525px]">
+            <div class="flex-1">
                 <div class="w-full h-72 shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50">
                     grafica
                 </div>
                 <div class="w-full h-72 shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50">
                     <div class=" p-4 flex flex-row justify-between">
                         <p class=" text-md">Gestiones</p>
-                        <a href=""
+                        <a href="#" id="openModal"
                             class="text-xs border border-green-500 bg-white hover:bg-green-500 px-2 py-1 rounded hover:text-white text-green-500"><i
                                 class='bx bx-plus'></i> Adicionar</a>
                     </div>
                     <table class="text-xs w-full bg-white">
-                        <tr class="text-center border-b border-slate-500">
+                        <tr class="text-center  bg-blue-500 text-white">
                             <td>Nombre</td>
                             <td>Inicio</td>
                             <td>Fin</td>
                             <td>Estado</td>
                         </tr>
-                        <tr class="text-center border-b h-9 ">
-                            <td>2022</td>
-                            <td>02/02/2022</td>
-                            <td>02/12/2022</td>
-                            <td><a href=""
-                                    class="text-xs border border-red-500 bg-white hover:bg-red-500 px-2 py-1 rounded hover:text-white text-red-500">
-                                    Inactivo</a></td>
+                        @foreach ($gestiones as $gestion)
+                            <tr class="text-center border-b hover:bg-slate-400 hover:text-white border-slate-500 h-9 ">
+                                <td>{{ $gestion->anio }}</td>
+                                <td>{{ $gestion->fechaI }}</td>
+                                <td>{{ $gestion->fechaF }}</td>
+                                <td>
+                                    @if ($gestion->estado == 'A')
+                                        <a href=""
+                                            class="text-xs border border-green-700 bg-green-500 px-2 py-1 rounded text-white ">
+                                            ACTIVO</a>
+                                    @else
+                                        <a href=""
+                                            class="text-xs border border-red-500 bg-white hover:bg-red-500 px-2 py-1 rounded hover:text-white text-red-500">
+                                            INACTIVO</a>
+                                </td>
+                        @endif
                         </tr>
-                        <tr class="text-center border-b h-9 ">
-                            <td>2023</td>
-                            <td>02/02/2022</td>
-                            <td>02/12/2022</td>
-                            <td><a href=""
-                                    class="text-xs border border-red-500 bg-white hover:bg-red-500 px-2 py-1 rounded hover:text-white text-red-500">
-                                    Inactivo</a></td>
-                        </tr>
-                        <tr class="text-center border-b h-9 ">
-                            <td>2024</td>
-                            <td>02/02/2022</td>
-                            <td>02/12/2022</td>
-                            <td><a href=""
-                                    class="text-xs border border-red-500 bg-white hover:bg-red-500 px-2 py-1 rounded hover:text-white text-red-500">
-                                    Inactivo</a></td>
-                        </tr>
-                        <tr class="text-center border-b h-9 bg-slate-400 text-white">
-                            <td>2025</td>
-                            <td>02/02/2022</td>
-                            <td>02/12/2022</td>
-                            <td><a href=""
-                                    class="text-xs border border-green-500 bg-green-500 px-2 py-1 rounded text-white ">
-                                    Activo</a></td>
-                        </tr>
-                        <tr class="text-center border-b h-9 ">
-                            <td>2026</td>
-                            <td>02/02/2022</td>
-                            <td>02/12/2022</td>
-                            <td><a href=""
-                                    class="text-xs border border-red-500 bg-white hover:bg-red-500 px-2 py-1 rounded hover:text-white text-red-500">
-                                    Inactivo</a></td>
-                        </tr>
+                        @endforeach
+
                     </table>
                 </div>
             </div>
@@ -177,95 +156,43 @@
                 class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-95 opacity-0">
 
                 <!-- Título -->
-                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Registrar profesor</h2>
+                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Aperturar nueva gestion</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" id="formularioProfesor" method="post" action="{{ route('profesor.store') }}">
+                <form class="space-y-4" id="formularioProfesor" method="post" action="{{ route('gestion.store') }}">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
                     <div class="flex flex-row gap-1 mt-[-25px]">
                         <div class="basis-1/2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">RDA </label>
-                            <input type="text" name="rda" id="rda"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
+                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Inicio de gestion
+                            </label>
+                            <input type="date" name="fechaI" id="fechaI"
+                                class="w-full border border-slate-700 rounded-md p-2 ">
                         </div>
                         <div class="basis-1/2">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">CI </label>
-                            <input type="text" name="ci" id="ci"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
+                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Fin de gestion
+                            </label>
+                            <input type="date" name="fechaF" id="fechaF"
+                                class="w-full border border-slate-700 rounded-md p-2 ">
                         </div>
                     </div>
                     <div class="flex flex-row mt-[-25px] gap-1">
-                        <div class="basis-1/2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Apellido paterno
+                        <div class="w-full  ">
+                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Nombre de la gestion
                             </label>
-                            <input type="text" name="appaterno" id="appaterno"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
+                            <input type="number" name="anio" id="anio"
+                                class="w-full border border-slate-700 rounded-md p-2 ">
                         </div>
-                        <div class="basis-1/2">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Apellido materno
-                            </label>
-                            <input type="text" name="apmaterno" id="apmaterno"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </div>
-                    </div>
-                    <div class="mt-[-25px]">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Nombre (s) </label>
-                        <input type="text" name="nombres" id="nombres"
-                            class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                    </div>
-                    <div class="flex flex-row mt-[-25px] gap-1">
-                        <div class="basis-1/2 flex flex-col mt-2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Genero
-                            </label>
-                            <select name="genero" id="genero"
-                                class="border border-slate-600 bg-white p-2 rounded-md">
-                                <option value="">seleccione</option>
-                                <option value="M">MASCULINO</option>
-                                <option value="F">FEMENINO</option>
-                            </select>
-                        </div>
-                        <div class="basis-1/2">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Fecha de nacimiento
-                            </label>
-                            <input type="date" name="fechaNac" id="fechaNac"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </div>
-                    </div>
-                    <div class="flex flex-row gap-1 mt-[-25px]">
-                        <div class="basis-1/2 ">
-                            <label for="codigo" class="text-xs relative top-3 left-3 bg-white px-2">Grado de estudio
-                            </label>
-                            <input type="text" name="nivelFormacion" id="nivelFormacion"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </div>
-                        <div class="basis-1/2 flex flex-col mt-2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Fuente de
-                                financiamiento
-                            </label>
-                            <select name="fuenteFinan" id="fuenteFinan"
-                                class="border border-slate-600 bg-white p-2 rounded-md">
-                                <option value="PPFF">PADRES DE FAMILIA</option>
-                                <option value="TGE">TESORO GENERAL DEL ESTADO</option>
-                                <option value="RP">RECURSOS PROPIOS</option>
-                            </select>
-                        </div>
+
                     </div>
 
-
-
-                    <div class="mt-[-25px]">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Observaciones </label>
-                        <textarea name="observacion" id="observacion" class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </textarea>
-                    </div>
                     <hr class="border-slate-200 border">
                     <!-- Botones -->
                     <div class="flex justify-end space-x-2  ">
                         <button type="button" id="closeModal"
                             class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
                         <button type="submit" id="submitBtn"
-                            class="px-4 py-2 bg-blue-600 text-white w-1/2 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Guardar</button>
+                            class="px-4 py-2 bg-blue-600 text-white w-1/2 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Crear</button>
                     </div>
                 </form>
             </div>
@@ -285,9 +212,9 @@
                 openBtn.addEventListener('click', () => {
                     document.getElementById('modal').classList.remove('hidden');
                     formularioProfesor.reset();
-                    formularioProfesor.action = "{{ route('profesor.store') }}";
+                    formularioProfesor.action = "{{ route('gestion.store') }}";
                     formMethod.value = 'POST';
-                    submitBtn.textContent = 'Guardar';
+                    submitBtn.textContent = 'Crear';
 
 
                     setTimeout(() => {
@@ -336,7 +263,6 @@
                     });
                 });
                 /* Utilizamos SweetAlert para confirmar la eliminacion */
-
                 document.querySelectorAll('.form-eliminar').forEach(form => {
                     form.addEventListener('submit', function(e) {
                         e.preventDefault(); // Detener envío
