@@ -13,7 +13,7 @@ class Asignacion extends Model
         'id_materia',
         'idcurso',
         'id_profesor',
-        'gestion'
+        'id_gestion'
     ];
 
     // 🔗 RELACIONES

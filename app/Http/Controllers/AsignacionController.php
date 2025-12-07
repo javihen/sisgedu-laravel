@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asignacion;
+use App\Models\Gestion;
 use Illuminate\Http\Request;
 
 class AsignacionController extends Controller
@@ -28,22 +29,21 @@ class AsignacionController extends Controller
      */
     public function store(Request $request)
     {
-        $id = $request->idprofesor;
-        $toUpper = fn($v) => $v === null ? null : mb_strtoupper(trim($v), 'UTF-8');
         try{
+            $id = $request->idprofesor;
             $request->validate([
                 'idprofesor'=>'required',
                 'idcurso'=>'required',
                 'idmateria'=>'required',
             ]);
             $asignacion=Asignacion::where('idcurso',$request->idcurso)->where('id_materia',$request->idmateria)->get();
-
+            $gestion = Gestion::where('estado', 'A')->first();
             if($asignacion->isEmpty()){
             Asignacion::create([
                 'id_profesor'=>$request->idprofesor,
                 'idcurso'=>$request->idcurso,
                 'id_materia'=>$request->idmateria,
-                'gestion'=>'2025',
+                'id_gestion'=> session('gestion_activa'),
             ]);
                 session()->flash('swal', [
                     'icon' => 'success',
@@ -56,11 +56,12 @@ class AsignacionController extends Controller
                 ->where('idcurso', $request->idcurso)
                 ->where('id_materia', $request->idmateria)
                 ->first();
-                    $nombreProfesor = $profesorAsignado->profesor->nombres . ' ' . $profesorAsignado->profesor->appaterno.' '.$profesorAsignado->profesor->apmaterno;
+
+                $nombreProfesor = $profesorAsignado->profesor->nombres . ' ' . $profesorAsignado->profesor->appaterno.' '.$profesorAsignado->profesor->apmaterno;
                 session()->flash('swal', [
                     'icon' => 'info',
                     'title' => 'La materia ya fue asignada!',
-                    'text' => 'El profesor(a) '.$nombreProfesor.' da la clase de '.$toUpper($profesorAsignado->materia->area).' .'
+                    'text' => 'El profesor(a) '.$nombreProfesor.' da la clase de '.$profesorAsignado->materia->area.' .'
                 ]);
                     return redirect()->route('profesor.perfil', $id);
 
@@ -71,7 +72,7 @@ class AsignacionController extends Controller
                 'title' => 'DiScUlPa!',
                 'text' => 'Tuvimos un problema al registrar la asignacion.'
             ]);
-            return redirect()->route('profesor.perfil', $id)->with('error', $e);
+            return redirect()->route('profesor.perfil', $id)->with('error', $e->getMessage());
         }
     }
 

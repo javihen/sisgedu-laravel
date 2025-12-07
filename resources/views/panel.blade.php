@@ -132,16 +132,20 @@
                                 <td>{{ $gestion->fechaF }}</td>
                                 <td>
                                     @if ($gestion->estado == 'A')
-                                        <a href=""
+                                        <a href="#"
                                             class="text-xs border border-green-700 bg-green-500 px-2 py-1 rounded text-white ">
-                                            ACTIVO</a>
-                                    @else
-                                        <a href=""
-                                            class="text-xs border border-red-500 bg-white hover:bg-red-500 px-2 py-1 rounded hover:text-white text-red-500">
-                                            INACTIVO</a>
+                                            ACTIVO</button>
+                                        @else
+                                            <form action="{{ route('gestion.cambiarEstado', $gestion->id_gestion) }}"
+                                                method="post">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="text-xs border border-red-500 bg-white hover:bg-red-500 px-2 py-1 rounded hover:text-white text-red-500">
+                                                    INACTIVO</button>
+                                            </form>
+                                    @endif
                                 </td>
-                        @endif
-                        </tr>
+                            </tr>
                         @endforeach
 
                     </table>
@@ -286,4 +290,12 @@
             });
         </script>
     </div>
+    @if (session('swal'))
+        <script>
+            Swal.fire(@json(session('swal')));
+        </script>
+    @endif
+    <script>
+        console.log(@json(session()->all()));
+    </script>
 @endsection

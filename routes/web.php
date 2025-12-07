@@ -24,6 +24,7 @@ Route::get('/panel', function(){
 });
 Route::get('/panel',[GestionController::class, 'index'])->name('panel');
 Route::post('/gestion/store',[GestionController::class, 'store'])->name('gestion.store');
+Route::post('/gestion/cambiar-estado/{id}', [GestionController::class, 'cambiarEstado'])->name('gestion.cambiarEstado');
 
 //-------------- MODULO CURSO ---------------------//
 Route::get('/curso', [CursoController::class, 'index'])->name('curso.index')->middleware('role:2');

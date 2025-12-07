@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="{{ asset('images/favicon.png') }}">
+
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,7 +75,7 @@
         <div class=" ml-16 flex flex-row items-center h-full">
             <p style='font-family: "Playwrite GB S", cursive;'>Sistema de Gestion Educativa</p>
             <div class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm mx-2">Gestion
-                2025
+                {{ session('gestion') }}
             </div>
         </div>
         <div class=" mr-4 h-full flex items-center justify-center">
@@ -99,7 +101,7 @@
                     <div class="nav__items grid gap-y-6">
 
 
-                        <a href="panel_vista.php"
+                        <a href="{{ route('panel') }}"
                             class="nav__link flex align-items-center text-white hover:text-[#6923d0]">
                             <i class='bx bx-home nav__icon text-[1.2rem] mr-2'></i>
                             <span class="nav__name font-medium whitespace-nowrap text-white ml-1.5">Inicio</span>
@@ -151,13 +153,14 @@
                             <i class='bx bx-id-card nav__icon'></i>
                             <span class="nav__name">Materias</span>
                         </a>
-                        <a href="honor_vista.php" class="nav__link">
-                            <i class='bx bx-trophy nav__icon'></i>
-                            <span class="nav__name">Cuadro de honor</span>
-                        </a>
+
                         <a href="{{ route('curso.index') }}" class="nav__link">
                             <i class='bx bx-book-open nav__icon'></i>
                             <span class="nav__name">Cursos</span>
+                        </a>
+                        {{-- <a href="honor_vista.php" class="nav__link">
+                            <i class='bx bx-trophy nav__icon'></i>
+                            <span class="nav__name">Cuadro de honor</span>
                         </a>
                         <a href="reprobados_vista.php" class="nav__link">
                             <i class='bx bx-book-open nav__icon'></i>
@@ -166,7 +169,7 @@
                         <a href="importar_vista.php" class="nav__link">
                             <i class='bx bx-data nav__icon'></i>
                             <span class="nav__name">Importar datos</span>
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
             </div>

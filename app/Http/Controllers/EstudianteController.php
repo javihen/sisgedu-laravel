@@ -159,7 +159,7 @@ class EstudianteController extends Controller
             DB::table('inscripciones')->insert([
                 'id_estudiante' => $row[0] ?? null,
                 'id_curso' => $idCurso,
-                'gestion' => date('Y'), // o cualquier otro valor predeterminado
+                'id_gestion' => session('gestion_activa'), // o cualquier otro valor predeterminado
             ]);
         }
 

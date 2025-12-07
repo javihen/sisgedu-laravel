@@ -138,6 +138,7 @@
                 <form class="space-y-4" id="formularioProfesor" method="post" action="{{ route('profesor.store') }}">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
+                    <input type="hidden" name="id_gestion" value="{{ session('gestion_activa') }}">
                     <div class="flex flex-row gap-1 mt-[-25px]">
                         <div class="basis-1/2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">RDA </label>

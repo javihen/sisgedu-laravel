@@ -90,4 +90,26 @@ class GestionController extends Controller
     {
         //
     }
+
+    public function cambiarEstado($id)
+    {
+        try{
+            Gestion::query()->update(['estado' => 'I']);
+            $gestion = Gestion::findOrFail($id);
+            $gestion->estado = 'A';
+            $gestion->save();
+            session(['gestion_activa' => $gestion->id_gestion]);
+            session(['gestion' => $gestion->anio]);
+            session()->flash('swal', [
+                'icon' => 'success',
+                'title' => '.: Gestion '.$gestion->anio.' :.',
+                'text' => 'la gestion se activo exitosamente.'
+            ]);
+            return back();
+        }catch(\exception $e){
+            return back()->with('error', 'tuvimos un problema');
+        }
+
+
+    }
 }

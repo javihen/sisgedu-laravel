@@ -166,6 +166,7 @@ class ProfesorController extends Controller
             ->join('cursos', 'cursos.id', '=', 'asignaciones.idcurso')
             ->join('materias', 'materias.id_materia', '=', 'asignaciones.id_materia') // opcional
             ->where('asignaciones.id_profesor', $id)
+            ->where('id_gestion', session('gestion_activa'))
             ->orderBy('cursos.nivel', 'asc')
             ->orderBy('cursos.turno', 'asc')
             ->orderBy('cursos.paralelo', 'asc')

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Usuario;
 use App\Models\Profesor;
+use App\Models\Gestion;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -33,10 +34,14 @@ class AuthController extends Controller
             return back()->with('error', 'Credenciales incorrectas.');
         }
         //dd($user);
+        $gestion = Gestion::where('estado', 'A')->first();
+        //dd($gestion);
         $profesor = Profesor::find($user->id_Profesor);
         $nombre = $profesor->nombres.' '. $profesor->appaterno.' '. $profesor->apmaterno;
-        session(['usuario_nombre' => $nombre]);
         // guardamos usuario en sesión
+        session(['gestion_activa'=> $gestion->id_gestion]);
+        session(['gestion' => $gestion->anio]);
+        session(['usuario_nombre' => $nombre]);
         session(['usuario_id' => $user->idUsuario]);
         session(['usuario_rol' => $user->idRol]); // para el middleware
 
