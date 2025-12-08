@@ -274,7 +274,7 @@
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
                                     </div>
                                     <div>
-                                        <a href="#"
+                                        <a href="{{ route('estudiante.curso', $MS->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
                                         </a>
@@ -317,7 +317,7 @@
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
                                     </div>
                                     <div>
-                                        <a href="#"
+                                        <a href="{{ route('estudiante.curso', $TS->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
                                         </a>

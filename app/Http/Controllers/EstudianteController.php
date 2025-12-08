@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
 use App\Models\Curso;
+use App\Models\Inscripcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +18,15 @@ class EstudianteController extends Controller
         $buscar = request()->get('buscar');
 
         // Carga inscripciones y el curso asociado para cada estudiante ademas hacemos el filtro de busqueda
-        $estudiantes = Estudiante::with('inscripciones.curso')
+        $estudiantes = Estudiante::with([
+            'inscripciones' => function ($q) {
+                $q->where('id_gestion', session('gestion_activa'));
+            },
+            'inscripciones.curso'
+        ])
+            ->whereHas('inscripciones', function ($query) {
+                $query->where('id_gestion', session('gestion_activa'));
+            })
             ->when($buscar, function ($query, $buscar) {
                 $query->whereRaw("UPPER(CONCAT(nombres, ' ', appaterno, ' ', apmaterno)) LIKE ?", ['%' . strtoupper($buscar) . '%'])
                     ->orWhereRaw("UPPER(id_estudiante) LIKE ?", ['%' . strtoupper($buscar) . '%'])
@@ -26,10 +35,12 @@ class EstudianteController extends Controller
             ->orderBy('appaterno', 'asc')
             ->get();
 
+        //dd($estudiantes);
         $estadisticas = Curso::withCount([
             // HOMBRES EFECTIVOS
             'inscripciones as hombres_efectivos' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))
+                ->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'M')
                         ->where('estado', 'E');
                 });
@@ -37,7 +48,7 @@ class EstudianteController extends Controller
 
             // MUJERES EFECTIVAS
             'inscripciones as mujeres_efectivas' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'F')
                         ->where('estado', 'E');
                 });
@@ -45,7 +56,7 @@ class EstudianteController extends Controller
 
             // HOMBRES RETIRADOS
             'inscripciones as hombres_retirados' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'M')
                         ->where('estado', 'R');
                 });
@@ -53,7 +64,7 @@ class EstudianteController extends Controller
 
             // MUJERES RETIRADAS
             'inscripciones as mujeres_retiradas' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'F')
                         ->where('estado', 'R');
                 });
@@ -61,7 +72,7 @@ class EstudianteController extends Controller
 
             // HOMBRES ABANDONO
             'inscripciones as hombres_abandono' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'M')
                         ->where('estado', 'A');
                 });
@@ -69,7 +80,7 @@ class EstudianteController extends Controller
 
             // MUJERES ABANDONO
             'inscripciones as mujeres_abandono' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'F')
                         ->where('estado', 'A');
                 });
@@ -156,10 +167,10 @@ class EstudianteController extends Controller
             if (count($row) < 1) continue; // evitar filas vacías
 
             // Insertar inscripción usando el idCurso capturado
-            DB::table('inscripciones')->insert([
+            Inscripcion::create([
                 'id_estudiante' => $row[0] ?? null,
                 'id_curso' => $idCurso,
-                'id_gestion' => session('gestion_activa'), // o cualquier otro valor predeterminado
+                'id_gestion' => session('gestion_activa'),
             ]);
         }
 
@@ -221,12 +232,12 @@ class EstudianteController extends Controller
             ]);
 
             $codigoEstudiante = $toUpper($request->codigo);
-            $gestionActual = date('Y');
+            $gestionActual = session('gestion_activa');
             $idCursoNuevo = $idCurso;
 
             $inscripcion = DB::table('inscripciones')
                 ->where('id_estudiante', $codigoEstudiante)
-                ->where('gestion', $gestionActual)
+                ->where('id_gestion', $gestionActual)
                 ->first();
 
             if (!$inscripcion) {
@@ -234,13 +245,13 @@ class EstudianteController extends Controller
                 DB::table('inscripciones')->insert([
                     'id_estudiante' => $codigoEstudiante,
                     'id_curso' => $idCursoNuevo,
-                    'gestion' => $gestionActual,
+                    'id_gestion' => $gestionActual,
                 ]);
             } else {
 
                 DB::table('inscripciones')
                     ->where('id_estudiante', $codigoEstudiante)
-                    ->where('gestion', $gestionActual)
+                    ->where('id_gestion', $gestionActual)
                     ->update([
                         'id_curso' => $idCursoNuevo,
                     ]);
@@ -269,5 +280,19 @@ class EstudianteController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('estudiante.index')->with('error', 'Ocurrió un error al eliminar el estudiante: ' . $e->getMessage());
         }
+    }
+    public function estudiantexcurso(string $id)
+    {
+        // Ejemplo de consulta con join
+            $estudiantes = Inscripcion::where('id_curso', $id)
+                ->with('estudiante')
+                ->get()
+                ->pluck('estudiante');
+
+        $curso = Curso::where('id', $id)->first();
+
+
+        // Enviar datos a estudiante/estudiantexcurso.blade.php
+        return view('estudiante.estudiantexcurso', compact('estudiantes', 'curso'));
     }
 }
