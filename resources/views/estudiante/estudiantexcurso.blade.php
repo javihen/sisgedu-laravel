@@ -6,18 +6,25 @@
 
 
     <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
-        <div class="sticky top-0 z-1 ml-3 w-full mt-2 h-12 bg-[#3B82F6] rounded-md flex justify-end items-center pl-2 pr-2 ">
+        <div
+            class="sticky top-0 z-1 ml-3 w-full mt-2 h-12 bg-[#3B82F6] rounded-md flex justify-between items-center pl-2 pr-2 ">
+            <div class="">
+                <a href="" class="py-1 px-2 rounded text-slate-700 border text-md border-slate-700 bg-white"><i
+                        class="fa-regular fa-address-book"></i></a>
+                <a href="" class="py-1 px-2 rounded text-green-700 border border-green-700 bg-white"><i
+                        class="fa-regular fa-file-excel"></i></a>
+            </div>
             <div class="bg-white w-72 text-center rounded-md">
                 <p class="text-md ">{{ $curso->display_name }}</p>
                 <p class="text-[10px]">Listado de estudiantes</p>
             </div>
-            <div class="">
+            {{-- <div class="">
 
-                {{-- <form method="GET" action="{{ route('estudiante.index') }}">
+                <form method="GET" action="{{ route('estudiante.index') }}">
                     <input type="text" name="buscar" id="buscar" class="bg-white my-2 py-2 rounded-md px-2 text-xs"
                         placeholder="Buscar estudiante..." value="{{ request('buscar') }}">
-                </form> --}}
-            </div>
+                </form>
+            </div> --}}
         </div>
         @if (session('success'))
             <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full ml-[18px] mr-4">
@@ -39,14 +46,13 @@
             </div>
         @endif
 
-        <div class=" ml-3 w-full mt-2  flex gap-1 ">
-            <div class="bg-white w-full  border border-slate-300 rounded-md mb-16">
+        <div class=" ml-3 w-full mt-2  flex flex-col gap-1 ">
+            <div class="bg-white w-full  border border-slate-300 rounded-md">
                 <table class="w-full ">
                     <tr class="bg-[#64748B] text-white text-sm text-center ">
                         <td class="py-2">Nro.</td>
                         <td>Codigo</td>
                         <td>Estudiante</td>
-
                         <td>Genero</td>
                         <td>Estado</td>
                         <td>Opciones</td>
@@ -61,11 +67,11 @@
                             <td>
                                 @if ($estudiante->genero == 'M')
                                     <p class="border border-blue-500 bg-white text-blue-500 rounded px-1 w-fit m-auto">
-                                        Masculino
+                                        <i class="fa-solid fa-person"></i>
                                     </p>
                                 @else
                                     <p class="border border-pink-500 bg-white text-pink-500 rounded px-1 w-fit m-auto">
-                                        Femenino
+                                        <i class="fa-solid fa-person-dress"></i>
                                     </p>
                                 @endif
                             </td>
@@ -91,16 +97,21 @@
                             </td>
                             <td>
                                 <a href="#"
-                                    class="bg-slate-500 text-white px-2 py-1 rounded hover:text-slate-500 hover:bg-white border border-slate-500 ">calificaciones</a>
+                                    class="bg-[#78E305] text-white px-2 py-2 rounded hover:text-[#78E305] hover:bg-white border-2 border-[#78E305] "><i
+                                        class="fa-solid fa-book"></i> Calificaciones</a>
                                 <a href="#"
-                                    class="bg-fuchsia-500 text-white px-2 py-1 rounded hover:text-fuchsia-500 hover:bg-white border border-fuchsia-500 ">Observaciones</a>
+                                    class="bg-[#374A8F] text-white px-2 py-2 rounded hover:text-[#374A8F] hover:bg-white border-2 border-[#374A8F] "><i
+                                        class="fa-solid fa-list-check"></i> Asistencias</a>
+                                <a href="#"
+                                    class="bg-[#0535E3] text-white px-2 py-2 rounded hover:text-[#0535E3] hover:bg-white border-2 border-[#0535E3] ">
+                                    <i class="fa-solid fa-box"></i> Observaciones</a>
                                 <form action="{{ route('estudiante.destroy', $estudiante->id_estudiante) }}" method="POST"
                                     class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este curso?')"
-                                        class="py-1 px-2 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
-                                        <i class='bx bx-trash'></i>
+                                        class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
+                                        <i class="fa-regular fa-trash-can"></i>
                                     </button>
                                 </form>
                                 {{-- <a href="#"
@@ -122,7 +133,17 @@
 
                 </table>
             </div>
+            <div class="flex justify-end bg-white w-full  border border-slate-300 rounded-md mb-16 h-30">
+                <div class="flex my-auto flex-col mr-2">
+                    <a href=""
+                        class="py-1 px-2 rounded mb-2 text-center text-slate-700 border text-md border-slate-700 bg-white"><i
+                            class="fa-regular fa-address-book"></i> Adicionar estudiante</a>
 
+                    <a href=""
+                        class="py-1 px-2 rounded text-center text-green-700 border border-green-700 bg-white"><i
+                            class="fa-regular fa-file-excel"></i> Generar archivo</a>
+                </div>
+            </div>
         </div>
 
         {{-- Nos crearemos el formulario modal con el que podamos nosotros registras a nuevos estudiantes --}}
@@ -156,7 +177,8 @@
                         <div class="basis-1/2 flex flex-col mt-2 ">
                             <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Estado
                             </label>
-                            <select name="estado" id="estado" class="border border-slate-600 bg-white p-2 rounded-md">
+                            <select name="estado" id="estado"
+                                class="border border-slate-600 bg-white p-2 rounded-md">
                                 <option value="E">EFECTIVO</option>
                                 <option value="R">RETIRADO</option>
                                 <option value="A">ABANDONO</option>

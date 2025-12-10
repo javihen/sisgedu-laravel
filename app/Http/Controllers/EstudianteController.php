@@ -286,6 +286,7 @@ class EstudianteController extends Controller
         // Ejemplo de consulta con join
             $estudiantes = Inscripcion::where('id_curso', $id)
                 ->with('estudiante')
+                ->where('id_gestion', session('gestion_activa'))
                 ->get()
                 ->pluck('estudiante');
 
