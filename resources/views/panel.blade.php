@@ -77,8 +77,8 @@
                 </div>
             </div>
             <div class="flex-1">
-                <div class="w-full h-72 shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50">
-                    grafica
+                <div class="w-full h-72 shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white">
+                    <canvas id="myChart"></canvas>
                 </div>
                 <div class="w-full h-fit shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50">
                     <div class=" p-4 flex flex-row justify-between">
@@ -108,8 +108,8 @@
                 </div>
             </div>
             <div class="flex-1">
-                <div class="w-full h-72 shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50">
-                    grafica
+                <div class="w-full h-72 shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white">
+                    <canvas id="myChart2"></canvas>
                 </div>
                 <div class="w-full h-72 shadow-[0_0_5px_rgba(0,0,0,0.25)] bg-white/50">
                     <div class=" p-4 flex flex-row justify-between">
@@ -287,6 +287,63 @@
                         });
                     });
                 });
+            });
+            /* Graficas  */
+            const ctx = document.getElementById('myChart');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1ro', '2do', '3ro', '4to', '5to', '6to'],
+                    datasets: [{
+                        label: 'Cursos',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            /* Grafica nro 2 */
+            const ctx2 = document.getElementById('myChart2');
+
+
+            const data = {
+                labels: [
+                    'LEN',
+                    'CS',
+                    'LEX',
+                    'TEC'
+                ],
+                datasets: [{
+                    type: 'bar',
+                    label: '',
+                    data: [10, 70, 30, 40],
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                }, {
+                    type: 'line',
+                    label: '',
+                    data: [50, 50, 50, 50],
+                    fill: false,
+                    borderColor: 'rgb(54, 162, 235)'
+                }]
+            };
+            new Chart(ctx2, {
+                type: 'scatter',
+                data: data,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
             });
         </script>
     </div>

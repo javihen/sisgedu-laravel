@@ -97,13 +97,13 @@
                             </td>
                             <td>
                                 <a href="#"
-                                    class="bg-[#78E305] text-white px-2 py-2 rounded hover:text-[#78E305] hover:bg-white border-2 border-[#78E305] "><i
+                                    class="bg-[#1F1F1F] text-white px-2 py-2 rounded hover:text-[#1F1F1F] hover:bg-white border-2 border-[#1F1F1F] "><i
                                         class="fa-solid fa-book"></i> Calificaciones</a>
                                 <a href="#"
-                                    class="bg-[#374A8F] text-white px-2 py-2 rounded hover:text-[#374A8F] hover:bg-white border-2 border-[#374A8F] "><i
+                                    class="bg-[#888888] text-white px-2 py-2 rounded hover:text-[#888888] hover:bg-white border-2 border-[#888888] "><i
                                         class="fa-solid fa-list-check"></i> Asistencias</a>
                                 <a href="#"
-                                    class="bg-[#0535E3] text-white px-2 py-2 rounded hover:text-[#0535E3] hover:bg-white border-2 border-[#0535E3] ">
+                                    class="bg-[#F62961] text-white px-2 py-2 rounded hover:text-[#F62961] hover:bg-white border-2 border-[#F62961] ">
                                     <i class="fa-solid fa-box"></i> Observaciones</a>
                                 <form action="{{ route('estudiante.destroy', $estudiante->id_estudiante) }}" method="POST"
                                     class="inline">

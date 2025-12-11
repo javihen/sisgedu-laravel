@@ -45,7 +45,7 @@ class AuthController extends Controller
         session(['usuario_id' => $user->idUsuario]);
         session(['usuario_rol' => $user->idRol]); // para el middleware
 
-        return redirect()->route('curso.index');
+        return redirect()->route('panel');
     }
 
     public function logout()
