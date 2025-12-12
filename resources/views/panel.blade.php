@@ -302,6 +302,8 @@
                     }]
                 },
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true
@@ -318,12 +320,21 @@
                     'LEN',
                     'CS',
                     'LEX',
-                    'TEC'
+                    'TEC',
+                    'LEN',
+                    'CS',
+                    'LEX',
+                    'TEC',
+                    'LEN',
+                    'CS',
+                    'LEX',
+                    'TEC',
+
                 ],
                 datasets: [{
                     type: 'bar',
                     label: '',
-                    data: [10, 70, 30, 40],
+                    data: [10, 70, 30, 40, 10, 70, 30, 40, 10, 70, 30, 40],
                     borderColor: 'rgb(255, 99, 132)',
                     backgroundColor: 'rgba(255, 99, 132, 0.2)'
                 }, {
@@ -338,6 +349,8 @@
                 type: 'scatter',
                 data: data,
                 options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true
