@@ -296,4 +296,76 @@ class EstudianteController extends Controller
         // Enviar datos a estudiante/estudiantexcurso.blade.php
         return view('estudiante.estudiantexcurso', compact('estudiantes', 'curso'));
     }
+
+    /**
+     * Obtiene todos los estudiantes en formato JSON
+     */
+    public function getAllEstudiantes()
+    {
+        //$estudiantes = Estudiante::all();
+        $gestion = session('gestion_activa');
+
+        $estudiantes = Estudiante::whereDoesntHave('inscripciones', function ($query) use ($gestion) {
+            $query->where('id_gestion', $gestion);
+        })
+            ->orderBy('appaterno', 'asc')
+            ->get();
+
+        return response()->json($estudiantes);
+    }
+
+    /**
+     * Inscribe múltiples estudiantes en un curso
+     */
+    public function inscribirMultiples(Request $request)
+    {
+        try {
+            $estudianteIds = $request->input('estudiante_ids', []);
+            $idCurso = $request->input('id_curso');
+            $idGestion = session('gestion_activa');
+
+            if (empty($estudianteIds) || !$idCurso || !$idGestion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Datos incompletos para realizar la inscripción'
+                ], 400);
+            }
+
+            $inscritos = 0;
+            $errores = [];
+
+            foreach ($estudianteIds as $idEstudiante) {
+                try {
+                    // Verificar si ya existe una inscripción
+                    $existe = Inscripcion::where('id_estudiante', $idEstudiante)
+                        ->where('id_curso', $idCurso)
+                        ->where('id_gestion', $idGestion)
+                        ->exists();
+
+                    if (!$existe) {
+                        Inscripcion::create([
+                            'id_estudiante' => $idEstudiante,
+                            'id_curso' => $idCurso,
+                            'id_gestion' => $idGestion
+                        ]);
+                        $inscritos++;
+                    }
+                } catch (\Exception $e) {
+                    $errores[] = "Error al inscribir estudiante $idEstudiante: " . $e->getMessage();
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'inscritos' => $inscritos,
+                'errores' => $errores,
+                'message' => "$inscritos estudiante(s) inscrito(s) correctamente"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al procesar la inscripción: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

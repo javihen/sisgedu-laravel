@@ -43,6 +43,8 @@ Route::post('/estudiante/import', [EstudianteController::class, 'import'])->name
 Route::delete('/estudiante/destroy/{id}', [EstudianteController::class, 'destroy'])->name('estudiante.destroy');
 Route::put('/estudiante/{id}', [EstudianteController::class, 'update'])->name('estudiante.update');
 Route::get('/estudiante-curso/{id}', [EstudianteController::class, 'estudiantexcurso'])->name('estudiante.curso');
+Route::get('/api/estudiantes/all', [EstudianteController::class, 'getAllEstudiantes'])->name('estudiante.api.all');
+Route::post('/inscripcion/inscribir-multiples', [EstudianteController::class, 'inscribirMultiples'])->name('inscripcion.inscribir-multiples');
 
 
 

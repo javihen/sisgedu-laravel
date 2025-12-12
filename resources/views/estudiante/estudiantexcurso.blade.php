@@ -1,35 +1,25 @@
 @extends('layouts.navhorizontal')
 
 @section('content')
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-
     <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
         <div
             class="sticky top-0 z-1 ml-3 w-full mt-2 h-12 bg-[#3B82F6] rounded-md flex justify-between items-center pl-2 pr-2 ">
             <div>
-                <a href="" class="py-1 px-2 rounded text-slate-700 border text-md border-slate-700 bg-white"><i
+                <a href="" id="openListadoEstudiantes"
+                    class="py-1 px-2 rounded text-slate-700 border text-md border-slate-700 bg-white"><i
                         class="fa-regular fa-address-book"></i></a>
                 <a href="" class="py-1 px-2 rounded text-green-700 border border-green-700 bg-white"><i
                         class="fa-regular fa-file-excel"></i></a>
             </div>
-            <div class="bg-white w-fit px-4 text-center rounded-md">
+            {{-- <div class="bg-white w-fit px-4 text-center rounded-md">
                 <p class="text-md italic uppercase">Comunicacion y Lenguajes: Lengua originaria</p>
                 <p class="text-[10px]">Prof. Lourdes Mamani Chipana</p>
 
-            </div>
+            </div> --}}
             <div class="bg-white w-72 text-center rounded-md">
                 <p class="text-md ">{{ $curso->display_name }}</p>
                 <p class="text-[10px]">Listado de estudiantes</p>
             </div>
-            {{-- <div class="">
-
-                <form method="GET" action="{{ route('estudiante.index') }}">
-                    <input type="text" name="buscar" id="buscar" class="bg-white my-2 py-2 rounded-md px-2 text-xs"
-                        placeholder="Buscar estudiante..." value="{{ request('buscar') }}">
-                </form>
-            </div> --}}
         </div>
         @if (session('success'))
             <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full ml-[18px] mr-4">
@@ -263,405 +253,211 @@
                 </form>
             </div>
         </div>
-        <div id="modalSubir"
-            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div id="modalListado"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+            data-curso-id="{{ $curso->id }}">
+            <!-- Contenedor del modal -->
+            <div id="modalListadoContent" class="bg-white rounded-md shadow-lg w-[800px] p-4 transform transition-all">
 
-            <div id="modalSubirContent" class="bg-white rounded-md shadow-lg w-[600px] p-5 transform transition-all">
+                <!-- Título -->
+                <h2 class="text-md font-semibold mt-4 mb-6 text-left">LISTADO DE ESTUDIANTES</h2>
+                <hr class="border border-slate-200 mb-4">
 
-                <h2 class="text-lg font-semibold text-gray-700 flex items-center">
-                    <i class='bx bx-cloud-upload mr-2'></i> IMPORTACIÓN DE ESTUDIANTES
-                </h2>
+                <!-- Input de búsqueda -->
+                <div class="mb-4">
+                    <input type="text" id="inputBusqueda" placeholder="Buscar por nombre, RUDE o código..."
+                        class="w-full border border-slate-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
 
-                <p class="text-xs text-gray-500 mt-1">
-                    El archivo debe contener las columnas: RUDE, CI, Nombres, Ap. Paterno, Ap. Materno, Género, Fecha
-                    Nacimiento
-                </p>
+                <!-- Tabla de estudiantes -->
+                <div class="overflow-auto max-h-96 border border-slate-300 rounded-md">
+                    <table class="w-full">
+                        <thead class="bg-[#64748B] text-white text-sm sticky top-0">
+                            <tr>
+                                <th class="py-2 px-2 text-center w-10">
+                                    <input type="checkbox" id="checkboxSelectAll" class="cursor-pointer">
+                                </th>
+                                <th class="py-2 px-2 text-left">Codigo</th>
+                                <th class="py-2 px-2 text-left">Rude</th>
+                                <th class="py-2 px-2 text-left">Nombre Completo</th>
+                                <th class="py-2 px-2 text-center">Genero</th>
+                                <th class="py-2 px-2 text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEstudiantesBody">
+                            <!-- Se llena dinamicamente con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
 
-                <hr class="border-slate-200 mt-3">
+                <hr class="border-slate-200 border mt-4">
 
-                <form class="space-y-4" id="formularioImportar" action="{{ route('estudiante.import') }}"
-                    method="post">
-                    @csrf
-                    <div id="selectCursoImport" class="basis-1/2 flex flex-col mt-2 w-full hidden">
-                        <label for="idCurso" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Asignar a curso
-                        </label>
-                        <select name="idCurso" id="idCurso" class="border border-slate-600 bg-white p-2 rounded-md">
-                            <option value="">- seleccione un curso -</option>
-                        </select>
-                    </div>
-
-                    <!-- ÁREA DE SUBIDA -->
-                    <div id="dropZone"
-                        class="border border-gray-400 border-dashed rounded-md mt-4 p-10 grid place-items-center cursor-pointer transition">
-
-                        <img src="./images/excel.png" class="w-14 opacity-70" alt="">
-
-                        <p class="text-xs text-gray-500 mt-2 text-center">
-                            Arrastra o selecciona un archivo Excel o CSV
-                        </p>
-                        <input type="hidden" id="excelData" name="excelData">
-                        <input type="file" id="archivo" name="archivo" accept=".xlsx,.xls,.csv" class="hidden"
-                            required>
-                    </div>
-
-                    <!-- TABLA DE PREVISUALIZACIÓN -->
-                    <div id="previewContainer" class="hidden mt-4 max-h-64 overflow-auto border rounded">
-                        <table class="w-full text-xs text-left border-collapse" id="previewTable"></table>
-                    </div>
-
-                    <hr class="border-slate-200 mt-4">
-
-                    <!-- BOTONES -->
-                    <div class="flex justify-end space-x-2 mt-4">
-                        <button type="button" id="closeModalSubir"
-                            class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white transition">
-                            Cancelar
-                        </button>
-
-                        <button type="submit"
-                            class="px-4 py-2 bg-green-600 text-white w-1/2 rounded-lg hover:bg-green-700 transition">
-                            Importar
-                        </button>
-                    </div>
-
-                </form>
+                <!-- Botones -->
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button type="button" id="closeModalListado"
+                        class="px-4 py-2 border border-gray-300 rounded-md w-1/4 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cerrar</button>
+                    <button type="button" id="btnSeleccionarEstudiantes"
+                        class="px-4 py-2 bg-blue-600 text-white w-1/4 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Seleccionar</button>
+                </div>
             </div>
         </div>
 
-        <script>
-            const dropZone = document.getElementById("dropZone");
-            const fileInput = document.getElementById("archivo");
-            const previewContainer = document.getElementById("previewContainer");
-            const previewTable = document.getElementById("previewTable");
-            const modal = document.getElementById("modalSubir");
-            const closeModal = document.getElementById("closeModalSubir");
-            const selectCurso = document.getElementById("selectCursoImport");
 
-            function abrirModalSubir() {
-                modal.classList.remove("hidden");
-            }
-            /* ---------LEER EXCEL O CSV ---------------------------- */
-            function procesarArchivo(file) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {
-                        type: "array"
-                    });
-                    const hoja = workbook.Sheets[workbook.SheetNames[0]];
-                    // Obtener el rango real (ejemplo: "A1:H5")
-                    const rango = hoja["!ref"];
-                    const rangoDecod = XLSX.utils.decode_range(rango);
-
-                    const filas = [];
-                    for (let R = rangoDecod.s.r; R <= rangoDecod.e.r; R++) {
-                        const fila = [];
-
-                        for (let C = rangoDecod.s.c; C <= rangoDecod.e.c; C++) {
-                            const celdaRef = XLSX.utils.encode_cell({
-                                r: R,
-                                c: C
-                            });
-                            const celda = hoja[celdaRef];
-                            fila.push(celda ? celda.v : null);
-                        }
-
-                        // Verificar si la fila tiene al menos un valor no nulo
-                        const filaNoVacia = fila.some(celda => celda !== null && celda !== "");
-                        if (filaNoVacia) {
-                            filas.push(fila);
-                        }
-                    }
-                    mostrarTabla(filas);
-                    document.getElementById("excelData").value = JSON.stringify(filas);
-                };
-
-                reader.readAsArrayBuffer(file);
-            }
-
-
-            /* ----------------------------------------------------------
-               MOSTRAR TABLA
-            ---------------------------------------------------------- */
-            function mostrarTabla(data) {
-                previewTable.innerHTML = "";
-                previewContainer.classList.remove("hidden");
-                if (selectCurso) selectCurso.classList.remove("hidden");
-                dropZone.classList.add("hidden");
-
-                data.forEach((row, index) => {
-                    let tr = document.createElement("tr");
-
-                    row.forEach(cell => {
-                        let td = document.createElement(index === 0 ? "th" : "td");
-                        td.textContent = cell === undefined ? " " : cell;
-                        td.className =
-                            "border px-2 py-1 text-[11px] " +
-                            (index === 0 ? "bg-gray-100 font-semibold" : "");
-                        tr.appendChild(td);
-                    });
-
-                    previewTable.appendChild(tr);
-                });
-
-                // 👉 Enviar datos al back-end
-                document.getElementById("excelData").value = JSON.stringify(data);
-
-                // Cargar todos los cursos y poblar el select #idCurso
-                (function populateAllCursos() {
-                    const idCursoSelect = document.getElementById('idCurso');
-                    if (!idCursoSelect) return;
-                    fetch('/cursos')
-                        .then(res => res.json())
-                        .then(list => {
-                            idCursoSelect.innerHTML = '<option value="">- seleccione un curso -</option>' + list.map(
-                                c => `<option value="${c.idCurso}">${c.nombreCurso}</option>`).join('');
-                            // mostrar el bloque de asignación si hay cursos
-                            const selectCursoBlock = document.getElementById('selectCurso');
-                            if (selectCursoBlock) selectCursoBlock.classList.remove('hidden');
-                        })
-                        .catch(err => {
-                            console.error('Error cargando cursos:', err);
-                        });
-                })();
-            }
-
-
-            /* ----------------------------------------------------------
-               DRAG & DROP
-            ---------------------------------------------------------- */
-            dropZone.addEventListener("click", () => fileInput.click());
-
-            dropZone.addEventListener("dragover", e => {
-                e.preventDefault();
-                dropZone.classList.add("bg-emerald-50", "border-emerald-500");
-            });
-
-            dropZone.addEventListener("dragleave", () => {
-                dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
-            });
-
-            dropZone.addEventListener("drop", e => {
-                e.preventDefault();
-                dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
-
-                const file = e.dataTransfer.files[0];
-                if (file) {
-                    fileInput.files = e.dataTransfer.files;
-                    procesarArchivo(file);
-                }
-            });
-
-            fileInput.addEventListener("change", () => {
-                const file = fileInput.files[0];
-                if (file) procesarArchivo(file);
-            });
-
-            /* ----------------------------------------------------------
-               BOTÓN CANCELAR → REINICIAR MODAL
-            ---------------------------------------------------------- */
-            closeModal.addEventListener("click", () => {
-                modal.classList.add("hidden");
-
-                // reset
-                fileInput.value = "";
-                previewContainer.classList.add("hidden");
-                if (selectCurso) selectCurso.classList.add("hidden");
-                dropZone.classList.remove("hidden");
-                previewTable.innerHTML = "";
-                dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
-            });
-        </script>
-
-
-
-
-
-        <script>
-            llenaSelectCursos();
-
-            function llenaSelectCursos() {
-                const idCursoSelect = document.getElementById('id_curso');
-                if (!idCursoSelect) return;
-                fetch('/cursos')
-                    .then(res => res.json())
-                    .then(list => {
-                        idCursoSelect.innerHTML = '<option value="">- seleccione un curso -</option>' + list.map(
-                            c => `<option value="${c.idCurso}">${c.nombreCurso}</option>`).join('');
-                    })
-                    .catch(err => {
-                        console.error('Error cargando cursos:', err);
-                    });
-            }
-            document.addEventListener('DOMContentLoaded', function() {
-                const openBtn = document.getElementById('openModal'); // Nuevo estudiante
-                const modal = document.getElementById('modal');
-                const modalContent = document.getElementById('modalContent');
-                const studentForm = document.getElementById('formularioEstudiante');
-                const formMethod = document.getElementById('formMethod');
-                const submitBtn = document.getElementById('submitBtn');
-
-                // Abre modal para CREAR (limpia campos)
-                openBtn.addEventListener('click', () => {
-                    studentForm.reset();
-                    studentForm.action = "{{ route('estudiante.store') }}";
-                    formMethod.value = 'POST';
-                    submitBtn.textContent = 'Guardar';
-                    modal.classList.remove('hidden');
-                    setTimeout(() => {
-                        modalContent.classList.remove('opacity-0', 'scale-95');
-                        modalContent.classList.add('opacity-100', 'scale-100');
-                    }, 10);
-                    //llenaSelectCursos();
-                });
-
-                // Delegación: escuchar todos los botones "edit-btn"
-                document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const id = this.dataset.id;
-                        // llenar campos desde data-attributes
-                        document.getElementById('codigo').value = this.dataset.codigo ?? '';
-                        document.getElementById('estado').value = this.dataset.estado ?? '';
-                        document.getElementById('rude').value = this.dataset.rude ?? '';
-                        document.getElementById('ci').value = this.dataset.ci ?? '';
-                        document.getElementById('nombres').value = this.dataset.nombres ?? '';
-                        document.getElementById('appaterno').value = this.dataset.appaterno ?? '';
-                        document.getElementById('apmaterno').value = this.dataset.apmaterno ?? '';
-                        document.getElementById('genero').value = this.dataset.genero ?? '';
-                        document.getElementById('fecha_nacimiento').value = this.dataset.fecha ?? '';
-                        document.getElementById('observacion').value = this.dataset.observacion ?? '';
-                        document.getElementById('id_curso').value = this.dataset.id_curso ?? '';
-                        // cambiar action a la ruta update (URL RESTful)
-                        studentForm.action =
-                            `/estudiante/${id}`; // o usa la ruta generada en data-url si prefieres
-                        formMethod.value = 'PUT';
-                        submitBtn.textContent = 'Actualizar';
-
-                        // abrir modal
-                        modal.classList.remove('hidden');
-                        setTimeout(() => {
-                            modalContent.classList.remove('opacity-0', 'scale-95');
-                            modalContent.classList.add('opacity-100', 'scale-100');
-                        }, 10);
-                    });
-                });
-
-                // Cerrar modal (ya tienes closeBtn)
-                const closeBtn = document.getElementById('closeModal');
-                closeBtn.addEventListener('click', () => {
-                    modalContent.classList.remove('opacity-100', 'scale-100');
-                    modalContent.classList.add('opacity-0', 'scale-95');
-                    setTimeout(() => modal.classList.add('hidden'), 200);
-                });
-            });
-
-            const openBtnSubir = document.getElementById('openModalSubir');
-            const closeBtnSubir = document.getElementById('closeModalSubir');
-            const modalSubir = document.getElementById('modalSubir');
-            const modalSubirContent = document.getElementById('modalSubirContent');
-
-
-            // Abrir modal de importación
-            openBtnSubir.addEventListener('click', (e) => {
-                e.preventDefault();
-                modalSubir.classList.remove('hidden');
-                setTimeout(() => {
-                    modalSubirContent.classList.remove('opacity-0', 'scale-95');
-                    modalSubirContent.classList.add('opacity-100', 'scale-100');
-                }, 10);
-            });
-
-            // Cerrar modal de importación
-            closeBtnSubir.addEventListener('click', () => {
-                modalSubirContent.classList.remove('opacity-100', 'scale-100');
-                modalSubirContent.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => {
-                    modalSubir.classList.add('hidden');
-                    document.getElementById('formularioImportar').reset();
-                }, 200);
-            });
-
-            // Función para editar estudiante
-            function editarEstudiante(idEstudiante) {
-                fetch(`/estudiante/${idEstudiante}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Llenar el formulario con los datos
-                        document.getElementById('id_estudiante_hidden').value = data.id_estudiante;
-                        document.getElementById('turno').value = data.turno || '';
-                        document.getElementById('nivel').value = data.nivel || '';
-                        document.getElementById('estado').value = data.estado || '';
-                        document.getElementById('rude').value = data.rude || '';
-                        document.getElementById('ci').value = data.ci || '';
-                        document.getElementById('nombres').value = data.nombres || '';
-                        document.getElementById('appaterno').value = data.appaterno || '';
-                        document.getElementById('apmaterno').value = data.apmaterno || '';
-                        document.getElementById('genero').value = data.genero || '';
-                        document.getElementById('fecha_nacimiento').value = data.fecha_nacimiento || '';
-                        document.getElementById('observacion').value = data.observacion || '';
-
-                        // Cambiar acción del formulario y método
-                        document.getElementById('formularioEstudiante').action = `/estudiante/${idEstudiante}`;
-                        document.getElementById('formMethod').value = 'PUT';
-                        document.getElementById('modalTitle').textContent = 'EDITAR ESTUDIANTE';
-
-                        // Llenar el select de cursos
-                        llenaSelectCursos();
-
-                        // Pre-seleccionar el curso actual si existe
-                        if (data.id_curso) {
-                            setTimeout(() => {
-                                document.getElementById('id_curso').value = data.id_curso;
-                            }, 300);
-                        }
-
-                        // Abrir modal
-                        modal.classList.remove('hidden');
-                        setTimeout(() => {
-                            modalContent.classList.remove('opacity-0', 'scale-95');
-                            modalContent.classList.add('opacity-100', 'scale-100');
-                        }, 10);
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
-
-            // Limpiar formulario al cerrar modal
-            function limpiarFormulario() {
-                document.getElementById('formularioEstudiante').reset();
-                document.getElementById('formularioEstudiante').action = "{{ route('estudiante.store') }}";
-                document.getElementById('formMethod').value = 'POST';
-                document.getElementById('modalTitle').textContent = 'REGISTRO DE NUEVO ESTUDIANTE';
-                document.getElementById('id_curso').value = '';
-            }
-
-            //codigo para obtener datos de un select
-            document.getElementById("nivel").addEventListener('change', function() {
-                const nivel = this.value;
-                const turno = document.getElementById('turno').value;
-                const cursoSelect = document.getElementById('curso');
-
-                cursoSelect.innerHTML = '<option value="">seleccione</option>';
-                cursoSelect.disabled = true;
-
-                if (turno && nivel) {
-                    // Cargar los cursos pasando ambos parámetros
-                    fetch(`/curso/${turno}/${nivel}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            cursoSelect.innerHTML = data.map(item =>
-                                `<option value="${item.idCurso}">${item.nombreCurso}</option>`
-                            ).join('');
-                            cursoSelect.disabled = false;
-                        })
-                        .catch(error => console.error('Error cargando de los cursos:', error));
-                }
-
-
-            });
-        </script>
 
 
     </div>
+
+    <script>
+        // Abrir modal de listado
+        document.getElementById('openListadoEstudiantes').addEventListener('click', function(e) {
+            e.preventDefault();
+            const modal = document.getElementById('modalListado');
+            modal.classList.remove('hidden');
+
+            // Cargar los estudiantes
+            cargarEstudiantes();
+        });
+
+        // Cerrar modal de listado
+        document.getElementById('closeModalListado').addEventListener('click', function() {
+            document.getElementById('modalListado').classList.add('hidden');
+        });
+
+        // Cargar estudiantes vía AJAX
+        function cargarEstudiantes() {
+            fetch('{{ route('estudiante.api.all') }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Guardar datos en una variable global para filtrado
+                    window.estudiantes_data = data;
+
+                    const tbody = document.getElementById('tablaEstudiantesBody');
+                    tbody.innerHTML = ''; // Limpiar tabla
+
+                    data.forEach((estudiante, index) => {
+                        const row = document.createElement('tr');
+                        row.className = 'border-t border-slate-400 hover:bg-slate-100';
+                        row.setAttribute('data-codigo', estudiante.id_estudiante.toLowerCase());
+                        row.setAttribute('data-rude', (estudiante.rude || '').toLowerCase());
+                        row.setAttribute('data-nombre', (estudiante.appaterno + ' ' + estudiante.apmaterno +
+                            ' ' + estudiante.nombres).toLowerCase());
+
+                        const generoIcon = estudiante.genero === 'M' ?
+                            '<i class="fa-solid fa-person"></i>' :
+                            '<i class="fa-solid fa-person-dress"></i>';
+
+                        const estadoClase = estudiante.estado === 'E' ? 'text-green-500' :
+                            estudiante.estado === 'R' ? 'text-red-500' :
+                            estudiante.estado === 'A' ? 'text-slate-500' : '';
+
+                        const estadoTexto = estudiante.estado === 'E' ? 'Efectivo' :
+                            estudiante.estado === 'R' ? 'Retirado' :
+                            estudiante.estado === 'A' ? 'Abandono' : '';
+
+                        row.innerHTML = `
+                            <td class="py-2 px-2 text-center">
+                                <input type="checkbox" class="checkbox-estudiante cursor-pointer" value="${estudiante.id_estudiante}">
+                            </td>
+                            <td class="py-2 px-2 text-sm">${estudiante.id_estudiante}</td>
+                            <td class="py-2 px-2 text-sm">${estudiante.rude}</td>
+
+                            <td class="py-2 px-2 text-sm">${estudiante.appaterno} ${estudiante.apmaterno} ${estudiante.nombres}</td>
+                            <td class="py-2 px-2 text-center text-sm">
+                                <span class="border border-slate-400 rounded px-2 py-1">
+                                    ${generoIcon}
+                                </span>
+                            </td>
+                            <td class="py-2 px-2 text-center text-sm">
+                                <span class="border border-slate-400 rounded px-2 py-1 ${estadoClase}">
+                                    ${estadoTexto}
+                                </span>
+                            </td>
+                        `;
+
+                        tbody.appendChild(row);
+                    });
+
+                    // Agregar listener al checkbox de seleccionar todos
+                    document.getElementById('checkboxSelectAll').addEventListener('change', function() {
+                        const checkboxes = document.querySelectorAll('.checkbox-estudiante');
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = this.checked;
+                        });
+                    });
+
+                    // Agregar evento de búsqueda
+                    document.getElementById('inputBusqueda').addEventListener('keyup', filtrarEstudiantes);
+                })
+                .catch(error => {
+                    console.error('Error cargando estudiantes:', error);
+                    alert('Error al cargar los estudiantes');
+                });
+        }
+
+        // Función para filtrar estudiantes en tiempo real
+        function filtrarEstudiantes() {
+            const busqueda = document.getElementById('inputBusqueda').value.toLowerCase();
+            const filas = document.querySelectorAll('#tablaEstudiantesBody tr');
+
+            filas.forEach(fila => {
+                const codigo = fila.getAttribute('data-codigo');
+                const rude = fila.getAttribute('data-rude');
+                const nombre = fila.getAttribute('data-nombre');
+
+                // Mostrar fila si coincide con el código, rude o nombre
+                if (codigo.includes(busqueda) || rude.includes(busqueda) || nombre.includes(busqueda)) {
+                    fila.style.display = '';
+                } else {
+                    fila.style.display = 'none';
+                }
+            });
+        }
+
+        // Manejar selección de estudiantes
+        document.getElementById('btnSeleccionarEstudiantes').addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.checkbox-estudiante:checked');
+            const seleccionados = Array.from(checkboxes).map(cb => cb.value);
+
+            if (seleccionados.length === 0) {
+                alert('Por favor selecciona al menos un estudiante');
+                return;
+            }
+
+            // Obtener el ID del curso desde el atributo data del modal
+            const idCurso = document.getElementById('modalListado').getAttribute('data-curso-id');
+
+            // Enviar los datos al servidor
+            fetch('{{ route('inscripcion.inscribir-multiples') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        estudiante_ids: seleccionados,
+                        id_curso: idCurso
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        if (data.errores && data.errores.length > 0) {
+                            console.warn('Errores:', data.errores);
+                        }
+                        document.getElementById('modalListado').classList.add('hidden');
+                        // Recargar la página para ver los cambios
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar la inscripción');
+                });
+        });
+    </script>
 @endsection
