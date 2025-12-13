@@ -7,6 +7,8 @@ use App\Models\Curso;
 use App\Models\Inscripcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\URL;
 
 class EstudianteController extends Controller
 {
@@ -295,6 +297,26 @@ class EstudianteController extends Controller
 
         // Enviar datos a estudiante/estudiantexcurso.blade.php
         return view('estudiante.estudiantexcurso', compact('estudiantes', 'curso'));
+    }
+
+    /**
+     * Genera un PDF con el listado de estudiantes de un curso
+     */
+    public function reportePDF(string $id)
+    {
+        $estudiantes = Inscripcion::where('id_curso', $id)
+            ->with('estudiante')
+            ->where('id_gestion', session('gestion_activa'))
+            ->get()
+            ->pluck('estudiante');
+
+        $curso = Curso::where('id', $id)->first();
+
+        $pdf = Pdf::loadView('estudiante.reporte_pdf', compact('curso', 'estudiantes'));
+
+        $fileName = 'listado_' . ($curso->display_name ?? 'curso') . '.pdf';
+
+        return $pdf->stream($fileName);
     }
 
     /**

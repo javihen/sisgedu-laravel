@@ -5,9 +5,9 @@
         <div
             class="sticky top-0 z-1 ml-3 w-full mt-2 h-12 bg-[#3B82F6] rounded-md flex justify-between items-center pl-2 pr-2 ">
             <div>
-                <a href="{{ route('estudiante.reportePDF', $curso->id) }}" id="reportePDF"
-                    class="py-1 px-2 rounded text-slate-700 border text-md border-slate-700 bg-white" target="_blank"><i
-                        class="fa-regular fa-file-pdf"></i></a>
+                <a href="" id="openListadoEstudiantes"
+                    class="py-1 px-2 rounded text-slate-700 border text-md border-slate-700 bg-white"><i
+                        class="fa-regular fa-address-book"></i></a>
                 <a href="" class="py-1 px-2 rounded text-green-700 border border-green-700 bg-white"><i
                         class="fa-regular fa-file-excel"></i></a>
             </div>
@@ -50,7 +50,10 @@
                         <td>Estudiante</td>
                         <td>Genero</td>
                         <td class="w-30">Estado</td>
-
+                        <td class="w-20">1er Trimestre</td>
+                        <td class="w-20">2do Trimestre</td>
+                        <td class="w-20">3er Trimestre</td>
+                        <td class="w-20">Final</td>
                         <td>Opciones</td>
                     </tr>
                     @foreach ($estudiantes as $estudiante)
@@ -91,11 +94,14 @@
                                     <span class="px-2 text-sm text-gray-500">—</span>
                                 @endif
                             </td>
-
+                            <td class="font-bold text-blue-500">51</td>
+                            <td>51</td>
+                            <td>51</td>
+                            <td class="border border-slate-400 bg-slate-200">100</td>
                             <td>
-                                <a href="#"
+                                {{-- <a href="#"
                                     class="bg-[#1F1F1F] text-white px-2 py-2 rounded hover:text-[#1F1F1F] hover:bg-white border-2 border-[#1F1F1F] "><i
-                                        class="fa-solid fa-book"></i> Calificaciones</a>
+                                        class="fa-solid fa-book"></i> Calificaciones</a> --}}
                                 <a href="#"
                                     class="bg-[#888888] text-white text-xs px-2 py-2 rounded hover:text-[#888888] hover:bg-white border-2 border-[#888888] "><i
                                         class="fa-solid fa-list-check"></i> Asistencias</a>
@@ -269,7 +275,7 @@
                         <thead class="bg-[#64748B] text-white text-sm sticky top-0">
                             <tr>
                                 <th class="py-2 px-2 text-center w-10">
-                                    {{-- <input type="checkbox" id="checkboxSelectAll" class="cursor-pointer"> --}}
+                                    <input type="checkbox" id="checkboxSelectAll" class="cursor-pointer">
                                 </th>
                                 <th class="py-2 px-2 text-left">Codigo</th>
                                 <th class="py-2 px-2 text-left">Rude</th>
