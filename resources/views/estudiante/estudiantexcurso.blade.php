@@ -5,6 +5,9 @@
         <div
             class="sticky top-0 z-1 ml-3 w-full mt-2 h-12 bg-[#3B82F6] rounded-md flex justify-between items-center pl-2 pr-2 ">
             <div>
+                <a href="" id="openListadoEstudiantes"
+                    class="py-1 px-2 rounded text-slate-700 border text-md border-slate-700 bg-white"><i
+                        class="fa-regular fa-address-book"></i></a>
                 <a href="{{ route('estudiante.reportePDF', $curso->id) }}" id="reportePDF"
                     class="py-1 px-2 rounded text-slate-700 border text-md border-slate-700 bg-white" target="_blank"><i
                         class="fa-regular fa-file-pdf"></i></a>
@@ -331,6 +334,9 @@
                     data.forEach((estudiante, index) => {
                         const row = document.createElement('tr');
                         row.className = 'border-t border-slate-400 hover:bg-slate-100';
+                        row.addEventListener('click', function() {
+                            toggleCheckbox(this);
+                        });
                         row.setAttribute('data-codigo', estudiante.id_estudiante.toLowerCase());
                         row.setAttribute('data-rude', (estudiante.rude || '').toLowerCase());
                         row.setAttribute('data-nombre', (estudiante.appaterno + ' ' + estudiante.apmaterno +
@@ -355,7 +361,7 @@
                             <td class="py-2 px-2 text-sm">${estudiante.id_estudiante}</td>
                             <td class="py-2 px-2 text-sm">${estudiante.rude}</td>
 
-                            <td class="py-2 px-2 text-sm">${estudiante.appaterno} ${estudiante.apmaterno} ${estudiante.nombres}</td>
+                            <td class="py-2 px-2 text-sm" id='fila' onclick="toggleCheckbox(this)">${estudiante.appaterno} ${estudiante.apmaterno} ${estudiante.nombres}</td>
                             <td class="py-2 px-2 text-center text-sm">
                                 <span class="border border-slate-400 rounded px-2 py-1">
                                     ${generoIcon}
@@ -372,12 +378,12 @@
                     });
 
                     // Agregar listener al checkbox de seleccionar todos
-                    document.getElementById('checkboxSelectAll').addEventListener('change', function() {
+                    /* document.getElementById('checkboxSelectAll').addEventListener('change', function() {
                         const checkboxes = document.querySelectorAll('.checkbox-estudiante');
                         checkboxes.forEach(checkbox => {
                             checkbox.checked = this.checked;
                         });
-                    });
+                    }); */
 
                     // Agregar evento de búsqueda
                     document.getElementById('inputBusqueda').addEventListener('keyup', filtrarEstudiantes);
@@ -388,6 +394,26 @@
                 });
         }
 
+
+
+
+        function toggleCheckbox(row) {
+            const checkbox = row.querySelector('input[type="checkbox"]');
+
+            if (!checkbox) {
+                console.error('Checkbox no encontrado en la fila', row);
+                return;
+            }
+
+            checkbox.checked = !checkbox.checked;
+        }
+
+
+        document.addEventListener('onclick', function(e) {
+            if (e.target && e.target.id == 'fila') {
+                console.log('hola');
+            }
+        });
         // Función para filtrar estudiantes en tiempo real
         function filtrarEstudiantes() {
             const busqueda = document.getElementById('inputBusqueda').value.toLowerCase();

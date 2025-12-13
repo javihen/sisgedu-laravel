@@ -14,13 +14,43 @@ class CursoController extends Controller
     public function index()
     {
         //$cursos = curso::all();                  /* Obtiene todas las tuplas de la tabla Cursos de la BD */
+        $gestionActiva = session('gestion_activa');
+        $Minicial = Curso::where('nivel', 0)->where('turno', 'M')->withCount([
+            'inscripciones as total_estudiantes' => function ($query) use ($gestionActiva) {
+                $query->where('id_gestion', $gestionActiva);
+            }
+        ])->orderBy('grado')->orderBy('paralelo')->get();
+        $Tinicial = Curso::where('nivel', 0)->where('turno', 'T')->withCount([
+            'inscripciones as total_estudiantes' => function ($query) use ($gestionActiva) {
+                $query->where('id_gestion', $gestionActiva);
+            }
+        ])->orderBy('grado')->orderBy('paralelo')->get();
+        $Mprimaria = Curso::where('nivel', 1)->where('turno', 'M')->withCount([
+            'inscripciones as total_estudiantes' => function ($query) use ($gestionActiva) {
+                $query->where('id_gestion', $gestionActiva);
+            }
+        ])->orderBy('grado')->orderBy('paralelo')->get();
+        $Tprimaria = Curso::where('nivel', 1)->where('turno', 'T')->withCount([
+            'inscripciones as total_estudiantes' => function ($query) use ($gestionActiva) {
+                $query->where('id_gestion', $gestionActiva);
+            }
+        ])->orderBy('grado')->orderBy('paralelo')->get();
+        $Msecundaria = Curso::where('nivel', 2)
+            ->where('turno', 'M')
+            ->withCount([
+                'inscripciones as total_estudiantes' => function ($query) use ($gestionActiva) {
+                    $query->where('id_gestion', $gestionActiva);
+                }
+            ])
+            ->orderBy('grado')
+            ->orderBy('paralelo')
+            ->get();
 
-        $Minicial = Curso::where('nivel', 0)->where('turno', 'M')->orderBy('grado')->orderBy('paralelo')->get();
-        $Tinicial = Curso::where('nivel', 0)->where('turno', 'T')->orderBy('grado')->orderBy('paralelo')->get();
-        $Mprimaria = Curso::where('nivel', 1)->where('turno', 'M')->orderBy('grado')->orderBy('paralelo')->get();
-        $Tprimaria = Curso::where('nivel', 1)->where('turno', 'T')->orderBy('grado')->orderBy('paralelo')->get();
-        $Msecundaria = Curso::where('nivel', 2)->where('turno', 'M')->orderBy('grado')->orderBy('paralelo')->get();
-        $Tsecundaria = Curso::where('nivel', 2)->where('turno', 'T')->orderBy('grado')->orderBy('paralelo')->get();
+        $Tsecundaria = Curso::where('nivel', 2)->where('turno', 'T')->withCount([
+            'inscripciones as total_estudiantes' => function ($query) use ($gestionActiva) {
+                $query->where('id_gestion', $gestionActiva);
+            }
+        ])->orderBy('grado')->orderBy('paralelo')->get();
         return view('curso.index', compact('Minicial', 'Tinicial', 'Mprimaria', 'Tprimaria', 'Msecundaria', 'Tsecundaria'));              /* Retorna el frontend de curso con la variable donde se guardara todas las tuplas */
     }
 

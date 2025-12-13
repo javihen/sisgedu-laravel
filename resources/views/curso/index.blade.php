@@ -25,7 +25,7 @@
                     <p class="text-[14px] font-semibold">INICIAL EN FAMILIA COMUNITARIA</p>
                     <p class="text-[10px]">Unidad Educativa Cristiano Vida Nueva</p>
                 </div>
-                <div class=" flex mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
+                {{-- <div class=" flex mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
                     <div class="flex-auto justify-center flex flex-col items-center">
                         <p class="text-[14px] font-semibold">250</p>
                         <p class="text-[10px]">Estudiantes</p>
@@ -38,7 +38,7 @@
                         <p class="text-[14px] font-semibold">250</p>
                         <p class="text-[10px]">Efectivo</p>
                     </div>
-                </div>
+                </div> --}}
                 <div class="flex flex-col mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
                     <div class="group w-full">
                         <!-- Botón principal -->
@@ -58,10 +58,10 @@
                                     </div>
                                     <div>
                                         <a href="#"
-                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">{{ $MI->total_estudiantes }}</a>
                                     </div>
                                     <div>
-                                        <a href="#"
+                                        <a href="{{ route('estudiante.curso', $MI->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
                                         </a>
@@ -100,10 +100,10 @@
                                     </div>
                                     <div>
                                         <a href="#"
-                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">{{ $TI->total_estudiantes }}</a>
                                     </div>
                                     <div>
-                                        <a href="#"
+                                        <a href="{{ route('estudiante.curso', $TI->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
                                         </a>
@@ -131,7 +131,7 @@
                     <p class="text-[14px] font-semibold">PRIMARIA COMUNITARIA VOCACIONAL</p>
                     <p class="text-[10px]">Unidad Educativa Cristiano Vida Nueva</p>
                 </div>
-                <div class=" flex mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
+                {{-- <div class=" flex mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
                     <div class="flex-auto justify-center flex flex-col items-center">
                         <p class="text-[14px] font-semibold">250</p>
                         <p class="text-[10px]">Estudiantes</p>
@@ -144,7 +144,7 @@
                         <p class="text-[14px] font-semibold">250</p>
                         <p class="text-[10px]">Efectivo</p>
                     </div>
-                </div>
+                </div> --}}
                 <div class="flex flex-col mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
                     <div class="group w-full">
                         <!-- Botón principal -->
@@ -164,10 +164,10 @@
                                     </div>
                                     <div>
                                         <a href="#"
-                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">{{ $MP->total_estudiantes }}</a>
                                     </div>
                                     <div>
-                                        <a href="#"
+                                        <a href="{{ route('estudiante.curso', $MP->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
                                         </a>
@@ -206,17 +206,16 @@
                                     </div>
                                     <div>
                                         <a href="#"
-                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">{{ $TP->total_estudiantes }}</a>
                                     </div>
                                     <div>
-                                        <a href="#"
+                                        <a href="{{ route('estudiante.curso', $TP->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
                                         </a>
                                     </div>
                                     <div>
-                                        <form action="{{ route('curso.destroy', $TP->id) }}" method="POST"
-                                            class="inline">
+                                        <form action="{{ route('curso.destroy', $TP->id) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -238,7 +237,7 @@
                     <p class="text-[14px] font-semibold">SECUNDARIA COMUNITARIA PRODUCTIVA</p>
                     <p class="text-[10px]">Unidad Educativa Cristiano Vida Nueva</p>
                 </div>
-                <div class=" flex mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
+                {{-- <div class=" flex mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
                     <div class="flex-auto justify-center flex flex-col items-center">
                         <p class="text-[14px] font-semibold">250</p>
                         <p class="text-[10px]">Estudiantes</p>
@@ -251,7 +250,7 @@
                         <p class="text-[14px] font-semibold">250</p>
                         <p class="text-[10px]">Efectivo</p>
                     </div>
-                </div>
+                </div> --}}
                 <div class="flex flex-col mt-1 bg-white h-fit border border-slate-300 shadow-md rounded-xs p-4">
                     <div class="group w-full">
                         <!-- Botón principal -->
@@ -271,7 +270,7 @@
                                     </div>
                                     <div>
                                         <a href="#"
-                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">{{ $MS->total_estudiantes }}</a>
                                     </div>
                                     <div>
                                         <a href="{{ route('estudiante.curso', $MS->id) }}"
@@ -314,7 +313,7 @@
                                     </div>
                                     <div>
                                         <a href="#"
-                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">32</a>
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-slate-600 text-[12px] text-blue-600">{{ $TS->total_estudiantes }}</a>
                                     </div>
                                     <div>
                                         <a href="{{ route('estudiante.curso', $TS->id) }}"
