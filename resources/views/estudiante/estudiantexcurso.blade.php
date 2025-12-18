@@ -65,11 +65,13 @@
 
                             <td>
                                 @if ($estudiante->genero == 'M')
-                                    <p class="border border-blue-500 bg-white text-blue-500 rounded px-1 w-fit m-auto">
+                                    <p class="border border-blue-500 bg-white text-blue-500 rounded px-1 w-fit m-auto cursor-pointer genero-toggle"
+                                        data-id="{{ $estudiante->id_estudiante }}">
                                         <i class="fa-solid fa-person"></i>
                                     </p>
                                 @else
-                                    <p class="border border-pink-500 bg-white text-pink-500 rounded px-1 w-fit m-auto">
+                                    <p class="border border-pink-500 bg-white text-pink-500 rounded px-1 w-fit m-auto cursor-pointer genero-toggle"
+                                        data-id="{{ $estudiante->id_estudiante }}">
                                         <i class="fa-solid fa-person-dress"></i>
                                     </p>
                                 @endif
@@ -363,7 +365,7 @@
 
                             <td class="py-2 px-2 text-sm" id='fila' onclick="toggleCheckbox(this)">${estudiante.appaterno} ${estudiante.apmaterno} ${estudiante.nombres}</td>
                             <td class="py-2 px-2 text-center text-sm">
-                                <span class="border border-slate-400 rounded px-2 py-1">
+                                <span class="border border-slate-400 rounded px-2 py-1 cursor-pointer genero-toggle-modal" data-id="${estudiante.id_estudiante}">
                                     ${generoIcon}
                                 </span>
                             </td>
@@ -479,5 +481,58 @@
                     alert('Error al procesar la inscripción');
                 });
         });
+
+        // Cambiar género en tabla principal
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.genero-toggle')) {
+                const elemento = e.target.closest('.genero-toggle');
+                const id = elemento.getAttribute('data-id');
+                cambiarGeneroEstudiante(id, elemento);
+            }
+        });
+
+        // Cambiar género en modal de listado
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.genero-toggle-modal')) {
+                const elemento = e.target.closest('.genero-toggle-modal');
+                const id = elemento.getAttribute('data-id');
+                cambiarGeneroEstudiante(id, elemento);
+            }
+        });
+
+        // Función para cambiar el género
+        function cambiarGeneroEstudiante(id, elemento) {
+            fetch('{{ route('estudiante.cambiarGenero', ['id' => 'PLACEHOLDER']) }}'.replace('PLACEHOLDER', id), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Actualizar el icono y colores dinámicamente
+                        if (data.genero === 'M') {
+                            elemento.innerHTML = '<i class="fa-solid fa-person"></i>';
+                            elemento.className =
+                                'border border-blue-500 bg-white text-blue-500 rounded px-1 w-fit m-auto cursor-pointer genero-toggle';
+                            elemento.setAttribute('data-id', id);
+                        } else {
+                            elemento.innerHTML = '<i class="fa-solid fa-person-dress"></i>';
+                            elemento.className =
+                                'border border-pink-500 bg-white text-pink-500 rounded px-1 w-fit m-auto cursor-pointer genero-toggle';
+                            elemento.setAttribute('data-id', id);
+                        }
+                        console.log('Género actualizado correctamente');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al actualizar el género');
+                });
+        }
     </script>
 @endsection

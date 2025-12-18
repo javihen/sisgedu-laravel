@@ -46,6 +46,7 @@ Route::get('/estudiante-curso/{id}', [EstudianteController::class, 'estudiantexc
 Route::get('/estudiante-curso/{id}/reporte', [EstudianteController::class, 'reportePDF'])->name('estudiante.reportePDF');
 Route::get('/api/estudiantes/all', [EstudianteController::class, 'getAllEstudiantes'])->name('estudiante.api.all');
 Route::post('/inscripcion/inscribir-multiples', [EstudianteController::class, 'inscribirMultiples'])->name('inscripcion.inscribir-multiples');
+Route::post('/estudiante/cambiar-genero/{id}', [EstudianteController::class, 'cambiarGenero'])->name('estudiante.cambiarGenero');
 
 
 

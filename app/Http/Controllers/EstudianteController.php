@@ -129,7 +129,7 @@ class EstudianteController extends Controller
             DB::table('inscripciones')->insert([
                 'id_estudiante' => $toUpper($request->codigo),
                 'id_curso' => $idCurso,
-                'gestion' => date('Y'), // o cualquier otro valor predeterminado
+                'id_gestion' => session('gestion_activa'), // o cualquier otro valor predeterminado
             ]);
             return redirect()->route('estudiante.index')->with('success', 'El estudiante se registro satisfactoriamente.');
         } catch (\Exception $e) {
@@ -387,6 +387,31 @@ class EstudianteController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error al procesar la inscripción: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Cambiar el género del estudiante al inverso
+     */
+    public function cambiarGenero($id)
+    {
+        try {
+            $estudiante = Estudiante::findOrFail($id);
+
+            // Cambiar el género al inverso
+            $estudiante->genero = $estudiante->genero === 'M' ? 'F' : 'M';
+            $estudiante->save();
+
+            return response()->json([
+                'success' => true,
+                'genero' => $estudiante->genero,
+                'message' => 'Género actualizado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el género: ' . $e->getMessage()
             ], 500);
         }
     }
