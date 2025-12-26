@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Estudiante;
 use App\Models\Curso;
+use App\Models\Inscripcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\URL;
 
 class EstudianteController extends Controller
 {
@@ -17,7 +20,15 @@ class EstudianteController extends Controller
         $buscar = request()->get('buscar');
 
         // Carga inscripciones y el curso asociado para cada estudiante ademas hacemos el filtro de busqueda
-        $estudiantes = Estudiante::with('inscripciones.curso')
+        $estudiantes = Estudiante::with([
+            'inscripciones' => function ($q) {
+                $q->where('id_gestion', session('gestion_activa'));
+            },
+            'inscripciones.curso'
+        ])
+            ->whereHas('inscripciones', function ($query) {
+                $query->where('id_gestion', session('gestion_activa'));
+            })
             ->when($buscar, function ($query, $buscar) {
                 $query->whereRaw("UPPER(CONCAT(nombres, ' ', appaterno, ' ', apmaterno)) LIKE ?", ['%' . strtoupper($buscar) . '%'])
                     ->orWhereRaw("UPPER(id_estudiante) LIKE ?", ['%' . strtoupper($buscar) . '%'])
@@ -26,10 +37,12 @@ class EstudianteController extends Controller
             ->orderBy('appaterno', 'asc')
             ->get();
 
+        //dd($estudiantes);
         $estadisticas = Curso::withCount([
             // HOMBRES EFECTIVOS
             'inscripciones as hombres_efectivos' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))
+                ->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'M')
                         ->where('estado', 'E');
                 });
@@ -37,7 +50,7 @@ class EstudianteController extends Controller
 
             // MUJERES EFECTIVAS
             'inscripciones as mujeres_efectivas' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'F')
                         ->where('estado', 'E');
                 });
@@ -45,7 +58,7 @@ class EstudianteController extends Controller
 
             // HOMBRES RETIRADOS
             'inscripciones as hombres_retirados' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'M')
                         ->where('estado', 'R');
                 });
@@ -53,7 +66,7 @@ class EstudianteController extends Controller
 
             // MUJERES RETIRADAS
             'inscripciones as mujeres_retiradas' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'F')
                         ->where('estado', 'R');
                 });
@@ -61,7 +74,7 @@ class EstudianteController extends Controller
 
             // HOMBRES ABANDONO
             'inscripciones as hombres_abandono' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'M')
                         ->where('estado', 'A');
                 });
@@ -69,7 +82,7 @@ class EstudianteController extends Controller
 
             // MUJERES ABANDONO
             'inscripciones as mujeres_abandono' => function ($q) {
-                $q->whereHas('estudiante', function ($q) {
+                $q->where('id_gestion', session('gestion_activa'))->whereHas('estudiante', function ($q) {
                     $q->where('genero', 'F')
                         ->where('estado', 'A');
                 });
@@ -116,7 +129,7 @@ class EstudianteController extends Controller
             DB::table('inscripciones')->insert([
                 'id_estudiante' => $toUpper($request->codigo),
                 'id_curso' => $idCurso,
-                'gestion' => date('Y'), // o cualquier otro valor predeterminado
+                'id_gestion' => session('gestion_activa'), // o cualquier otro valor predeterminado
             ]);
             return redirect()->route('estudiante.index')->with('success', 'El estudiante se registro satisfactoriamente.');
         } catch (\Exception $e) {
@@ -156,10 +169,10 @@ class EstudianteController extends Controller
             if (count($row) < 1) continue; // evitar filas vacías
 
             // Insertar inscripción usando el idCurso capturado
-            DB::table('inscripciones')->insert([
+            Inscripcion::create([
                 'id_estudiante' => $row[0] ?? null,
                 'id_curso' => $idCurso,
-                'gestion' => date('Y'), // o cualquier otro valor predeterminado
+                'id_gestion' => session('gestion_activa'),
             ]);
         }
 
@@ -221,12 +234,12 @@ class EstudianteController extends Controller
             ]);
 
             $codigoEstudiante = $toUpper($request->codigo);
-            $gestionActual = date('Y');
+            $gestionActual = session('gestion_activa');
             $idCursoNuevo = $idCurso;
 
             $inscripcion = DB::table('inscripciones')
                 ->where('id_estudiante', $codigoEstudiante)
-                ->where('gestion', $gestionActual)
+                ->where('id_gestion', $gestionActual)
                 ->first();
 
             if (!$inscripcion) {
@@ -234,13 +247,13 @@ class EstudianteController extends Controller
                 DB::table('inscripciones')->insert([
                     'id_estudiante' => $codigoEstudiante,
                     'id_curso' => $idCursoNuevo,
-                    'gestion' => $gestionActual,
+                    'id_gestion' => $gestionActual,
                 ]);
             } else {
 
                 DB::table('inscripciones')
                     ->where('id_estudiante', $codigoEstudiante)
-                    ->where('gestion', $gestionActual)
+                    ->where('id_gestion', $gestionActual)
                     ->update([
                         'id_curso' => $idCursoNuevo,
                     ]);
@@ -268,6 +281,138 @@ class EstudianteController extends Controller
             return redirect()->route('estudiante.index')->with('success', 'El estudiante fue eliminado satisfactoriamente.');
         } catch (\Exception $e) {
             return redirect()->route('estudiante.index')->with('error', 'Ocurrió un error al eliminar el estudiante: ' . $e->getMessage());
+        }
+    }
+    public function estudiantexcurso(string $id)
+    {
+        // Ejemplo de consulta con join
+            $estudiantes = Inscripcion::where('id_curso', $id)
+                ->with('estudiante')
+                ->where('id_gestion', session('gestion_activa'))
+                ->get()
+                ->pluck('estudiante');
+
+        $curso = Curso::where('id', $id)->first();
+
+
+        // Enviar datos a estudiante/estudiantexcurso.blade.php
+        return view('estudiante.estudiantexcurso', compact('estudiantes', 'curso'));
+    }
+
+    /**
+     * Genera un PDF con el listado de estudiantes de un curso
+     */
+    public function reportePDF(string $id)
+    {
+        $estudiantes = Inscripcion::where('id_curso', $id)
+            ->with('estudiante')
+            ->where('id_gestion', session('gestion_activa'))
+            ->get()
+            ->pluck('estudiante');
+
+        $curso = Curso::where('id', $id)->first();
+
+        $pdf = Pdf::loadView('estudiante.reporte_pdf', compact('curso', 'estudiantes'));
+
+        $fileName = 'listado_' . ($curso->display_name ?? 'curso') . '.pdf';
+
+        return $pdf->stream($fileName);
+    }
+
+    /**
+     * Obtiene todos los estudiantes en formato JSON
+     */
+    public function getAllEstudiantes()
+    {
+        //$estudiantes = Estudiante::all();
+        $gestion = session('gestion_activa');
+
+        $estudiantes = Estudiante::whereDoesntHave('inscripciones', function ($query) use ($gestion) {
+            $query->where('id_gestion', $gestion);
+        })
+            ->orderBy('appaterno', 'asc')
+            ->get();
+
+        return response()->json($estudiantes);
+    }
+
+    /**
+     * Inscribe múltiples estudiantes en un curso
+     */
+    public function inscribirMultiples(Request $request)
+    {
+        try {
+            $estudianteIds = $request->input('estudiante_ids', []);
+            $idCurso = $request->input('id_curso');
+            $idGestion = session('gestion_activa');
+
+            if (empty($estudianteIds) || !$idCurso || !$idGestion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Datos incompletos para realizar la inscripción'
+                ], 400);
+            }
+
+            $inscritos = 0;
+            $errores = [];
+
+            foreach ($estudianteIds as $idEstudiante) {
+                try {
+                    // Verificar si ya existe una inscripción
+                    $existe = Inscripcion::where('id_estudiante', $idEstudiante)
+                        ->where('id_curso', $idCurso)
+                        ->where('id_gestion', $idGestion)
+                        ->exists();
+
+                    if (!$existe) {
+                        Inscripcion::create([
+                            'id_estudiante' => $idEstudiante,
+                            'id_curso' => $idCurso,
+                            'id_gestion' => $idGestion
+                        ]);
+                        $inscritos++;
+                    }
+                } catch (\Exception $e) {
+                    $errores[] = "Error al inscribir estudiante $idEstudiante: " . $e->getMessage();
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'inscritos' => $inscritos,
+                'errores' => $errores,
+                'message' => "$inscritos estudiante(s) inscrito(s) correctamente"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al procesar la inscripción: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Cambiar el género del estudiante al inverso
+     */
+    public function cambiarGenero($id)
+    {
+        try {
+            $estudiante = Estudiante::findOrFail($id);
+
+            // Cambiar el género al inverso
+            $estudiante->genero = $estudiante->genero === 'M' ? 'F' : 'M';
+            $estudiante->save();
+
+            return response()->json([
+                'success' => true,
+                'genero' => $estudiante->genero,
+                'message' => 'Género actualizado correctamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el género: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

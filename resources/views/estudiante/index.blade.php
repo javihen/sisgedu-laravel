@@ -15,7 +15,6 @@
                     <input type="text" name="buscar" id="buscar" class="bg-white my-2 py-2 rounded-md px-2 text-xs"
                         placeholder="Buscar estudiante..." value="{{ request('buscar') }}">
                 </form>
-
             </div>
         </div>
         @if (session('success'))
@@ -82,10 +81,10 @@
                             </td>
                             <td>
                                 <form action="{{ route('estudiante.destroy', $estudiante->id_estudiante) }}" method="POST"
-                                    class="inline">
+                                    class="inline form-eliminar">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" onclick="return confirm('¿Estás seguro de eliminar este curso?')"
+                                    <button type="submit"
                                         class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
                                         <i class='bx bx-trash'></i>
                                     </button>
@@ -159,7 +158,8 @@
                 <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">REGISTRO DE NUEVO ESTUDIANTE</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" id="formularioEstudiante" action="{{ route('estudiante.store') }}" method="post">
+                <form class="space-y-4" id="formularioEstudiante" action="{{ route('estudiante.store') }}" method="post"
+                    class="form-adicionar">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
 
@@ -463,10 +463,6 @@
             });
         </script>
 
-
-
-
-
         <script>
             llenaSelectCursos();
 
@@ -543,6 +539,58 @@
                     modalContent.classList.remove('opacity-100', 'scale-100');
                     modalContent.classList.add('opacity-0', 'scale-95');
                     setTimeout(() => modal.classList.add('hidden'), 200);
+                });
+
+                document.querySelectorAll('.form-adicionar').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault(); // Detener envío
+                        /* if (document.getElementById('id_curso').value === '') {
+                            Swal.fire({
+                                title: "¡Atención!",
+                                text: "Por favor, seleccione un curso para el estudiante.",
+                                icon: "warning",
+                                confirmButtonColor: "#3085d6",
+                                confirmButtonText: "Aceptar"
+                            });
+                            return; // No continuar con el envío
+
+                        } */
+                        Swal.fire({
+                            title: "¿Estás seguro?",
+                            text: "Se añadirá el estudiante al curso seleccionado.",
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Sí, añadir",
+                            cancelButtonText: "Cancelar"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.submit(); // Enviar formulario si confirma
+                            }
+                        });
+                    });
+                });
+
+                document.querySelectorAll('.form-eliminar').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault(); // Detener envío
+
+                        Swal.fire({
+                            title: "¿Estás seguro?",
+                            text: "Se eliminará el estudiante de forma permanente.",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#3085d6",
+                            confirmButtonText: "Sí, eliminar",
+                            cancelButtonText: "Cancelar"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                form.submit(); // Enviar formulario si confirma
+                            }
+                        });
+                    });
                 });
             });
 

@@ -8,8 +8,8 @@ class Inscripcion extends Model
 {
     protected $table = 'inscripciones';
     protected $primaryKey = 'id_inscripcion';
-    protected $fillable = ['id_estudiante', 'id_curso', 'gestion'];
-
+    protected $fillable = ['id_estudiante', 'id_curso', 'id_gestion'];
+    public $timestamps = true;
     /**
      * Relación: una inscripción pertenece a un estudiante
      */
