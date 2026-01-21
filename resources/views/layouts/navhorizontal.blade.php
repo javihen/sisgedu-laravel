@@ -35,10 +35,6 @@
 
         }
 
-
-
-
-
         .nav__icon {
             font-size: 1.2rem;
             margin-right: 0.5rem;
@@ -102,7 +98,8 @@
                         </a>
 
                         {{-- <div class="nav__dropdown">
-                            <a href="#" class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                            <a href="#"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
                                 <i class='bx bx-user nav__icon'></i>
                                 <span class="nav__name">Perfil</span>
                                 <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
@@ -116,8 +113,9 @@
                             </div>
                         </div> --}}
 
-                        <!-- <div class="nav__dropdown">
-                            <a href="#" class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                        {{-- <div class="nav__dropdown">
+                            <a href="#"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
                                 <i class='bx bx-book-alt nav__icon'></i>
                                 <span class="nav__name">Administracion</span>
                                 <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
@@ -132,27 +130,67 @@
                                     <a href="curso_vista.php" class="nav__dropdown-item">Cursos</a>
                                 </div>
                             </div>
-                        </div> -->
-                        <a href="{{ route('curso.index') }}"
-                            class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
-                            <i class="fa-solid fa-chalkboard-user nav__icon"></i>
-                            <span class="nav__name ">Cursos</span>
-                        </a>
-                        <a href="{{ route('profesor.index') }}"
-                            class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
-                            <i class="fa-solid fa-user-tie nav__icon"></i>
-                            <span class="nav__name ">Profesores</span>
-                        </a>
-                        <a href="{{ route('estudiante.index') }}"
-                            class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
-                            <i class="fa-solid fa-graduation-cap nav__icon"></i>
-                            <span class="nav__name ">Estudiantes</span>
-                        </a>
-                        <a href="{{ route('materia.index') }}"
-                            class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
-                            <i class="fa-solid fa-book-bookmark nav__icon"></i>
-                            <span class="nav__name ">Materias</span>
-                        </a>
+                        </div> --}}
+                        {{-- PERFIL - Solo si tiene permiso --}}
+                        @if (session()->has('usuario_permisos') && in_array('ver_perfil', session('usuario_permisos')))
+                            <a href="{{ route('curso.index') }}"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <i class="fa-solid fa-address-card nav__icon"></i>
+                                <span class="nav__name ">Perfil</span>
+                            </a>
+                        @endif
+                        {{-- CURSOS - Solo si tiene permiso --}}
+                        @if (session()->has('usuario_permisos') && in_array('ver_cursos', session('usuario_permisos')))
+                            <a href="{{ route('curso.index') }}"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <i class="fa-solid fa-chalkboard-user nav__icon"></i>
+                                <span class="nav__name ">Cursos</span>
+                            </a>
+                        @endif
+
+                        {{-- PROFESORES - Solo si tiene permiso --}}
+                        @if (session()->has('usuario_permisos') && in_array('ver_profesores', session('usuario_permisos')))
+                            <a href="{{ route('profesor.index') }}"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <i class="fa-solid fa-user-tie nav__icon"></i>
+                                <span class="nav__name ">Profesores</span>
+                            </a>
+                        @endif
+
+                        {{-- ESTUDIANTES - Solo si tiene permiso --}}
+                        @if (session()->has('usuario_permisos') && in_array('ver_estudiantes', session('usuario_permisos')))
+                            <a href="{{ route('estudiante.index') }}"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <i class="fa-solid fa-graduation-cap nav__icon"></i>
+                                <span class="nav__name ">Estudiantes</span>
+                            </a>
+                        @endif
+
+                        {{-- MATERIAS - Solo si tiene permiso --}}
+                        @if (session()->has('usuario_permisos') && in_array('ver_materias', session('usuario_permisos')))
+                            <a href="{{ route('materia.index') }}"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <i class="fa-solid fa-book-bookmark nav__icon"></i>
+                                <span class="nav__name ">Materias</span>
+                            </a>
+                        @endif
+
+                        {{-- ADMINISTRACIÓN - Solo si es administrador --}}
+                        @if (session()->has('usuario_permisos') && in_array('gestionar_roles', session('usuario_permisos')))
+                            <div class="border-t border-slate-600 pt-4 mt-4">
+
+                                <a href="{{ route('roles.index') }}"
+                                    class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                    <i class="fa-solid fa-shield nav__icon"></i>
+                                    <span class="nav__name ">Roles</span>
+                                </a>
+                                <a href="{{ route('permisos.index') }}"
+                                    class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                    <i class="fa-solid fa-lock nav__icon"></i>
+                                    <span class="nav__name ">Permisos</span>
+                                </a>
+                            </div>
+                        @endif
 
 
                         {{-- <a href="honor_vista.php" class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">

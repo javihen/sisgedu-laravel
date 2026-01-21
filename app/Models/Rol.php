@@ -9,6 +9,7 @@ class Rol extends Model
     //use HasFactory;
 
     protected $table = 'roles';
+    protected $primaryKey = 'idRol';
 
     protected $fillable = ['nombreRol'];
 
@@ -21,6 +22,6 @@ class Rol extends Model
     // Un rol tiene muchos permisos (relación muchos a muchos)
     public function permisos()
     {
-        return $this->belongsToMany(Permiso::class, 'rolPermiso', 'idRol', 'idPermiso');
+        return $this->belongsToMany(Permiso::class, 'rol_Permiso', 'idRol', 'idPermiso');
     }
 }

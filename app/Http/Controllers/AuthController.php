@@ -38,12 +38,17 @@ class AuthController extends Controller
         //dd($gestion);
         $profesor = Profesor::find($user->id_Profesor);
         $nombre = $profesor->nombres.' '. $profesor->appaterno.' '. $profesor->apmaterno;
+
+        // Obtener permisos del rol del usuario
+        $permisos = $user->rol->permisos->pluck('nombrePermiso')->toArray();
+
         // guardamos usuario en sesión
         session(['gestion_activa'=> $gestion->id_gestion]);
         session(['gestion' => $gestion->anio]);
         session(['usuario_nombre' => $nombre]);
         session(['usuario_id' => $user->idUsuario]);
         session(['usuario_rol' => $user->idRol]); // para el middleware
+        session(['usuario_permisos' => $permisos]); // permisos del usuario
 
         return redirect()->route('panel');
     }

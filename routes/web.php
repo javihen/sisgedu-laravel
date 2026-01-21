@@ -7,6 +7,8 @@ use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\GestionController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\PermisoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,7 +29,7 @@ Route::post('/gestion/store',[GestionController::class, 'store'])->name('gestion
 Route::post('/gestion/cambiar-estado/{id}', [GestionController::class, 'cambiarEstado'])->name('gestion.cambiarEstado');
 
 //-------------- MODULO CURSO ---------------------//
-Route::get('/curso', [CursoController::class, 'index'])->name('curso.index')->middleware('role:2');
+Route::get('/curso', [CursoController::class, 'index'])->name('curso.index');
 Route::post('/curso/store', [CursoController::class, 'store'])->name('curso.store');
 Route::delete('/curso/destroy/{id}', [CursoController::class, 'destroy'])->name('curso.destroy');
 Route::get('/curso/{turno}/{nivel}', [CursoController::class, 'getCursos'])->name('curso.getCursos');
@@ -68,3 +70,20 @@ Route::post('/profesor/cambiar-estado/{id}', [ProfesorController::class, 'cambia
 //-------------------- MODULO ASIGNACION --------------------//
 Route::post('/asignacion/store',[AsignacionController::class, 'store'])->name('asignacion.store');
 Route::delete('/asignacion/destroy/{id}', [AsignacionController::class, 'destroy'])->name('asignacion.destroy');
+
+//----------------------- MODULO ADMINISTRACIÓN: ROLES Y PERMISOS -----------------------//
+// ROLES - Solo administradores
+Route::get('/admin/roles', [RolController::class, 'index'])->name('roles.index')->middleware('permiso:gestionar_roles');
+Route::get('/admin/roles/create', [RolController::class, 'create'])->name('roles.create')->middleware('permiso:gestionar_roles');
+Route::post('/admin/roles', [RolController::class, 'store'])->name('roles.store')->middleware('permiso:gestionar_roles');
+Route::get('/admin/roles/{id}/edit', [RolController::class, 'edit'])->name('roles.edit')->middleware('permiso:gestionar_roles');
+Route::put('/admin/roles/{id}', [RolController::class, 'update'])->name('roles.update')->middleware('permiso:gestionar_roles');
+Route::delete('/admin/roles/{id}', [RolController::class, 'destroy'])->name('roles.destroy')->middleware('permiso:gestionar_roles');
+
+// PERMISOS - Solo administradores
+Route::get('/admin/permisos', [PermisoController::class, 'index'])->name('permisos.index')->middleware('permiso:gestionar_roles');
+Route::get('/admin/permisos/create', [PermisoController::class, 'create'])->name('permisos.create')->middleware('permiso:gestionar_roles');
+Route::post('/admin/permisos', [PermisoController::class, 'store'])->name('permisos.store')->middleware('permiso:gestionar_roles');
+Route::get('/admin/permisos/{id}/edit', [PermisoController::class, 'edit'])->name('permisos.edit')->middleware('permiso:gestionar_roles');
+Route::put('/admin/permisos/{id}', [PermisoController::class, 'update'])->name('permisos.update')->middleware('permiso:gestionar_roles');
+Route::delete('/admin/permisos/{id}', [PermisoController::class, 'destroy'])->name('permisos.destroy')->middleware('permiso:gestionar_roles');
