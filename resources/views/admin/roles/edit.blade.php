@@ -48,11 +48,11 @@
 
                     <div class="flex gap-4 justify-center">
                         <a href="{{ route('roles.index') }}"
-                            class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-2 px-6 rounded transition-colors">
+                            class="bg-gray-500 w-1/2 text-center hover:bg-gray-600 text-white text-xs py-2 px-6 rounded transition-colors">
                             <i class="fa-solid fa-arrow-left mr-2"></i>Cancelar
                         </a>
                         <button type="submit"
-                            class="bg-green-500 hover:bg-green-600 text-white text-xs py-2 px-6 rounded transition-colors">
+                            class="bg-green-500 w-1/2 text-center hover:bg-green-600 text-white text-xs py-2 px-6 rounded transition-colors">
                             <i class="fa-solid fa-save mr-2"></i>Actualizar Rol
                         </button>
 
