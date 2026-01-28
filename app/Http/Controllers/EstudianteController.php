@@ -299,6 +299,19 @@ class EstudianteController extends Controller
         return view('estudiante.estudiantexcurso', compact('estudiantes', 'curso'));
     }
 
+    public function estudiantexasistencia(string $id)
+    {
+        // Ejemplo de consulta con join
+            $estudiantes = Inscripcion::where('id_curso', $id)
+                ->with('estudiante')
+                ->where('id_gestion', session('gestion_activa'))
+                ->get()
+                ->pluck('estudiante');
+
+        $curso = Curso::where('id', $id)->first();
+
+        return view('curso.cursoxasistencia', compact('estudiantes', 'curso'));
+    }
     /**
      * Genera un PDF con el listado de estudiantes de un curso
      */

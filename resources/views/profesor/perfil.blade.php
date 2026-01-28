@@ -108,9 +108,11 @@
                                     <a href=""
                                         class="border border-green-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-green-600 hover:bg-green-600 hover:text-white"><i
                                             class='bx bx-download'></i></a>
-                                    <a href="{{ route('estudiante.curso', $asignacion->idcurso) }}"
+
+                                    <a href="{{ route('estudiante.asistencia', $asignacion->idcurso) }}"
                                         class="border border-blue-600 rounded shadow-[0_0_3px_rgba(0,0,0,0.25)] text-center px-2 py-1 bg-white text-blue-600 hover:bg-blue-600 hover:text-white"><i
                                             class='bx bxs-book-open'></i></a>
+
                                     <form action="{{ route('asignacion.destroy', $asignacion->idAsignacion) }}"
                                         method="POST" class="inline form-eliminar">
                                         @csrf
