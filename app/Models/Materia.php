@@ -21,4 +21,10 @@ class Materia extends Model
         /* Una materia tiene muchas (hasMany) asignaciones */
         return $this->hasMany(Asignacion::class, 'id_materia', 'id_materia');
     }
+
+    public function asistencias()
+{
+    return $this->hasMany(Asistencia::class, 'idMateria', 'id_materia');
+}
+
 }

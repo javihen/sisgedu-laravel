@@ -26,4 +26,10 @@ class Profesor extends Model
         /* un profesor tiene varias (hasMany) asignaciones */
         return $this->hasMany(Asignacion::class, 'id_profesor', 'id_profesor');
     }
+
+    public function asistencias()
+{
+    return $this->hasMany(Asistencia::class, 'idProfesor', 'id_profesor');
+}
+
 }

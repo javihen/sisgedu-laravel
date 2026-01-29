@@ -14,4 +14,10 @@ class Gestion extends Model
         'fechaF',
         'estado',
     ];
+
+    public function asistencias()
+{
+    return $this->hasMany(Asistencia::class, 'id_gestion', 'id_gestion');
+}
+
 }
