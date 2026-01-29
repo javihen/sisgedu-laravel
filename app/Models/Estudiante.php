@@ -34,4 +34,10 @@ class Estudiante extends Model
     {
         return $this->inscripciones()->first()?->id_curso;
     }
+
+    public function asistencias()
+{
+    return $this->hasMany(DetalleAsistencia::class, 'idEstudiante');
+}
+
 }

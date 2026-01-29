@@ -39,4 +39,10 @@ class Asistencia extends Model
     {
         return $this->belongsTo(Gestion::class, 'id_gestion', 'id_gestion');
     }
+
+    public function detalles()
+{
+    return $this->hasMany(DetalleAsistencia::class, 'idAsistencia');
+}
+
 }
