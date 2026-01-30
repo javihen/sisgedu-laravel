@@ -13,8 +13,9 @@
                         class="fa-regular fa-file-pdf"></i></a>
                 <a href="" class="py-1 px-2 rounded text-green-700 border border-green-700 bg-white"><i
                         class="fa-regular fa-file-excel"></i></a>
-                <a href="" class="text-xs py-[7px] px-2 rounded text-slate-700 border border-slate-700 bg-white"><i
-                        class="fa-solid fa-list-check"></i> Nueva asistencia</a>
+                <a href="" id="openasistenciaModal"
+                    class="text-xs py-[7px] px-2 rounded text-slate-700 border border-slate-700 bg-white"><i
+                        class="fa-solid fa-list-check"></i> Nueva asistencia </a>
             </div>
             {{-- <div class="bg-white w-fit px-4 text-center rounded-md">
                 <p class="text-md italic uppercase">Comunicacion y Lenguajes: Lengua originaria</p>
@@ -163,113 +164,79 @@
             </div>
         </div>
 
-        {{-- Nos crearemos el formulario modal con el que podamos nosotros registras a nuevos estudiantes --}}
+        {{-- Modal para registrar asistencia --}}
         <div id="modal"
-            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50"
+            style="display: none;">
             <!-- Contenedor del modal -->
             <div id="modalContent"
-                class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all scale-95 opacity-0">
+                class="bg-white rounded-md shadow-lg w-[800px] p-4 transform transition-all scale-100 opacity-100">
 
                 <!-- Título -->
-                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">REGISTRO DE NUEVO ESTUDIANTE</h2>
+                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">REGISTRO DE ASISTENCIA</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" id="formularioEstudiante" action="{{ route('estudiante.store') }}" method="post">
+                <form class="space-y-4" id="formularioAsistencia" method="post">
                     @csrf
-                    <input type="hidden" name="_method" id="formMethod" value="POST">
+                    <input type="hidden" name="idCurso" id="inputIdCurso" value="{{ $curso->id }}">
+                    <input type="hidden" name="id_gestion" id="inputIdGestion" value="">
 
-                    <div id="selectCursoCreate" class="basis-1/2 flex flex-col mt-2 w-full ">
-                        <label for="id_curso" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Asignar a curso
-                        </label>
-                        <select name="id_curso" id="id_curso" class="border border-slate-600 bg-white p-2 rounded-md">
-                            <option value="">- seleccione un curso -</option>
-                        </select>
-                    </div>
-                    <div class="flex flex-row mt-4 gap-1">
-                        <div class="basis-1/2 ">
-                            <label for="codigo" class="text-xs relative top-3 left-3 bg-white px-2">Codigo </label>
-                            <input type="text" name="codigo" id="codigo"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </div>
-                        <div class="basis-1/2 flex flex-col mt-2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Estado
-                            </label>
-                            <select name="estado" id="estado"
-                                class="border border-slate-600 bg-white p-2 rounded-md">
-                                <option value="E">EFECTIVO</option>
-                                <option value="R">RETIRADO</option>
-                                <option value="A">ABANDONO</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex flex-row gap-1 mt-[-25px]">
-                        <div class="basis-1/2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">R.U.D.E. </label>
-                            <input type="text" name="rude" id="rude"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </div>
+                    <div class="flex flex-row mt-4 gap-4">
                         <div class="basis-1/2">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">C.I. </label>
-                            <input type="text" name="ci" id="ci"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
+                            <label for="fechaAsistencia" class="text-xs relative top-3 left-3 bg-white px-2">Fecha</label>
+                            <input type="date" name="fecha" id="fechaAsistencia"
+                                class="w-full border border-slate-700 rounded-md p-2" required>
+                        </div>
+                        <div class="basis-1/2 flex flex-col mt-2">
+                            <label for="horaAsistencia"
+                                class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Hora</label>
+                            <input type="time" name="hora" id="horaAsistencia"
+                                class="border border-slate-600 bg-white p-2 rounded-md" required>
                         </div>
                     </div>
-                    <div class="mt-[-25px]">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Nombre (s) </label>
-                        <input type="text" name="nombres" id="nombres"
-                            class="w-full border border-slate-700 rounded-md p-2 uppercase">
+
+                    <div class="flex flex-col hidden ">
+                        <label for="descripcionAsistencia"
+                            class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Descripción</label>
+                        <textarea name="descripcion" id="descripcionAsistencia" class="border border-slate-600 bg-white p-2 rounded-md"
+                            rows="2"></textarea>
                     </div>
-                    <div class="flex flex-row mt-[-25px] gap-1">
-                        <div class="basis-1/2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Apellido paterno
-                            </label>
-                            <input type="text" name="appaterno" id="appaterno"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </div>
-                        <div class="basis-1/2">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Apellido materno
-                            </label>
-                            <input type="text" name="apmaterno" id="apmaterno"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </div>
+
+                    <hr class="border border-slate-200 mb-4">
+                    <p class="font-semibold">Listado de estudiantes inscritos</p>
+
+                    <!-- Tabla de estudiantes para asistencia -->
+                    <div class="overflow-auto max-h-96 border border-slate-300 rounded-md">
+                        <table class="w-full">
+                            <thead class="bg-[#64748B] text-white text-sm sticky top-0">
+                                <tr>
+                                    <td class="py-2 px-2 text-center">Nro</td>
+                                    <td class="py-2 px-2">Código</td>
+                                    <td class="py-2 px-2">RUDE</td>
+                                    <td class="py-2 px-2">Estudiante</td>
+                                    <td class="py-2 px-2 text-center">Estado</td>
+                                    <td class="py-2 px-2">Observación</td>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaAsistenciaBody">
+                                <!-- Se llenará con JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="flex flex-row mt-[-25px] gap-1">
-                        <div class="basis-1/2 flex flex-col mt-2 ">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Genero
-                            </label>
-                            <select name="genero" id="genero"
-                                class="border border-slate-600 bg-white p-2 rounded-md">
-                                <option value="">seleccione</option>
-                                <option value="M">MASCULINO</option>
-                                <option value="F">FEMENINO</option>
-                            </select>
-                        </div>
-                        <div class="basis-1/2">
-                            <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Fecha de nacimiento
-                            </label>
-                            <input type="date" name="fecha_nacimiento" id="fecha_nacimiento"
-                                class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </div>
-                    </div>
-                    <div class="mt-[-25px]">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Observaciones </label>
-                        <textarea name="observacion" id="observacion" class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </textarea>
-                    </div>
-                    <hr class="border-slate-200 border">
+
                     <!-- Botones -->
-                    <div class="flex justify-end space-x-2  ">
+                    <div class="flex justify-end space-x-2 mt-4">
                         <button type="button" id="closeModal"
-                            class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
+                            class="px-4 py-2 border border-gray-300 rounded-md w-1/4 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
                         <button type="submit" id="submitBtn"
-                            class="px-4 py-2 bg-blue-600 text-white w-1/2 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Guardar</button>
+                            class="px-4 py-2 bg-blue-600 text-white w-1/4 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Registrar
+                            asistencia</button>
                     </div>
                 </form>
             </div>
         </div>
-        <div id="modalListado"
-            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-            data-curso-id="{{ $curso->id }}">
+        <div id="modalListado" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+            style="display: none;" data-curso-id="{{ $curso->id }}">
             <!-- Contenedor del modal -->
             <div id="modalListadoContent" class="bg-white rounded-md shadow-lg w-[800px] p-4 transform transition-all">
 
@@ -322,6 +289,181 @@
     </div>
 
     <script>
+        document.getElementById('openasistenciaModal').addEventListener('click', function(e) {
+            e.preventDefault();
+            const modal = document.getElementById('modal');
+            modal.style.display = 'flex';
+
+            const modalContent = document.getElementById('modalContent');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            // Establecer fecha y hora actual por defecto
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            document.getElementById('fechaAsistencia').value = `${year}-${month}-${day}`;
+            document.getElementById('horaAsistencia').value = `${hours}:${minutes}`;
+
+            // Cargar estudiantes inscritos en el curso
+            cargarEstudiantesInscritosParaAsistencia();
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function() {
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modalContent');
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
+        });
+
+        // Cargar estudiantes inscritos para el formulario de asistencia
+        function cargarEstudiantesInscritosParaAsistencia() {
+            const idCurso = document.getElementById('inputIdCurso').value;
+
+            fetch('{{ route('asistencia.inscritos', ['idCurso' => $curso->id]) }}')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById('tablaAsistenciaBody');
+                    tbody.innerHTML = '';
+
+                    data.forEach((inscripcion, index) => {
+                        const estudiante = inscripcion.estudiante;
+                        const row = document.createElement('tr');
+                        row.className = 'border-t border-slate-400 hover:bg-slate-100';
+                        row.innerHTML = `
+                            <td class="py-2 px-2 text-center text-sm">${index + 1}</td>
+                            <td class="py-2 px-2 text-sm">${estudiante.id_estudiante}</td>
+                            <td class="py-2 px-2 text-sm">${estudiante.rude || '-'}</td>
+                            <td class="py-2 px-2 text-sm">${estudiante.appaterno} ${estudiante.apmaterno} ${estudiante.nombres}</td>
+                            <td class="py-2 px-2 text-center">
+                                <button type="button" class="btn-asistencia w-8 h-8 rounded-full border border-green-500 bg-green-100 flex items-center justify-center mx-auto cursor-pointer transition-colors" data-id="${estudiante.id_estudiante}" data-state="P">
+                                    <i class="fa-solid fa-p text-green-600"></i>
+                                </button>
+                            </td>
+                            <td class="py-2 px-2">
+                                <input type="text" name="observacion_${estudiante.id_estudiante}" placeholder="Obs."
+                                    class="w-full border border-slate-300 rounded p-1 text-sm">
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error cargando estudiantes:', error);
+                    alert('Error al cargar los estudiantes inscritos');
+                });
+        }
+
+        // Delegación de eventos para el botón de asistencia (Cambio de estado P -> F -> R -> P)
+        document.getElementById('tablaAsistenciaBody').addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-asistencia');
+            if (btn) {
+                const currentState = btn.getAttribute('data-state');
+                let newState, newClass, newIcon;
+
+                if (currentState === 'P') {
+                    newState = 'F';
+                    newClass =
+                        'btn-asistencia w-8 h-8 rounded-full border border-red-500 bg-red-100 flex items-center justify-center mx-auto cursor-pointer transition-colors';
+                    newIcon = '<i class="fa-solid fa-f text-red-600"></i>';
+                } else if (currentState === 'F') {
+                    newState = 'R';
+                    newClass =
+                        'btn-asistencia w-8 h-8 rounded-full border border-yellow-500 bg-yellow-100 flex items-center justify-center mx-auto cursor-pointer transition-colors';
+                    newIcon = '<i class="fa-solid fa-a text-yellow-600"></i>';
+                } else {
+                    newState = 'P';
+                    newClass =
+                        'btn-asistencia w-8 h-8 rounded-full border border-green-500 bg-green-100 flex items-center justify-center mx-auto cursor-pointer transition-colors';
+                    newIcon = '<i class="fa-solid fa-p text-green-600"></i>';
+                }
+
+                btn.setAttribute('data-state', newState);
+                btn.className = newClass;
+                btn.innerHTML = newIcon;
+            }
+        });
+
+        // Manejar envío del formulario de asistencia
+        document.getElementById('formularioAsistencia').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fecha = document.getElementById('fechaAsistencia').value;
+            const hora = document.getElementById('horaAsistencia').value;
+            const descripcion = document.getElementById('descripcionAsistencia').value;
+            const idCurso = document.getElementById('inputIdCurso').value;
+
+            if (!fecha || !hora) {
+                alert('Por favor completa los campos de fecha y hora');
+                return;
+            }
+
+            // Recopilar datos de asistencia
+            const detalles = [];
+            const filas = document.querySelectorAll('#tablaAsistenciaBody tr');
+
+            filas.forEach(fila => {
+                const btn = fila.querySelector('.btn-asistencia');
+                const textInput = fila.querySelector('input[type="text"]');
+
+                if (btn) {
+                    detalles.push({
+                        idEstudiante: btn.getAttribute('data-id'),
+                        estado: btn.getAttribute('data-state'),
+                        observacion: textInput ? textInput.value : ''
+                    });
+                }
+            });
+
+            if (detalles.length === 0) {
+                alert('Por favor selecciona al menos una asistencia');
+                return;
+            }
+
+            // Enviar datos al servidor
+            fetch('{{ route('asistencia.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        fecha: fecha,
+                        hora: hora,
+                        descripcion: descripcion,
+                        idCurso: idCurso,
+                        detalles: detalles
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Asistencia registrada correctamente');
+                        document.getElementById('modal').style.display = 'none';
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al registrar la asistencia');
+                });
+        });
+
         // Abrir modal de listado
         document.getElementById('openListadoEstudiantes').addEventListener('click', function(e) {
             e.preventDefault();

@@ -9,6 +9,7 @@ use App\Http\Controllers\GestionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\PermisoController;
+use App\Http\Controllers\AsistenciaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -73,6 +74,10 @@ Route::post('/profesor/cambiar-estado/{id}', [ProfesorController::class, 'cambia
 //-------------------- MODULO ASIGNACION --------------------//
 Route::post('/asignacion/store',[AsignacionController::class, 'store'])->name('asignacion.store');
 Route::delete('/asignacion/destroy/{id}', [AsignacionController::class, 'destroy'])->name('asignacion.destroy');
+
+//-------------------- MODULO ASISTENCIA --------------------//
+Route::post('/asistencia/store', [AsistenciaController::class, 'store'])->name('asistencia.store');
+Route::get('/api/inscritos-curso/{idCurso}', [AsistenciaController::class, 'obtenerInscritosPorCurso'])->name('asistencia.inscritos');
 
 //----------------------- MODULO ADMINISTRACIÓN: ROLES Y PERMISOS -----------------------//
 // ROLES - Solo administradores

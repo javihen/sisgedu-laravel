@@ -8,6 +8,7 @@ class Asistencia extends Model
 {
     protected $table = 'asistencias';
     protected $primaryKey = 'idAsistencia';
+    public $timestamps = true;
 
     protected $fillable = [
         'fecha',
@@ -41,8 +42,8 @@ class Asistencia extends Model
     }
 
     public function detalles()
-{
-    return $this->hasMany(DetalleAsistencia::class, 'idAsistencia');
+    {
+        return $this->hasMany(DetalleAsistencia::class, 'idAsistencia', 'idAsistencia');
+    }
 }
 
-}

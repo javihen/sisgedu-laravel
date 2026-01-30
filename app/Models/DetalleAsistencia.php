@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DetalleAsistencia extends Model
 {
-    //
+    protected $table = 'detalle_asistencias';
     protected $primaryKey = 'idDetalle';
 
     protected $fillable = [
@@ -18,11 +18,11 @@ class DetalleAsistencia extends Model
 
     public function asistencia()
     {
-        return $this->belongsTo(Asistencia::class, 'idAsistencia');
+        return $this->belongsTo(Asistencia::class, 'idAsistencia', 'idAsistencia');
     }
 
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class, 'id_estudiante');
+        return $this->belongsTo(Estudiante::class, 'idEstudiante', 'id_estudiante');
     }
 }

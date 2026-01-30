@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asistencia;
-use App\Http\Controllers\Controller;
+use App\Models\Asignacion;
+use App\Models\DetalleAsistencia;
+use App\Models\Inscripcion;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 
 class AsistenciaController extends Controller
@@ -33,6 +36,73 @@ class AsistenciaController extends Controller
      */
     public function store(Request $request)
     {
+        // Si es una solicitud JSON (desde el formulario de asistencia)
+        if ($request->isJson()) {
+            $request->validate([
+                'fecha' => 'required|date',
+                'hora' => 'required',
+                'idCurso' => 'required|string',
+                'detalles' => 'required|array',
+            ]);
+
+            try {
+                // Obtener el profesor desde la sesión (sistema de login personalizado)
+                $idProfesor = null;
+                if (session('usuario_id')) {
+                    $usuario = Usuario::find(session('usuario_id'));
+                    // Intentar obtener id_profesor (cubriendo posibles diferencias de mayúsculas/minúsculas en la propiedad)
+                    $idProfesor = $usuario ? ($usuario->id_profesor ?? $usuario->id_Profesor) : null;
+                }
+
+                if (!$idProfesor) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No se puede registrar: El usuario actual no tiene un perfil de profesor asociado.'
+                    ], 422);
+                }
+
+                // Obtener automáticamente la materia que dicta este profesor en este curso
+                $asignacion = Asignacion::where('idcurso', $request->idCurso)
+                    ->where('id_profesor', $idProfesor)
+                    ->where('id_gestion', session('gestion_activa'))
+                    ->first();
+                $idMateria = $asignacion ? $asignacion->id_materia : null;
+
+                // Crear registro de asistencia
+                $asistencia = Asistencia::create([
+                    'fecha' => $request->fecha,
+                    'hora' => $request->hora,
+                    'descripcion' => $request->descripcion ?? null,
+                    'idCurso' => $request->idCurso,
+                    'idProfesor' => $idProfesor,
+                    'idMateria' => $idMateria,
+                    'id_gestion' => session('gestion_activa') ?? null, // Usar la gestión de la sesión
+                ]);
+
+                // Crear detalles de asistencia
+                foreach ($request->detalles as $detalle) {
+                    DetalleAsistencia::create([
+                        'idAsistencia' => $asistencia->idAsistencia,
+                        'idEstudiante' => $detalle['idEstudiante'],
+                        'estado' => $detalle['estado'],
+                        'observacion' => $detalle['observacion'] ?? null,
+                    ]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Asistencia registrada correctamente',
+                    'asistencia_id' => $asistencia->idAsistencia
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error al registrar la asistencia: ' . $e->getMessage()
+                ], 500);
+            }
+        }
+
+        // Si es una solicitud tradicional
         $request->validate([
             'fecha' => 'required|date',
             'hora' => 'required',
@@ -77,5 +147,24 @@ class AsistenciaController extends Controller
     public function destroy(Asistencia $asistencia)
     {
         //
+    }
+
+    /**
+     * Obtener estudiantes inscritos en un curso
+     */
+    public function obtenerInscritosPorCurso($idCurso)
+    {
+        try {
+            $inscritos = Inscripcion::where('id_curso', $idCurso)
+                ->where('id_gestion', session('gestion_activa'))
+                ->with('estudiante')
+                ->get();
+
+            return response()->json($inscritos);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al obtener inscritos: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
