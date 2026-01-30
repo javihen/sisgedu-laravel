@@ -104,7 +104,7 @@
     </script>
 @endif
 <script>
-    console.log(@json(session()->all()));
+    //console.log(@json(session()->all()));
 </script>
 
 </html>

@@ -90,13 +90,13 @@
                 <div class="nav__list grid gap-y-10">
                     <div class="nav__items grid ">
 
-
-                        <a href="{{ route('panel') }}"
-                            class="items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white flex align-items-center ">
-                            <i class="fa-solid fa-school-flag text-[1.2rem] mr-2 nav__icon"></i>
-                            <span class="nav__name font-medium whitespace-nowrap  ml-1.5">Inicio</span>
-                        </a>
-
+                        @if (session()->has('usuario_permisos') && in_array('gestionar_roles', session('usuario_permisos')))
+                            <a href="{{ route('panel') }}"
+                                class="items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white flex align-items-center ">
+                                <i class="fa-solid fa-school-flag text-[1.2rem] mr-2 nav__icon"></i>
+                                <span class="nav__name font-medium whitespace-nowrap  ml-1.5">Inicio</span>
+                            </a>
+                        @endif
                         {{-- <div class="nav__dropdown">
                             <a href="#"
                                 class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
@@ -133,7 +133,7 @@
                         </div> --}}
                         {{-- PERFIL - Solo si tiene permiso --}}
                         @if (session()->has('usuario_permisos') && in_array('ver_perfil', session('usuario_permisos')))
-                            <a href="{{ route('curso.index') }}"
+                            <a href="{{ route('profesor.perfil', session('profesor_id')) }}"
                                 class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
                                 <i class="fa-solid fa-address-card nav__icon"></i>
                                 <span class="nav__name ">Perfil</span>
@@ -145,6 +145,14 @@
                                 class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
                                 <i class="fa-solid fa-chalkboard-user nav__icon"></i>
                                 <span class="nav__name ">Cursos</span>
+                            </a>
+                        @endif
+                        {{-- CURSOS - Solo si tiene permiso --}}
+                        @if (session()->has('usuario_permisos') && in_array('ver_cursos_asignados', session('usuario_permisos')))
+                            <a href="{{ route('curso.asignados', session('profesor_id')) }}"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <i class="fa-solid fa-chalkboard-user nav__icon"></i>
+                                <span class="nav__name ">Asignaturas</span>
                             </a>
                         @endif
 

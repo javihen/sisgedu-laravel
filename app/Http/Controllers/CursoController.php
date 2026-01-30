@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Curso;
+use App\Models\Asignacion;
+use App\Models\Inscripcion;
 use Illuminate\Support\Facades\DB;
 
 class CursoController extends Controller
@@ -167,5 +169,21 @@ class CursoController extends Controller
             ];
         });
         return response()->json($cursos);
+    }
+
+    public function CursosAsignados($id)
+    {
+        $asignaciones = Asignacion::select('asignaciones.*')
+            ->join('cursos', 'cursos.id', '=', 'asignaciones.idcurso')
+            ->join('materias', 'materias.id_materia', '=', 'asignaciones.id_materia') // opcional
+            ->where('asignaciones.id_profesor', $id)
+            ->where('id_gestion', session('gestion_activa'))
+            ->orderBy('cursos.nivel', 'asc')
+            ->orderBy('cursos.grado', 'asc')
+            ->orderBy('cursos.paralelo', 'asc')
+            ->with(['curso', 'materia']) // si quieres los modelos relacionados además
+            ->get();
+
+        return view('curso.curso-profesor', compact('asignaciones'));
     }
 }

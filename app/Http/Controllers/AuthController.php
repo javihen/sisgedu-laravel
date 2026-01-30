@@ -47,10 +47,21 @@ class AuthController extends Controller
         session(['gestion' => $gestion->anio]);
         session(['usuario_nombre' => $nombre]);
         session(['usuario_id' => $user->idUsuario]);
+        session(['profesor_id' => $user->id_Profesor]);
         session(['usuario_rol' => $user->idRol]); // para el middleware
         session(['usuario_permisos' => $permisos]); // permisos del usuario
 
+        if($user->idRol == 2){ // profesor
+            return redirect()->route('curso.asignados', $profesor->id_profesor);
+        }
+        if($user->idRol == 3){ // estudiante
+            return redirect()->route('estudiante.asistencia');
+        }
+        if ($user->idRol == 1) { // administrador
         return redirect()->route('panel');
+        }
+
+        //return redirect()->route('panel');
     }
 
     public function logout()

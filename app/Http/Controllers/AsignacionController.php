@@ -36,7 +36,7 @@ class AsignacionController extends Controller
                 'idcurso'=>'required',
                 'idmateria'=>'required',
             ]);
-            $asignacion=Asignacion::where('idcurso',$request->idcurso)->where('id_materia',$request->idmateria)->get();
+            $asignacion=Asignacion::where('idcurso',$request->idcurso)->where('id_materia',$request->idmateria)->where('id_gestion', session('gestion_activa'))->get();
             $gestion = Gestion::where('estado', 'A')->first();
             if($asignacion->isEmpty()){
             Asignacion::create([
