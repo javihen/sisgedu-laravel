@@ -26,7 +26,8 @@
                         <div class="w-full h-full bg-white/40"></div>
                     </div>
                     {{-- pie --}}
-                    <div class="w-full h-[36px] bg-white flex justify-end items-center px-5">
+                    <div onclick="openModal('{{ $asignacion->curso->id }}', '{{ $asignacion->curso->display_name }}')"
+                        class="w-full h-[36px] bg-white flex justify-end items-center px-5 cursor-pointer hover:bg-gray-100 transition-colors">
                         <p class="text-[9px] mr-2 text-gray-600">Mostrar</p>
                         <i class="fa-solid fa-expand text-gray-500"></i>
                     </div>
@@ -34,4 +35,69 @@
             @endforeach
         </div>
     </div>
+
+    {{-- Modal de Opciones --}}
+    <div id="modalOpciones"
+        class="fixed inset-0 z-50 hidden w-full h-full bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm">
+        <div class="bg-white rounded-lg shadow-xl w-80 md:w-96 transform transition-all scale-100 overflow-hidden">
+            {{-- Modal Header --}}
+            <div class="bg-[#38BC9B] px-4 py-3 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-white font-semibold text-sm">Opciones del Curso</h3>
+                <button onclick="closeModal()" class="text-white hover:text-gray-200 focus:outline-none">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            {{-- Modal Body --}}
+            <div class="p-6 flex flex-col gap-4">
+                <a id="linkAsistencia" href="#"
+                    class="flex items-center justify-center gap-3 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow transition-colors duration-200">
+                    <i class="fa-solid fa-clipboard-user text-lg"></i>
+                    <span class="font-medium">ASISTENCIA</span>
+                </a>
+
+                <a id="linkActividades" href="#"
+                    class="flex items-center justify-center gap-3 w-full py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-md shadow transition-colors duration-200">
+                    <i class="fa-solid fa-list-check text-lg"></i>
+                    <span class="font-medium">ACTIVIDADES</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(idCurso, nombreCurso) {
+            const modal = document.getElementById('modalOpciones');
+            const title = document.getElementById('modalTitle');
+            const linkAsistencia = document.getElementById('linkAsistencia');
+            const linkActividades = document.getElementById('linkActividades');
+
+            // Actualizar título
+            title.textContent = nombreCurso;
+
+            // Actualizar enlaces con el ID del curso
+            // Ajusta estas rutas según tu archivo routes/web.php
+            // Se asume que la ruta de asistencia es /estudiante/asistencia/{id} basado en EstudianteController
+            linkAsistencia.href = "{{ url('/estudiante/asistencia') }}/" + idCurso;
+
+            // Se asume una ruta para actividades
+            linkActividades.href = "{{ url('/curso/actividades') }}/" + idCurso;
+
+            // Mostrar modal
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modalOpciones');
+            modal.classList.add('hidden');
+        }
+
+        // Cerrar al hacer click fuera del modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalOpciones');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
 @endsection
