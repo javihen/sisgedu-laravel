@@ -310,7 +310,29 @@ class EstudianteController extends Controller
 
         $curso = Curso::where('id', $id)->first();
 
-        return view('curso.cursoxasistencia', compact('estudiantes', 'curso'));
+        // Obtener asistencias del curso (fechas) y sus detalles
+        $asistencias = \App\Models\Asistencia::with('detalles')
+            ->where('idCurso', $id)
+            ->where('id_gestion', session('gestion_activa'))
+            ->orderBy('fecha', 'asc')
+            ->get();
+
+        // Extraer fechas únicas en formato Y-m-d
+        $fechasAsistencias = $asistencias->pluck('fecha')->unique()->values()->toArray();
+
+        // Construir mapa: asistenciasMap[estudiante_id][fecha] = estado
+        $asistenciasMap = [];
+        foreach ($asistencias as $asi) {
+            foreach ($asi->detalles as $det) {
+                $fecha = $asi->fecha;
+                $idEst = $det->idEstudiante ?? $det->id_estudiante ?? null;
+                if ($idEst) {
+                    $asistenciasMap[$idEst][$fecha] = $det->estado;
+                }
+            }
+        }
+
+        return view('curso.cursoxasistencia', compact('estudiantes', 'curso', 'fechasAsistencias', 'asistenciasMap'));
     }
     /**
      * Genera un PDF con el listado de estudiantes de un curso

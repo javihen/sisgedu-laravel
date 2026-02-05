@@ -58,12 +58,13 @@
                         <td class="w-30">Estado</td>
                         <td class="p-0 w-0">
                             <div class="flex flex-col-reverse [writing-mode:vertical-rl] text-[10px]">
-                                <span class="my-2">02/02/2026</span>
-                                <span class="my-2">03/02/2026</span>
-                                <span class="my-2">02/02/2026</span>
-                                <span class="my-2">02/02/2026</span>
-                                <span class="my-2">02/02/2026</span>
-                                <span class="my-2">02/02/2026</span>
+                                @if (!empty($fechasAsistencias) && is_array($fechasAsistencias))
+                                    @foreach ($fechasAsistencias as $fecha)
+                                        <span class="my-2">{{ \Carbon\Carbon::parse($fecha)->format('d/m/Y') }}</span>
+                                    @endforeach
+                                @else
+                                    {{-- Si no hay fechas, mostrar vacío --}}
+                                @endif
                             </div>
                         </td>
                         <td>Opciones</td>
@@ -109,38 +110,57 @@
                                 @endif
                             </td>
                             <td class="flex flex-row gap-1 pt-3">
-                                <p
-                                    class="border inline-block hover:bg-green-500 hover:text-white hover:cursor-pointer border-green-500 text-green-500 m-auto w-fit h-fit px-2 py-1 text-xs  rounded  ">
-                                    P
-                                </p>
-                                <p
-                                    class="border inline-block hover:bg-red-500 hover:text-white hover:cursor-pointer border-red-500 text-red-500 m-auto w-fit h-fit px-2 py-1 text-xs  rounded  ">
-                                    F
-                                </p>
-                                <p
-                                    class="border inline-block border-blue-500 text-blue-500 m-auto w-fit h-fit px-2 py-1 text-xs  rounded  ">
-                                    L
-                                </p>
-                                <p
-                                    class="border inline-block border-amber-500 text-amber-500 m-auto w-fit h-fit px-2 py-1 text-xs  rounded  ">
-                                    A
-                                </p>
-                                <p
-                                    class="border inline-block border-red-500 text-red-500 m-auto w-fit h-fit px-2 py-1 text-xs  rounded  ">
-                                    F
-                                </p>
-                                <p
-                                    class="border inline-block border-red-500 text-red-500 m-auto w-fit h-fit px-2 py-1 text-xs  rounded  ">
-                                    F
-                                </p>
+                                @if (!empty($fechasAsistencias) && is_array($fechasAsistencias))
+                                    @foreach ($fechasAsistencias as $fecha)
+                                        @php
+                                            $estado = null;
+                                            if (
+                                                isset($asistenciasMap) &&
+                                                is_array($asistenciasMap) &&
+                                                isset($asistenciasMap[$estudiante->id_estudiante][$fecha])
+                                            ) {
+                                                $estado = $asistenciasMap[$estudiante->id_estudiante][$fecha];
+                                            }
+                                        @endphp
+
+                                        @if ($estado === 'P')
+                                            <p
+                                                class="border inline-block hover:bg-green-500 hover:text-white hover:cursor-pointer border-green-500 text-green-500 m-auto w-fit h-fit px-2 py-1 text-xs rounded">
+                                                P</p>
+                                        @elseif($estado === 'F')
+                                            <p
+                                                class="border inline-block hover:bg-red-500 hover:text-white hover:cursor-pointer border-red-500 text-red-500 m-auto w-fit h-fit px-2 py-1 text-xs rounded">
+                                                F</p>
+                                        @elseif($estado === 'L')
+                                            <p
+                                                class="border inline-block border-blue-500 text-blue-500 m-auto w-fit h-fit px-2 py-1 text-xs rounded">
+                                                L</p>
+                                        @elseif($estado === 'A')
+                                            <p
+                                                class="border inline-block border-amber-500 text-amber-500 m-auto w-fit h-fit px-2 py-1 text-xs rounded">
+                                                A</p>
+                                        @elseif(!is_null($estado))
+                                            <p
+                                                class="border inline-block text-gray-700 m-auto w-fit h-fit px-2 py-1 text-xs rounded">
+                                                {{ $estado }}</p>
+                                        @else
+                                            <p
+                                                class="border inline-block text-gray-400 m-auto w-fit h-fit px-2 py-1 text-xs rounded">
+                                                —</p>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <p class="px-2 text-sm text-gray-500">—</p>
+                                @endif
                             </td>
 
 
 
                             <td class="h-12">
                                 <a href="#"
-                                    class="bg-slate-700 text-white px-2 py-2 rounded hover:text-slate-700 hover:bg-white border-2 border-slate-700 "><i
-                                        class="fa-solid fa-list-check"></i></a>
+                                    onclick="openAsistenciaEstudianteModal({{ json_encode($estudiante) }}, {{ json_encode($asistenciasMap[$estudiante->id_estudiante] ?? []) }})"
+                                    class="bg-slate-700 text-white px-2 py-2 rounded hover:text-slate-700 hover:bg-white border-2 border-slate-700"
+                                    title="Ver asistencia del estudiante"><i class="fa-solid fa-list-check"></i></a>
                                 <a href="#"
                                     class="bg-slate-900 text-white px-2 py-2 rounded hover:text-slate-900 hover:bg-white border-2 border-slate-bg-slate-900 "><i
                                         class="fa-solid fa-book"></i> Calificaciones</a>
@@ -283,9 +303,56 @@
             </div>
         </div>
 
+        {{-- Modal para ver asistencia de un estudiante --}}
+        <div id="modalAsistenciaEstudiante"
+            class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+            style="display: none;">
+            <!-- Contenedor del modal -->
+            <div id="modalAsistenciaEstudianteContent"
+                class="bg-white rounded-md shadow-lg w-[700px] p-4 transform transition-all">
 
+                <!-- Título -->
+                <div class="flex justify-between items-center">
+                    <h2 class="text-md font-semibold" id="nombreEstudianteModal"></h2>
+                    <button type="button" id="closeModalAsistenciaEstudiante"
+                        class="text-xl text-gray-500 hover:text-gray-800">&times;</button>
+                </div>
+                <hr class="border border-slate-200 my-2">
 
+                <div class="flex flex-row gap-4">
+                    {{-- Columna de asistencias --}}
+                    <div class="w-2/3">
+                        <p class="font-semibold text-sm mb-2">Detalle de Asistencias</p>
+                        <div class="overflow-auto max-h-80 border border-slate-300 rounded-md">
+                            <table class="w-full text-sm">
+                                <thead class="bg-slate-200 text-slate-700 sticky top-0">
+                                    <tr>
+                                        <th class="py-2 px-2 text-left">Fecha</th>
+                                        <th class="py-2 px-2 text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaDetalleAsistenciaBody">
+                                    <!-- Se llenará con JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {{-- Columna de gráfico --}}
+                    <div class="w-1/3">
+                        <p class="font-semibold text-sm mb-2">Resumen Gráfico</p>
+                        <div id="graficoAsistencia" class="space-y-3 p-2 border rounded-md">
+                            <!-- Gráfico se generará aquí -->
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Botones -->
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button type="button" id="closeModalAsistenciaEstudianteBtn"
+                        class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cerrar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -691,5 +758,129 @@
                     alert('Error al actualizar el género');
                 });
         }
+
+        // --- Modal de Asistencia por Estudiante ---
+        function openAsistenciaEstudianteModal(estudiante, asistencias) {
+            const modal = document.getElementById('modalAsistenciaEstudiante');
+            if (!modal) return;
+
+            // Poblar datos
+            document.getElementById('nombreEstudianteModal').textContent =
+                `${estudiante.appaterno} ${estudiante.apmaterno} ${estudiante.nombres}`;
+
+            const tablaBody = document.getElementById('tablaDetalleAsistenciaBody');
+            tablaBody.innerHTML = '';
+
+            const graficoContainer = document.getElementById('graficoAsistencia');
+            graficoContainer.innerHTML = '';
+
+            const stats = {
+                'P': 0,
+                'F': 0,
+                'L': 0,
+                'A': 0,
+                'Total': 0
+            };
+
+            // Ordenar fechas de más reciente a más antigua
+            const fechasOrdenadas = Object.keys(asistencias).sort((a, b) => new Date(b) - new Date(a));
+
+            for (const fecha of fechasOrdenadas) {
+                const estado = asistencias[fecha];
+                if (stats.hasOwnProperty(estado)) {
+                    stats[estado]++;
+                }
+                stats.Total++;
+
+                let estadoHtml;
+                switch (estado) {
+                    case 'P':
+                        estadoHtml =
+                            '<span class="px-2 py-1 text-xs text-green-600 bg-green-100 border border-green-300 rounded-full">Presente</span>';
+                        break;
+                    case 'F':
+                        estadoHtml =
+                            '<span class="px-2 py-1 text-xs text-red-600 bg-red-100 border border-red-300 rounded-full">Falta</span>';
+                        break;
+                    case 'L':
+                        estadoHtml =
+                            '<span class="px-2 py-1 text-xs text-blue-600 bg-blue-100 border border-blue-300 rounded-full">Licencia</span>';
+                        break;
+                    case 'A':
+                        estadoHtml =
+                            '<span class="px-2 py-1 text-xs text-amber-600 bg-amber-100 border border-amber-300 rounded-full">Atraso</span>';
+                        break;
+                    default:
+                        estadoHtml =
+                            `<span class="px-2 py-1 text-xs text-gray-600 bg-gray-100 border border-gray-300 rounded-full">${estado}</span>`;
+                }
+
+                const row = `
+                    <tr class="border-t border-slate-200 hover:bg-slate-50">
+                        <td class="py-2 px-2">${new Date(fecha + 'T00:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })}</td>
+                        <td class="py-2 px-2 text-center">${estadoHtml}</td>
+                    </tr>
+                `;
+                tablaBody.innerHTML += row;
+            }
+
+            if (stats.Total === 0) {
+                tablaBody.innerHTML =
+                    '<tr><td colspan="2" class="text-center py-4 text-gray-500">No hay registros de asistencia.</td></tr>';
+                graficoContainer.innerHTML = '<p class="text-center text-sm text-gray-500">Sin datos para mostrar.</p>';
+            } else {
+                // Generar gráfico simple
+                const colores = {
+                    'P': 'bg-green-500',
+                    'F': 'bg-red-500',
+                    'L': 'bg-blue-500',
+                    'A': 'bg-amber-500'
+                };
+                const etiquetas = {
+                    'P': 'Presente',
+                    'F': 'Faltas',
+                    'L': 'Licencias',
+                    'A': 'Atrasos'
+                };
+
+                for (const estado in etiquetas) {
+                    const count = stats[estado] || 0;
+                    const percentage = stats.Total > 0 ? ((count / stats.Total) * 100).toFixed(1) : 0;
+                    const barraHtml = `
+                        <div class="w-full">
+                            <div class="flex justify-between text-xs font-medium text-gray-600">
+                                <span>${etiquetas[estado]} (${count})</span>
+                                <span>${percentage}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                                <div class="${colores[estado]} h-2.5 rounded-full" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    `;
+                    graficoContainer.innerHTML += barraHtml;
+                }
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeAsistenciaEstudianteModal() {
+            const modal = document.getElementById('modalAsistenciaEstudiante');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Eventos para cerrar el modal de asistencia de estudiante
+        document.getElementById('closeModalAsistenciaEstudiante').addEventListener('click', closeAsistenciaEstudianteModal);
+        document.getElementById('closeModalAsistenciaEstudianteBtn').addEventListener('click',
+            closeAsistenciaEstudianteModal);
+
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('modalAsistenciaEstudiante');
+            if (event.target == modal) {
+                closeAsistenciaEstudianteModal();
+            }
+        });
     </script>
 @endsection

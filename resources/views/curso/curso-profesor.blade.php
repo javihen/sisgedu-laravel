@@ -108,7 +108,7 @@
             // Actualizar enlaces con el ID del curso
             // Ajusta estas rutas según tu archivo routes/web.php
             // Se asume que la ruta de asistencia es /estudiante/asistencia/{id} basado en EstudianteController
-            linkAsistencia.href = "{{ url('/estudiante/asistencia') }}/" + idCurso;
+            linkAsistencia.href = "{{ url('/estudiante-asistencia') }}/" + idCurso;
 
             // Se asume una ruta para actividades
             linkActividades.href = "{{ url('/curso/actividades') }}/" + idCurso;
