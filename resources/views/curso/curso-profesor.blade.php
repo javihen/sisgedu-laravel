@@ -36,8 +36,38 @@
         </div>
     </div>
 
-    {{-- Modal de Opciones --}}
     <div id="modalOpciones"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
+        <!-- Contenedor del modal -->
+        <div id="modalContent" class="bg-white rounded-md shadow-lg w-fit p-4 transform transition-all scale-95 opacity-0">
+
+            <!-- Título -->
+            <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Actualizar datos</h2>
+            <hr class="border border-slate-200 mb-4">
+            <!-- Formulario -->
+            <div class="flex flex-row gap-4">
+                <a href="#" id="linkAsistencia"
+                    class="text-xs flex items-center justify-center gap-3 w-[150px] h-[150px] p-3 border-2 bg-red-600 hover:bg-transparent hover:border-red-600 hover:text-red-600 text-white rounded-md shadow transition-colors duration-200">
+                    <i class="fa-solid fa-clipboard-user text-lg"></i>
+                    <span class="font-medium">Asistencias</span>
+                </a>
+
+                <a href="#" id="linkActividades"
+                    class="text-xs flex items-center justify-center gap-3 w-[150px] h-[150px] p-3 border-2 bg-orange-500 hover:bg-transparent hover:border-orange-600 hover:text-orange-600 text-white rounded-md shadow transition-colors duration-200">
+                    <i class="fa-solid fa-list-check text-lg"></i>
+                    <span class="font-medium">Actividades</span>
+                </a>
+
+                <a href="#" id="linkActividades"
+                    class="text-xs flex items-center justify-center gap-3 w-[150px] h-[150px] p-3 border-2 bg-yellow-500 hover:bg-transparent hover:border-yellow-600 hover:text-yellow-600 text-white rounded-md shadow transition-colors duration-200">
+                    <i class="fa-solid fa-list-check text-lg"></i>
+                    <span class="font-medium">Otros ...</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {{-- Modal de Opciones --}}
+    <div id="modal"
         class="fixed inset-0 z-50 hidden w-full h-full bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm">
         <div class="bg-white rounded-lg shadow-xl w-80 md:w-96 transform transition-all scale-100 overflow-hidden">
             {{-- Modal Header --}}
@@ -85,6 +115,10 @@
 
             // Mostrar modal
             modal.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('modalContent').classList.remove('scale-95',
+                    'opacity-0');
+            }, 10);
         }
 
         function closeModal() {
