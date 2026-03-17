@@ -56,7 +56,7 @@
                             <td>{{ $estudiante->id_estudiante }}</td>
                             <td>{{ $estudiante->appaterno }}</td>
                             <td>{{ $estudiante->apmaterno }}</td>
-                            <td>{{ $estudiante->nombres }}</td>
+                            <td class="text-left">{{ $estudiante->nombres }}</td>
                             <td>{{ $estudiante->inscripciones->first()?->curso?->display_name ?? 'SIN CURSO' }}</td>
                             {{-- aqui debemos de buscar en la tabla inscripcion si esta registrado en algun curso sino solo colocamos SIN CURSO --}}
                             <td>

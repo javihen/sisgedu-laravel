@@ -162,7 +162,7 @@ class EstudianteController extends Controller
                 'apmaterno'    => $row[5] ?? null,
                 'genero' => $row[6] ?? null,
                 'estado' => 'E',
-                'fecha_nacimiento' => $row[7] ?? null,
+                'fecha_nacimiento' => $this->convertirFecha($row[7] ?? null),
             ]);
         }
         foreach ($data as $row) {
@@ -229,7 +229,7 @@ class EstudianteController extends Controller
                 'appaterno' => $toUpper($request->appaterno),
                 'apmaterno' => $toUpper($request->apmaterno),
                 'genero' => $toUpper($request->genero),
-                'fecha_nacimiento' => $toUpper($request->fecha_nacimiento),
+                'fecha_nacimiento' => $request->fecha_nacimiento,
                 'observacion' => $toUpper($request->observacion),
             ]);
 
@@ -449,5 +449,40 @@ class EstudianteController extends Controller
                 'message' => 'Error al actualizar el género: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Convierte una fecha en formato "10 de oct. de 2021" a "Y-m-d"
+     */
+    private function convertirFecha($fechaStr)
+    {
+        if (!$fechaStr) return null;
+
+        preg_match('/(\d+) de (\w+)\. de (\d+)/', $fechaStr, $matches);
+        if (count($matches) < 4) return null;
+
+        $dia = $matches[1];
+        $mesAbrev = $matches[2];
+        $anio = $matches[3];
+
+        $meses = [
+            'ene' => '01',
+            'feb' => '02',
+            'mar' => '03',
+            'abr' => '04',
+            'may' => '05',
+            'jun' => '06',
+            'jul' => '07',
+            'ago' => '08',
+            'sep' => '09',
+            'oct' => '10',
+            'nov' => '11',
+            'dic' => '12',
+        ];
+
+        $mes = $meses[$mesAbrev] ?? null;
+        if (!$mes) return null;
+
+        return $anio . '-' . $mes . '-' . str_pad($dia, 2, '0', STR_PAD_LEFT);
     }
 }
