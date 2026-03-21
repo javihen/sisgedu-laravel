@@ -207,4 +207,94 @@ class ProfesorController extends Controller
 
         return back()->with('success', 'Estado actualizado correctamente.');
     }
+
+    /**
+     * Import professors from file
+     */
+    public function import(Request $request)
+    {
+        // Validar que se recibió el campo excelData
+        if (!$request->has('excelData') || empty($request->excelData)) {
+            return back()->with('error', 'No se encontraron datos para importar.');
+        }
+
+        $data = json_decode($request->excelData, true);
+
+        // Verificar que json_decode fue exitoso y que es un array
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($data) || empty($data)) {
+            return back()->with('error', 'Los datos del archivo no son válidos. Verifique el formato del archivo Excel.');
+        }
+
+        // Verificar que tenga al menos una fila (encabezados)
+        if (count($data) < 2) {
+            return back()->with('error', 'El archivo debe contener al menos los encabezados y una fila de datos.');
+        }
+
+        // Primera fila es encabezado
+        $headers = $data[0];
+        unset($data[0]); // quitar encabezados
+
+        $importedCount = 0;
+
+        foreach ($data as $row) {
+            // Verificar que la fila sea un array válido
+            if (!is_array($row)) {
+                continue; // saltar filas inválidas
+            }
+
+            // Verificar que tenga al menos las columnas mínimas requeridas
+            if (count($row) < 5) {
+                continue; // evitar filas con muy pocos datos
+            }
+
+            // Verificar que al menos tenga CI y nombres (datos esenciales)
+            if (empty($row[1]) || empty($row[4])) {
+                continue; // saltar filas sin CI o nombres
+            }
+
+            try {
+                Profesor::create([
+                    'rda' => $row[0] ?? null,
+                    'ci' => $row[1] ?? null,
+                    'appaterno' => $row[2] ?? null,
+                    'apmaterno' => $row[3] ?? null,
+                    'nombres' => $row[4] ?? null,
+                    'genero' => $row[5] ?? null,
+                    'fechaNac' => $this->convertirFecha($row[6] ?? null),
+                    'nivelFormacion' => $row[7] ?? null,
+                    'fuenteFinan' => $row[8] ?? null,
+                    'observacion' => $row[9] ?? null,
+                    'estado' => 'I',
+                ]);
+                $importedCount++;
+            } catch (\Exception $e) {
+                // Log del error pero continuar con las demás filas
+                \Log::error('Error importando profesor: ' . $e->getMessage(), ['row' => $row]);
+                continue;
+            }
+        }
+
+        if ($importedCount > 0) {
+            return redirect()->route('profesor.index')->with('success', "Se importaron {$importedCount} profesores correctamente.");
+        } else {
+            return back()->with('error', 'No se pudo importar ningún profesor. Verifique que los datos sean correctos.');
+        }
+    }
+
+    private function convertirFecha($fecha)
+    {
+        if (!$fecha) return null;
+
+        // Si es un número serial de Excel
+        if (is_numeric($fecha)) {
+            return \Carbon\Carbon::createFromTimestamp(($fecha - 25569) * 86400)->format('Y-m-d');
+        }
+
+        // Intentar parsear como fecha
+        try {
+            return \Carbon\Carbon::parse($fecha)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }

@@ -1,18 +1,27 @@
 @extends('layouts.navhorizontal')
 
 @section('content')
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 
     <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
         <div class=" ml-3 w-full mt-2 h-12 px-4 bg-[#38BC9B] rounded-md flex justify-between items-center ">
             <p class="text-white text-sm ">Listado de Docentes</p>
-            <a href="#" id="openModal"
-                class=" mx-2 text-center flex items-center justify-center
-           text-white bg-blue-600  border border-transparent shadow-xs
-           font-medium leading-5 rounded text-xs px-3 py-1.5 my-2 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
-                <i class='bx bx-plus mr-2'></i>Nuevo Docente
-            </a>
+            <div class="flex flex-row">
+                <a href="#" id="openModal"
+                    class=" mx-2 text-center flex items-center justify-center
+                text-white bg-blue-600  border border-transparent shadow-xs
+                font-medium leading-5 rounded text-xs px-3 py-1.5 my-2 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
+                    <i class='bx bx-plus mr-2'></i>Nuevo Docente
+                </a>
+                <a href="#" id="openModalSubir"
+                    class=" mx-2 text-center flex items-center justify-center
+            text-white bg-green-600  border border-transparent shadow-xs
+            font-medium leading-5 rounded text-xs px-3 py-1.5 my-2 hover:text-black hover:bg-white hover:border-green-800 transition">
+                    <i class='bx bx-cloud-upload mr-2'></i>Subir Profesores
+                </a>
+            </div>
         </div>
         <div class="">
 
@@ -202,7 +211,7 @@
                             <select name="fuenteFinan" id="fuenteFinan"
                                 class="border border-slate-600 bg-white p-2 rounded-md">
                                 <option value="PPFF">PADRES DE FAMILIA</option>
-                                <option value="TGE">TESORO GENERAL DEL ESTADO</option>
+                                <option value="TGN">TESORO GENERAL DE LA NACION</option>
                                 <option value="RP">RECURSOS PROPIOS</option>
                             </select>
                         </div>
@@ -226,6 +235,65 @@
                 </form>
             </div>
         </div>
+
+        <div id="modalSubir"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+
+            <div id="modalSubirContent" class="bg-white rounded-md shadow-lg w-[600px] p-5 transform transition-all">
+
+                <h2 class="text-lg font-semibold text-gray-700 flex items-center">
+                    <i class='bx bx-cloud-upload mr-2'></i> IMPORTACIÓN DE PROFESORES
+                </h2>
+
+                <p class="text-xs text-gray-500 mt-1">
+                    El archivo debe contener las columnas en este orden exacto:<br>
+                    <strong>RDA | CI | Ap. Paterno | Ap. Materno | Nombres | Género | Fecha Nacimiento | Nivel Formación |
+                        Fuente Financiamiento | Observación</strong><br>
+                    La primera fila debe contener los encabezados.
+                </p>
+
+                <hr class="border-slate-200 mt-3">
+
+                <form class="space-y-4" id="formularioImportar" action="{{ route('profesor.import') }}" method="post">
+                    @csrf
+
+                    <!-- ÁREA DE SUBIDA -->
+                    <div id="dropZone"
+                        class="border border-gray-400 border-dashed rounded-md mt-4 p-10 grid place-items-center cursor-pointer transition">
+
+                        <img src="./images/excel.png" class="w-14 opacity-70" alt="">
+
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            Arrastra o selecciona un archivo Excel o CSV
+                        </p>
+                        <input type="hidden" id="excelData" name="excelData" required>
+                        <input type="file" id="archivo" name="archivo" accept=".xlsx,.xls,.csv" class="hidden">
+                    </div>
+
+                    <!-- TABLA DE PREVISUALIZACIÓN -->
+                    <div id="previewContainer" class="hidden mt-4 max-h-64 overflow-auto border rounded">
+                        <table class="w-full text-xs text-left border-collapse" id="previewTable"></table>
+                    </div>
+
+                    <hr class="border-slate-200 mt-4">
+
+                    <!-- BOTONES -->
+                    <div class="flex justify-end space-x-2 mt-4">
+                        <button type="button" id="closeModalSubir"
+                            class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white transition">
+                            Cancelar
+                        </button>
+
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 text-white w-1/2 rounded-lg hover:bg-green-700 transition">
+                            Importar
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
@@ -313,6 +381,168 @@
                         });
                     });
                 });
+
+                // Modal de subida
+                const modalSubir = document.getElementById('modalSubir');
+                const openModalSubirBtn = document.getElementById('openModalSubir');
+                const closeModalSubirBtn = document.getElementById('closeModalSubir');
+                const dropZone = document.getElementById('dropZone');
+                const fileInput = document.getElementById('archivo');
+                const previewContainer = document.getElementById('previewContainer');
+                const previewTable = document.getElementById('previewTable');
+
+                openModalSubirBtn.addEventListener('click', () => {
+                    modalSubir.classList.remove('hidden');
+                    setTimeout(() => {
+                        document.getElementById('modalSubirContent').classList.remove('scale-95',
+                            'opacity-0');
+                    }, 10);
+                });
+
+                closeModalSubirBtn.addEventListener('click', () => {
+                    document.getElementById('modalSubirContent').classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        modalSubir.classList.add('hidden');
+                        previewContainer.classList.add('hidden');
+                        dropZone.classList.remove('hidden');
+                        fileInput.value = '';
+                    }, 200);
+                });
+
+                /* ----------------------------------------------------------
+                   PROCESAR ARCHIVO EXCEL
+                ---------------------------------------------------------- */
+                function procesarArchivo(file) {
+                    try {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            try {
+                                const data = new Uint8Array(e.target.result);
+                                const workbook = XLSX.read(data, {
+                                    type: 'array'
+                                });
+
+                                // Tomar la primera hoja
+                                const nombreHoja = workbook.SheetNames[0];
+                                const hoja = workbook.Sheets[nombreHoja];
+
+                                // Convertir a array de arrays
+                                const filas = [];
+                                const rango = XLSX.utils.decode_range(hoja['!ref']);
+                                for (let R = rango.s.r; R <= rango.e.r; R++) {
+                                    const fila = [];
+                                    for (let C = rango.s.c; C <= rango.e.c; C++) {
+                                        const celdaRef = XLSX.utils.encode_cell({
+                                            r: R,
+                                            c: C
+                                        });
+                                        const celda = hoja[celdaRef];
+                                        fila.push(celda ? celda.v : null);
+                                    }
+
+                                    // Verificar si la fila tiene al menos un valor no nulo
+                                    const filaNoVacia = fila.some(celda => celda !== null && celda !== "");
+                                    if (filaNoVacia) {
+                                        filas.push(fila);
+                                    }
+                                }
+                                mostrarTabla(filas);
+                                document.getElementById("excelData").value = JSON.stringify(filas);
+                            } catch (error) {
+                                console.error('Error procesando archivo:', error);
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: 'Error al procesar el archivo. Verifique que sea un archivo Excel válido.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Entendido'
+                                });
+                            }
+                        };
+
+                        reader.readAsArrayBuffer(file);
+                    } catch (error) {
+                        console.error('Error leyendo archivo:', error);
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Error al leer el archivo.',
+                            icon: 'error',
+                            confirmButtonText: 'Entendido'
+                        });
+                    }
+                }
+
+                /* ----------------------------------------------------------
+                   MOSTRAR TABLA
+                ---------------------------------------------------------- */
+                function mostrarTabla(data) {
+                    previewTable.innerHTML = "";
+                    previewContainer.classList.remove("hidden");
+                    dropZone.classList.add("hidden");
+
+                    data.forEach((row, index) => {
+                        let tr = document.createElement("tr");
+
+                        row.forEach(cell => {
+                            let td = document.createElement(index === 0 ? "th" : "td");
+                            td.textContent = cell === undefined ? " " : cell;
+                            td.className =
+                                "border px-2 py-1 text-[11px] " +
+                                (index === 0 ? "bg-gray-100 font-semibold" : "");
+                            tr.appendChild(td);
+                        });
+
+                        previewTable.appendChild(tr);
+                    });
+
+                    // 👉 Enviar datos al back-end
+                    document.getElementById("excelData").value = JSON.stringify(data);
+                }
+
+                /* ----------------------------------------------------------
+                   DRAG & DROP
+                ---------------------------------------------------------- */
+                dropZone.addEventListener("click", () => fileInput.click());
+
+                dropZone.addEventListener("dragover", e => {
+                    e.preventDefault();
+                    dropZone.classList.add("bg-emerald-50", "border-emerald-500");
+                });
+
+                dropZone.addEventListener("dragleave", () => {
+                    dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
+                });
+
+                dropZone.addEventListener("drop", e => {
+                    e.preventDefault();
+                    dropZone.classList.remove("bg-emerald-50", "border-emerald-500");
+
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        fileInput.files = e.dataTransfer.files;
+                        procesarArchivo(file);
+                    }
+                });
+
+                fileInput.addEventListener("change", () => {
+                    const file = fileInput.files[0];
+                    if (file) procesarArchivo(file);
+                });
+
+                // Validación del formulario antes de enviar
+                document.getElementById('formularioImportar').addEventListener('submit', function(e) {
+                    const excelData = document.getElementById('excelData').value;
+                    if (!excelData || excelData === '[]') {
+                        e.preventDefault();
+                        Swal.fire({
+                            title: 'Archivo requerido',
+                            text: 'Por favor, selecciona y procesa un archivo Excel antes de importar.',
+                            icon: 'warning',
+                            confirmButtonText: 'Entendido'
+                        });
+                        return false;
+                    }
+                });
+
             });
         </script>
     </div>

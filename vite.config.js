@@ -25,18 +25,18 @@ export default defineConfig({
         cssCodeSplit: true,
         sourcemap: false,
         minify: 'esbuild',
-        manifest: true,
+        manifest: 'manifest.json',
         rollupOptions: {
             output: {
                 manualChunks: {
-                    vendor: ['axios', 'sweetalert2', 'chart.js'],
+                    vendor: ['axios', 'sweetalert2'],
                 },
             },
         },
         chunkSizeWarningLimit: 600,
     },
     optimizeDeps: {
-        include: ['axios', 'sweetalert2', 'chart.js'],
+        include: ['axios', 'sweetalert2'],
     },
 });
 
