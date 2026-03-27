@@ -289,73 +289,65 @@
                 });
             });
             /* Graficas  */
-            const ctx = document.getElementById('myChart');
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['1ro', '2do', '3ro', '4to', '5to', '6to'],
-                    datasets: [{
-                        label: 'Cursos',
-                        data: [12, 19, 3, 5, 2, 3],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+            document.addEventListener('DOMContentLoaded', () => {
+                const ctx = document.getElementById('myChart');
+                if (ctx && typeof Chart !== 'undefined') {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['1ro', '2do', '3ro', '4to', '5to', '6to'],
+                            datasets: [{
+                                label: 'Cursos',
+                                data: [12, 19, 3, 5, 2, 3],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
                         }
-                    }
+                    });
                 }
-            });
-            /* Grafica nro 2 */
-            const ctx2 = document.getElementById('myChart2');
 
+                const ctx2 = document.getElementById('myChart2');
+                if (ctx2 && typeof Chart !== 'undefined') {
+                    const data = {
+                        labels: [
+                            'LEN', 'CS', 'LEX', 'TEC', 'LEN', 'CS', 'LEX', 'TEC', 'LEN', 'CS', 'LEX', 'TEC',
+                        ],
+                        datasets: [{
+                            type: 'bar',
+                            label: '',
+                            data: [10, 70, 30, 40, 10, 70, 30, 40, 10, 70, 30, 40],
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                        }, {
+                            type: 'line',
+                            label: '',
+                            data: [50, 50, 50, 50],
+                            fill: false,
+                            borderColor: 'rgb(54, 162, 235)'
+                        }]
+                    };
 
-            const data = {
-                labels: [
-                    'LEN',
-                    'CS',
-                    'LEX',
-                    'TEC',
-                    'LEN',
-                    'CS',
-                    'LEX',
-                    'TEC',
-                    'LEN',
-                    'CS',
-                    'LEX',
-                    'TEC',
-
-                ],
-                datasets: [{
-                    type: 'bar',
-                    label: '',
-                    data: [10, 70, 30, 40, 10, 70, 30, 40, 10, 70, 30, 40],
-                    borderColor: 'rgb(255, 99, 132)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)'
-                }, {
-                    type: 'line',
-                    label: '',
-                    data: [50, 50, 50, 50],
-                    fill: false,
-                    borderColor: 'rgb(54, 162, 235)'
-                }]
-            };
-            new Chart(ctx2, {
-                type: 'scatter',
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                    new Chart(ctx2, {
+                        type: 'scatter',
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
                         }
-                    }
+                    });
                 }
             });
         </script>
