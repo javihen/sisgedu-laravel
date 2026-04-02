@@ -116,4 +116,16 @@ class MateriaController extends Controller
         });
         return response()->json($materias);
     }
+
+    public function asignacion(){
+        /* $cursos = DB::table('cursos')
+            ->join('materias', 'cursos.id_materia', '=', 'materias.id_materia')
+            ->join('asignacions', 'cursos.id', '=', 'asignacions.id_curso')
+            ->join('profesors', 'asignacions.id_profesor', '=', 'profesors.id')
+            ->select('cursos.id as id_curso', 'materias.area as materia', 'profesors.nombres as profesor')
+            ->where('cursos.id_gestion', session('gestion_activa'))
+            ->get(); */
+
+        return view('materia.asignacion');
+    }
 }

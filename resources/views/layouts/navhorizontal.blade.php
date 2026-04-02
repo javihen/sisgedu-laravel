@@ -195,7 +195,8 @@
                                     <div class="nav__dropdown-content">
                                         <a href="{{ route('curso.index') }}" class="nav__dropdown-item">Listado</a>
                                         <a href="{{ route('materia.index') }}" class="nav__dropdown-item">Materias</a>
-                                        <a href="#" class="nav__dropdown-item">Asignacion</a>
+                                        <a href="{{ route('materia.asignacion') }}"
+                                            class="nav__dropdown-item">Asignacion</a>
                                         <a href="#" class="nav__dropdown-item">Carga horaria</a>
                                     </div>
                                 </div>

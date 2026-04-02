@@ -290,7 +290,8 @@ class EstudianteController extends Controller
                 ->with('estudiante')
                 ->where('id_gestion', session('gestion_activa'))
                 ->get()
-                ->pluck('estudiante');
+                ->pluck('estudiante')
+                ->sortBy('nombres');
 
         $curso = Curso::where('id', $id)->first();
 
