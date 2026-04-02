@@ -40,7 +40,7 @@
 
         {{-- Contenedores por nivel de cursos --}}
         <div class="mx-3 mt-2 flex justify-center flex-row gap-1 w-full h-[calc(100vh-150px)]">
-            <div class=" w-3/4 bg-white h-[calc(100%-2rem)] rounded border border-gray-400 p-4">
+            <div class=" w-3/4 bg-white h-fit rounded border border-gray-400 p-4">
                 <div>
                     <form class="space-y-4" id="formularioAsignacion" action="{{ route('asignacion.store') }}"
                         method="post" class="form-adicionar">
@@ -119,9 +119,9 @@
                                 <thead
                                     class="text-xs text-body bg-neutral-secondary-medium border-b border-default-medium bg-slate-600 text-white">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 font-medium">Curso</th>
-                                        <th scope="col" class="px-6 py-3 font-medium">Docente asignado</th>
-                                        <th scope="col" class="px-6 py-3 font-medium">Estado</th>
+                                        <th scope="col" class="px-6 py-3 font-medium w-1/4">Curso</th>
+                                        <th scope="col" class="px-6 py-3 font-medium w-[20px]">Estado</th>
+                                        <th scope="col" class="px-6 py-3 font-medium">Profesor asignado</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -134,13 +134,25 @@
                                             </tr>
                                         @else
                                             @foreach ($cursos as $curso)
-                                                <tr class="bg-neutral-primary-soft border-default border-b">
-                                                    <td class="px-6 py-1 font-medium text-heading whitespace-nowrap">
+                                                <tr
+                                                    class="bg-neutral-primary-soft border-default border-b hover:bg-neutral-secondary-medium">
+                                                    <td class="px-6 py-2 font-medium text-heading whitespace-nowrap">
                                                         {{ $curso->display_name }}
+                                                    </td>
+                                                    <td
+                                                        class="px-6 py-1 font-medium text-heading whitespace-nowrap text-center">
+                                                        @if ($selectedMateria)
+                                                            <input type="checkbox" name="idcurso[]"
+                                                                value="{{ $curso->id }}"
+                                                                class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium">
+                                                        @else
+                                                            -
+                                                        @endif
                                                     </td>
                                                     <td class="px-6 py-1 font-medium text-heading whitespace-nowrap">
                                                         @if ($selectedMateria)
                                                             @if ($curso->asignaciones->isNotEmpty())
+                                                                PROF.
                                                                 {{ $curso->asignaciones->first()->profesor->nombres }}
                                                                 {{ $curso->asignaciones->first()->profesor->appaterno }}
                                                                 {{ $curso->asignaciones->first()->profesor->apmaterno }}
@@ -151,14 +163,7 @@
                                                             Seleccione una materia
                                                         @endif
                                                     </td>
-                                                    <td class="px-6 py-1 font-medium text-heading whitespace-nowrap">
-                                                        @if ($selectedMateria)
-                                                            <input type="checkbox" name="idcurso[]"
-                                                                value="{{ $curso->id }}">
-                                                        @else
-                                                            -
-                                                        @endif
-                                                    </td>
+
                                                 </tr>
                                             @endforeach
                                         @endif
