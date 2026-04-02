@@ -26,17 +26,164 @@
                 </div>
             </div>
         @endif
+        @if ($errors->any())
+            <div class="w-full ml-4 mr-4 mt-2">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        @endif
 
         {{-- Contenedores por nivel de cursos --}}
-        <div class=" mx-3 mt-2 flex flex-row gap-1 w-full h-[calc(100vh-150px)]">
-            <div
-                class="relative w-3/4 bg-white h-[calc(100%-2rem)] rounded border border-gray-400 overflow-y-scroll scrollbar-thin">
+        <div class="mx-3 mt-2 flex justify-center flex-row gap-1 w-full h-[calc(100vh-150px)]">
+            <div class=" w-3/4 bg-white h-[calc(100%-2rem)] rounded border border-gray-400 p-4">
+                <div>
+                    <form class="space-y-4" id="formularioAsignacion" action="{{ route('asignacion.store') }}"
+                        method="post" class="form-adicionar">
+                        @csrf
+                        <input type="hidden" name="_method" id="formMethod" value="POST">
+                        <div class="flex flex-row mt-4 gap-1">
+                            <div class="basis-1/2 flex flex-col mt-2 ">
+                                <label for="id_profesor"
+                                    class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Seleccione
+                                    al docente
+                                </label>
+                                <select name="id_profesor" id="id_profesor"
+                                    class="border border-slate-600 bg-white p-2 rounded-md">
+                                    <option value="">-- Seleccione al docente --</option>
+                                    @foreach ($profesores as $profesor)
+                                        <option value="{{ $profesor->id_profesor }}">
+                                            {{ $profesor->nombres }} {{ $profesor->appaterno }} {{ $profesor->apmaterno }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="basis-1/2 flex flex-col mt-2 ">
+                                <label for="nivel" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Nivel del
+                                    curso
+                                </label>
+                                <select name="nivel" id="nivel"
+                                    class="border border-slate-600 bg-white p-2 rounded-md" onchange="filterCursos()">
+                                    <option value="">-- Seleccione un nivel --</option>
+                                    @foreach ($niveles as $key => $valor)
+                                        <option value="{{ $key }}"
+                                            @if ($selectedNivel == (string) $key) selected @endif>{{ $valor }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
 
+                        <div class="flex flex-row gap-1 mt-[-25px]">
+                            <div class="basis-1/2 flex flex-col mt-2 ">
+                                <label for="id_materia" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Area /
+                                    Materia
+                                </label>
+                                <select name="id_materia" id="id_materia"
+                                    class="border border-slate-600 bg-white p-2 rounded-md" onchange="filterCursos()">
+                                    <option value="">-- Seleccione una materia --</option>
+                                    @foreach ($materias as $materia)
+                                        <option value="{{ $materia->id_materia }}"
+                                            @if ($selectedMateria == $materia->id_materia) selected @endif>
+                                            {{ $materia->area }} ({{ $materia->abreviatura }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="basis-1/2 flex flex-col mt-2 ">
+                                <label for="turno" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Turno
+                                </label>
+                                <select name="turno" id="turno"
+                                    class="border border-slate-600 bg-white p-2 rounded-md" onchange="filterCursos()">
+                                    <option value="">-- Seleccione un turno --</option>
+                                    @foreach ($turnos as $key => $valor)
+                                        <option value="{{ $key }}"
+                                            @if ($selectedTurno == $key) selected @endif>{{ $valor }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-2  ">
+                            <button type="submit" id="submitBtn"
+                                class="px-4 py-2 bg-blue-800 text-white w-1/3 rounded-md hover:bg-blue-700 transition hover:cursor-pointer text-sm">Registrar
+                                asignacion</button>
+                        </div>
+
+                        <div
+                            class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
+                            <table class="w-full text-xs text-left rtl:text-right text-body">
+                                <thead
+                                    class="text-xs text-body bg-neutral-secondary-medium border-b border-default-medium bg-slate-600 text-white">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 font-medium">Curso</th>
+                                        <th scope="col" class="px-6 py-3 font-medium">Docente asignado</th>
+                                        <th scope="col" class="px-6 py-3 font-medium">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if ($selectedTurno !== '' && $selectedNivel !== '')
+                                        @if ($cursos->isEmpty())
+                                            <tr class="bg-white">
+                                                <td colspan="3" class="px-6 py-4 text-center text-gray-600">No hay cursos
+                                                    para el turno y
+                                                    nivel seleccionados.</td>
+                                            </tr>
+                                        @else
+                                            @foreach ($cursos as $curso)
+                                                <tr class="bg-neutral-primary-soft border-default border-b">
+                                                    <td class="px-6 py-1 font-medium text-heading whitespace-nowrap">
+                                                        {{ $curso->display_name }}
+                                                    </td>
+                                                    <td class="px-6 py-1 font-medium text-heading whitespace-nowrap">
+                                                        @if ($selectedMateria)
+                                                            @if ($curso->asignaciones->isNotEmpty())
+                                                                {{ $curso->asignaciones->first()->profesor->nombres }}
+                                                                {{ $curso->asignaciones->first()->profesor->appaterno }}
+                                                                {{ $curso->asignaciones->first()->profesor->apmaterno }}
+                                                            @else
+                                                                No asignado
+                                                            @endif
+                                                        @else
+                                                            Seleccione una materia
+                                                        @endif
+                                                    </td>
+                                                    <td class="px-6 py-1 font-medium text-heading whitespace-nowrap">
+                                                        @if ($selectedMateria)
+                                                            <input type="checkbox" name="idcurso[]"
+                                                                value="{{ $curso->id }}">
+                                                        @else
+                                                            -
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                    @else
+                                        <tr class="bg-white">
+                                            <td colspan="3" class="px-6 py-4 text-center text-gray-600">Elige turno y
+                                                nivel
+                                                para ver cursos.
+                                            </td>
+                                        </tr>
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+                </div>
 
             </div>
         </div>
+        </form>
 
-        {{-- <div id="modal"
+        {{-- overflow-y-scroll scrollbar-thin
+         <div id="modal"
             class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
             <!-- Contenedor del modal -->
             <div id="modalContent"
@@ -110,4 +257,34 @@
         </div> --}}
 
     </div>
+
+    <script>
+        function filterCursos() {
+            const turno = document.getElementById('turno').value;
+            const nivel = document.getElementById('nivel').value;
+            const materia = document.getElementById('id_materia').value;
+            const params = new URLSearchParams(window.location.search);
+
+            if (turno) {
+                params.set('turno', turno);
+            } else {
+                params.delete('turno');
+            }
+
+            if (nivel) {
+                params.set('nivel', nivel);
+            } else {
+                params.delete('nivel');
+            }
+
+            if (materia) {
+                params.set('id_materia', materia);
+            } else {
+                params.delete('id_materia');
+            }
+
+            const target = '{{ route('materia.asignacion') }}';
+            window.location.href = target + (params.toString().length ? '?' + params.toString() : '');
+        }
+    </script>
 @endsection

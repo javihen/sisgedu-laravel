@@ -29,50 +29,67 @@ class AsignacionController extends Controller
      */
     public function store(Request $request)
     {
+        // Validación manual para redirigir de vuelta con errores
+        if (!$request->id_profesor) {
+            return redirect()->back()->withErrors(['id_profesor' => 'Debe seleccionar un docente.']);
+        }
+        if (!$request->id_materia) {
+            return redirect()->back()->withErrors(['id_materia' => 'Debe seleccionar una materia.']);
+        }
+        if (empty($request->idcurso)) {
+            return redirect()->back()->withErrors(['idcurso' => 'Debe seleccionar al menos un curso.']);
+        }
+
         try{
-            $id = $request->idprofesor;
-            $request->validate([
-                'idprofesor'=>'required',
-                'idcurso'=>'required',
-                'idmateria'=>'required',
-            ]);
-            $asignacion=Asignacion::where('idcurso',$request->idcurso)->where('id_materia',$request->idmateria)->where('id_gestion', session('gestion_activa'))->get();
-            $gestion = Gestion::where('estado', 'A')->first();
-            if($asignacion->isEmpty()){
-            Asignacion::create([
-                'id_profesor'=>$request->idprofesor,
-                'idcurso'=>$request->idcurso,
-                'id_materia'=>$request->idmateria,
-                'id_gestion'=> session('gestion_activa'),
-            ]);
+            $id = $request->id_profesor;
+
+            $asignacionesCreadas = 0;
+            $errores = [];
+
+            foreach($request->idcurso as $idcurso) {
+                $asignacionExistente = Asignacion::where('idcurso', $idcurso)
+                    ->where('id_materia', $request->id_materia)
+                    ->where('id_gestion', session('gestion_activa'))
+                    ->first();
+
+                if(!$asignacionExistente) {
+                    Asignacion::create([
+                        'id_profesor'=>$request->id_profesor,
+                        'idcurso'=>$idcurso,
+                        'id_materia'=>$request->id_materia,
+                        'id_gestion'=> session('gestion_activa'),
+                    ]);
+                    $asignacionesCreadas++;
+                } else {
+                    $profesorAsignado = $asignacionExistente->profesor->nombres . ' ' . $asignacionExistente->profesor->appaterno . ' ' . $asignacionExistente->profesor->apmaterno;
+                    $errores[] = 'La materia ya está asignada al profesor ' . $profesorAsignado . ' en el curso ' . $asignacionExistente->curso->display_name;
+                }
+            }
+
+            if($asignacionesCreadas > 0) {
                 session()->flash('swal', [
                     'icon' => 'success',
                     'title' => 'Bien hecho!',
-                    'text' => 'Se registro la asignacion con exito.'
+                    'text' => 'Se registraron ' . $asignacionesCreadas . ' asignaciones con éxito.' . (!empty($errores) ? ' Algunas ya existían.' : '')
                 ]);
-            return redirect()->route('profesor.perfil', $id);
-            }else{
-                $profesorAsignado = Asignacion::with('profesor')
-                ->where('idcurso', $request->idcurso)
-                ->where('id_materia', $request->idmateria)
-                ->first();
+            }
 
-                $nombreProfesor = $profesorAsignado->profesor->nombres . ' ' . $profesorAsignado->profesor->appaterno.' '.$profesorAsignado->profesor->apmaterno;
+            if(!empty($errores)) {
                 session()->flash('swal', [
                     'icon' => 'info',
-                    'title' => 'La materia ya fue asignada!',
-                    'text' => 'El profesor(a) '.$nombreProfesor.' da la clase de '.$profesorAsignado->materia->area.' .'
+                    'title' => 'Información',
+                    'text' => implode(' ', $errores)
                 ]);
-                    return redirect()->route('profesor.perfil', $id);
-
             }
+
+            return redirect()->route('profesor.perfil', $id);
         }catch (\Exception $e) {
             session()->flash('swal', [
                 'icon' => 'error',
-                'title' => 'DiScUlPa!',
-                'text' => 'Tuvimos un problema al registrar la asignacion.'
+                'title' => 'Disculpa!',
+                'text' => 'Tuvimos un problema al registrar las asignaciones.'
             ]);
-            return redirect()->route('profesor.perfil', $id)->with('error', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
