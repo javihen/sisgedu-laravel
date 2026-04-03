@@ -47,21 +47,7 @@
                         @csrf
                         <input type="hidden" name="_method" id="formMethod" value="POST">
                         <div class="flex flex-row mt-4 gap-1">
-                            <div class="basis-1/2 flex flex-col mt-2 ">
-                                <label for="id_profesor"
-                                    class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Seleccione
-                                    al docente
-                                </label>
-                                <select name="id_profesor" id="id_profesor"
-                                    class="border border-slate-600 bg-white p-2 rounded-md">
-                                    <option value="">-- Seleccione al docente --</option>
-                                    @foreach ($profesores as $profesor)
-                                        <option value="{{ $profesor->id_profesor }}">
-                                            {{ $profesor->nombres }} {{ $profesor->appaterno }} {{ $profesor->apmaterno }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+
                             <div class="basis-1/2 flex flex-col mt-2 ">
                                 <label for="nivel" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Nivel del
                                     curso
@@ -75,15 +61,15 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
 
-                        <div class="flex flex-row gap-1 mt-[-25px]">
-                            <div class="basis-1/2 flex flex-col mt-2 ">
+                            <div class="basis-1/2 flex flex-col "
+                                style="display: {{ $selectedTurno !== '' ? 'block' : 'none' }};">
                                 <label for="id_materia" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Area /
                                     Materia
                                 </label>
                                 <select name="id_materia" id="id_materia"
-                                    class="border border-slate-600 bg-white p-2 rounded-md" onchange="filterCursos()">
+                                    class="border border-slate-600 bg-white p-2 rounded-md w-full"
+                                    onchange="filterCursos()">
                                     <option value="">-- Seleccione una materia --</option>
                                     @foreach ($materias as $materia)
                                         <option value="{{ $materia->id_materia }}"
@@ -93,15 +79,40 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="basis-1/2 flex flex-col mt-2 ">
+
+                        </div>
+                        <div class="flex flex-row gap-1 mt-[-20px] ">
+
+                            <div class="basis-1/2 flex flex-col"
+                                style="display: {{ $selectedNivel !== '' ? 'block' : 'none' }};">
                                 <label for="turno" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Turno
                                 </label>
                                 <select name="turno" id="turno"
-                                    class="border border-slate-600 bg-white p-2 rounded-md" onchange="filterCursos()">
+                                    class="border border-slate-600 bg-white p-2 rounded-md w-full"
+                                    onchange="filterCursos()">
                                     <option value="">-- Seleccione un turno --</option>
                                     @foreach ($turnos as $key => $valor)
                                         <option value="{{ $key }}"
                                             @if ($selectedTurno == $key) selected @endif>{{ $valor }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="basis-1/2 flex flex-col"
+                                style="display: {{ $selectedMateria !== '' ? 'block' : 'none' }};">
+                                <label for="id_profesor"
+                                    class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Seleccione
+                                    al docente
+                                </label>
+                                <select name="id_profesor" id="id_profesor"
+                                    class="border border-slate-600 bg-white p-2 rounded-md w-full">
+                                    <option value="">-- Seleccione al docente --</option>
+                                    @foreach ($profesores as $profesor)
+                                        <option value="{{ $profesor->id_profesor }}"
+                                            @if (old('id_profesor') == $profesor->id_profesor) selected @endif>
+                                            {{ $profesor->appaterno }} {{ $profesor->apmaterno }}
+                                            {{ $profesor->nombres }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -113,8 +124,8 @@
                                 asignacion</button>
                         </div>
 
-                        <div
-                            class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
+                        <div class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default"
+                            style="display: {{ $selectedMateria !== '' ? 'block' : 'none' }};">
                             <table class="w-full text-xs text-left rtl:text-right text-body">
                                 <thead
                                     class="text-xs text-body bg-neutral-secondary-medium border-b border-default-medium bg-slate-600 text-white">
@@ -125,59 +136,49 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if ($selectedTurno !== '' && $selectedNivel !== '')
-                                        @if ($cursos->isEmpty())
-                                            <tr class="bg-white">
-                                                <td colspan="3" class="px-6 py-4 text-center text-gray-600">No hay cursos
-                                                    para el turno y
-                                                    nivel seleccionados.</td>
-                                            </tr>
-                                        @else
-                                            @foreach ($cursos as $curso)
-                                                <tr
-                                                    class="bg-neutral-primary-soft border-default border-b hover:bg-neutral-secondary-medium">
-                                                    <td class="px-6 py-2 font-medium text-heading whitespace-nowrap">
-                                                        {{ $curso->display_name }}
-                                                    </td>
-                                                    <td
-                                                        class="px-6 py-1 font-medium text-heading whitespace-nowrap text-center">
-                                                        @if ($selectedMateria)
-                                                            <input type="checkbox" name="idcurso[]"
-                                                                value="{{ $curso->id }}"
-                                                                class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium">
-                                                        @else
-                                                            -
-                                                        @endif
-                                                    </td>
-                                                    <td class="px-6 py-1 font-medium text-heading whitespace-nowrap">
-                                                        @if ($selectedMateria)
-                                                            @if ($curso->asignaciones->isNotEmpty())
-                                                                PROF.
-                                                                {{ $curso->asignaciones->first()->profesor->nombres }}
-                                                                {{ $curso->asignaciones->first()->profesor->appaterno }}
-                                                                {{ $curso->asignaciones->first()->profesor->apmaterno }}
-                                                            @else
-                                                                No asignado
-                                                            @endif
-                                                        @else
-                                                            Seleccione una materia
-                                                        @endif
-                                                    </td>
-
-                                                </tr>
-                                            @endforeach
-                                        @endif
-                                    @else
+                                    @if ($cursos->isEmpty())
                                         <tr class="bg-white">
-                                            <td colspan="3" class="px-6 py-4 text-center text-gray-600">Elige turno y
-                                                nivel
-                                                para ver cursos.
-                                            </td>
+                                            <td colspan="3" class="px-6 py-4 text-center text-gray-600">No hay cursos
+                                                para el turno y
+                                                nivel seleccionados.</td>
                                         </tr>
+                                    @else
+                                        @foreach ($cursos as $curso)
+                                            <tr
+                                                class="bg-neutral-primary-soft border-default border-b hover:bg-neutral-secondary-medium">
+                                                <td class="px-6 py-2 font-medium text-heading whitespace-nowrap">
+                                                    {{ $curso->display_name }}
+                                                </td>
+                                                <td
+                                                    class="px-6 py-1 font-medium text-heading whitespace-nowrap text-center">
+                                                    <input type="checkbox" name="idcurso[]" value="{{ $curso->id }}"
+                                                        class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium">
+                                                </td>
+                                                <td class="px-6 py-1 font-medium text-heading whitespace-nowrap">
+                                                    @if ($curso->asignaciones->isNotEmpty())
+                                                        PROF.
+                                                        {{ $curso->asignaciones->first()->profesor->nombres }}
+                                                        {{ $curso->asignaciones->first()->profesor->appaterno }}
+                                                        {{ $curso->asignaciones->first()->profesor->apmaterno }}
+                                                    @else
+                                                        No asignado
+                                                    @endif
+                                                </td>
+
+                                            </tr>
+                                        @endforeach
                                     @endif
                                 </tbody>
                             </table>
                         </div>
+
+                        @if ($selectedTurno !== '' && $selectedNivel !== '' && $selectedMateria === '')
+                            <div class="mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                                Seleccione una materia para ver la tabla de cursos y asignar profesor.
+                            </div>
+                        @elseif($selectedNivel === '')
+                            <div class="mt-4 text-gray-600">Seleccione un nivel para continuar.</div>
+                        @endif
 
 
 

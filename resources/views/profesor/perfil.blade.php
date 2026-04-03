@@ -250,7 +250,7 @@
                     <form class="space-y-4" id="formularioEstudiante" method="post"
                         action="{{ route('asignacion.store') }}">
                         @csrf
-                        <input type="hidden" name="idprofesor" value="{{ $profesor->id_profesor }}">
+                        <input type="hidden" name="id_profesor" value="{{ $profesor->id_profesor }}">
                         <div class="mt-[-25px]">
                             <label for="rude" class="text-xs relative top-0 left-3 bg-white px-2">Profesor (a)
                             </label>
@@ -276,8 +276,8 @@
                             <div class="basis-1/2 flex flex-col mt-2 ">
                                 <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Curso
                                 </label>
-                                <select name="idcurso" id="curso"
-                                    class="border border-slate-600 bg-white p-2 rounded-md" disabled>
+                                <select name="idcurso[]" id="curso"
+                                    class="border border-slate-600 bg-white p-2 rounded-md" multiple disabled>
                                     <option value="">Seleccione</option>
                                 </select>
                             </div>
@@ -286,7 +286,7 @@
                             <div class="basis-1/2 flex flex-col mt-2 ">
                                 <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Area
                                 </label>
-                                <select name="idmateria" id="materia"
+                                <select name="id_materia" id="materia"
                                     class="border border-slate-600 bg-white p-2 rounded-md" disabled>
                                     <option value="">seleccione</option>
                                 </select>
@@ -384,9 +384,10 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.length > 0) {
-                                    cursoSelect.innerHTML = data.map(curso =>
-                                        `<option value="${curso.idCurso}">${curso.nombreCurso}</option>`
-                                    ).join('');
+                                    cursoSelect.innerHTML = '<option value="">Seleccione</option>' + data
+                                        .map(curso =>
+                                            `<option value="${curso.idCurso}">${curso.nombreCurso}</option>`
+                                        ).join('');
                                 } else {
                                     cursoSelect.innerHTML =
                                         '<option value="">No hay cursos para este nivel</option>';
@@ -397,9 +398,10 @@
                             });
                         fetch(`/materia/nivel/${nivelId}`).then(response => response.json()).then(data => {
                             if (data.length > 0) {
-                                materiaSelect.innerHTML = data.map(materia =>
-                                    `<option value="${materia.idMateria}">${materia.nombreMateria}</option>`
-                                ).join('');
+                                materiaSelect.innerHTML = '<option value="">seleccione</option>' + data
+                                    .map(materia =>
+                                        `<option value="${materia.idMateria}">${materia.nombreMateria}</option>`
+                                    ).join('');
                             } else {
                                 materiaSelect.innerHTML =
                                     '<option value="">No hay materias para este nivel</option>';

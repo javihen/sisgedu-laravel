@@ -43,10 +43,13 @@ class AsignacionController extends Controller
         try{
             $id = $request->id_profesor;
 
+            // Asegurar que idcurso sea siempre un array
+            $cursos = is_array($request->idcurso) ? $request->idcurso : [$request->idcurso];
+
             $asignacionesCreadas = 0;
             $errores = [];
 
-            foreach($request->idcurso as $idcurso) {
+            foreach($cursos as $idcurso) {
                 $asignacionExistente = Asignacion::where('idcurso', $idcurso)
                     ->where('id_materia', $request->id_materia)
                     ->where('id_gestion', session('gestion_activa'))

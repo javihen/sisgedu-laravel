@@ -111,7 +111,7 @@ class MateriaController extends Controller
     }
 
     public function getMateriasByNivel($nivel){
-        $materias = Materia::where('nivel',$nivel)->get()->map(function($materia){
+        $materias = Materia::where('nivel', (int)$nivel)->orderBy('orden', 'asc')->get()->map(function($materia){
             return [
                 'idMateria' => $materia->id_materia,
                 'nombreMateria' => $materia->area,
@@ -123,7 +123,14 @@ class MateriaController extends Controller
     public function asignacion(Request $request){
         // Datos base para el formulario
         $profesores = Profesor::all();
-        $materias = Materia::all();
+
+        $selectedTurno = $request->query('turno', '');
+        $selectedNivel = $request->query('nivel', '');
+        $selectedMateria = $request->query('id_materia', '');
+
+        $materias = Materia::when($selectedNivel !== '', function ($query) use ($selectedNivel) {
+            return $query->where('nivel', $selectedNivel);
+        })->orderBy('orden', 'asc')->get();
 
         $niveles = [
             0 => 'Inicial En familia comunitaria',
@@ -139,6 +146,16 @@ class MateriaController extends Controller
         $selectedTurno = $request->query('turno', '');
         $selectedNivel = $request->query('nivel', '');
         $selectedMateria = $request->query('id_materia', '');
+
+        if ($selectedNivel !== '' && $selectedMateria !== '') {
+            $existeMateria = Materia::where('id_materia', $selectedMateria)
+                ->where('nivel', $selectedNivel)
+                ->exists();
+
+            if (! $existeMateria) {
+                $selectedMateria = '';
+            }
+        }
 
         $cursos = collect();
 
