@@ -237,7 +237,7 @@ class AsignacionController extends Controller
             return [
                 'materia' => $asignacion->materia->area,
                 'horas' => $asignacion->materia->horas ?? '',
-                'profesor' => $asignacion->profesor->nombres . ' ' . $asignacion->profesor->appaterno . ' ' . $asignacion->profesor->apmaterno
+                'profesor' => 'PROF. '.$asignacion->profesor->nombres . ' ' . $asignacion->profesor->appaterno . ' ' . $asignacion->profesor->apmaterno
             ];
         });
 

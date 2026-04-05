@@ -80,7 +80,8 @@
                                                                 <li
                                                                     class="relative pl-5  mb-3 before:absolute before:left-0 before:top-0 before:bottom-0 before:h-auto before:border-l before:border-gray-300 after:absolute after:left-0 after:top-2.5 after:w-2.5 after:h-px after:bg-gray-300">
                                                                     <span
-                                                                        class="border text-xs border-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-center">
+                                                                        class="border text-xs border-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-center cursor-pointer hover:bg-slate-100 transition"
+                                                                        onclick="selectParalelo('{{ $turno }}', '{{ $nivel }}', '{{ $grado }}', '{{ $paralelo }}')">
                                                                         {{ $paralelo }}
                                                                     </span>
                                                                 </li>
@@ -99,24 +100,71 @@
             </div>
 
             <script>
-                document.querySelectorAll('.toggle').forEach(el => {
-                    el.addEventListener('click', () => {
-                        const nested = el.nextElementSibling;
-                        if (nested) {
-                            nested.classList.toggle('hidden');
-                            el.classList.toggle('expanded');
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.querySelectorAll('.toggle').forEach(el => {
+                        el.addEventListener('click', () => {
+                            const nested = el.nextElementSibling;
+                            if (nested) {
+                                nested.classList.toggle('hidden');
+                                el.classList.toggle('expanded');
 
-                            // Cambiar flecha
-                            if (el.classList.contains('expanded')) {
-                                el.classList.remove("before:content-['▶']");
-                                el.classList.add("before:content-['▼']");
-                            } else {
-                                el.classList.remove("before:content-['▼']");
-                                el.classList.add("before:content-['▶']");
+                                // Cambiar flecha
+                                if (el.classList.contains('expanded')) {
+                                    el.classList.remove("before:content-['▶']");
+                                    el.classList.add("before:content-['▼']");
+                                } else {
+                                    el.classList.remove("before:content-['▼']");
+                                    el.classList.add("before:content-['▶']");
+                                }
                             }
-                        }
+                        });
                     });
                 });
+
+                function selectParalelo(turno, nivel, grado, paralelo) {
+                    const tbody = document.getElementById('asignaciones-tbody');
+                    tbody.innerHTML =
+                        '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-gray-600">Cargando...</td></tr>';
+
+                    const url = '{{ route('asignacion.getAsignacionesCurso') }}' +
+                        '?turno=' + encodeURIComponent(turno) +
+                        '&nivel=' + encodeURIComponent(nivel) +
+                        '&grado=' + encodeURIComponent(grado) +
+                        '&paralelo=' + encodeURIComponent(paralelo);
+
+                    fetch(url)
+                        .then(response => response.json().then(data => ({
+                            status: response.status,
+                            data
+                        })))
+                        .then(({
+                            status,
+                            data
+                        }) => {
+                            if (status !== 200 || data.error) {
+                                tbody.innerHTML =
+                                    '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-red-600">No se encontró el curso o no hay asignaciones.</td></tr>';
+                                return;
+                            }
+                            if (!Array.isArray(data) || data.length === 0) {
+                                tbody.innerHTML =
+                                    '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-gray-600">No hay asignaciones para este curso.</td></tr>';
+                                return;
+                            }
+                            tbody.innerHTML = data.map(asignacion => `
+                                <tr class="bg-white border-b border-gray-400 hover:bg-gray-300">
+                                    <td class="px-6 py-3 font-bold w-1/3">${asignacion.materia}</td>
+                                    <td class="px-6 py-3">${asignacion.horas}</td>
+                                    <td class="px-6 py-3"><p class="border font-bold text-white bg-green-600 rounded-md p-1 w-fit">${asignacion.profesor}</p></td>
+                                </tr>
+                            `).join('');
+                        })
+                        .catch(error => {
+                            console.error('Error al cargar asignaciones:', error);
+                            tbody.innerHTML =
+                                '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-red-600">Error al cargar las asignaciones.</td></tr>';
+                        });
+                }
             </script>
 
             <div class=" w-3/4 bg-white h-fit rounded border border-gray-400 p-4">
@@ -125,114 +173,69 @@
                         method="post" class="form-adicionar">
                         @csrf
                         <input type="hidden" name="_method" id="formMethod" value="POST">
-                        <div class="flex flex-row mt-4 gap-1">
 
-                            <div class="basis-1/2 flex flex-col mt-2 ">
-                                <label for="nivel" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Nivel del
-                                    curso
-                                </label>
 
-                            </div>
 
-                            <div class="basis-1/2 flex flex-col " style="">
-                                <label for="id_materia" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Area /
-                                    Materia
-                                </label>
+                        <div
+                            class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
+                            <table class="w-full text-xs text-left rtl:text-right text-body">
+                                <thead
+                                    class="text-xs text-body bg-neutral-secondary-medium border-b border-default-medium bg-slate-600 text-white">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 font-medium w-1/4">Materia</th>
+                                        <th scope="col" class="px-6 py-3 font-medium w-[20px]">Horas</th>
+                                        <th scope="col" class="px-6 py-3 font-medium">Profesor asignado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="asignaciones-tbody">
 
-                            </div>
 
-                        </div>
-                        <div class="flex flex-row gap-1 mt-[-20px] ">
-
-                            <div class="basis-1/2 flex flex-col" style="">
-                                <label for="turno" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Turno
-                                </label>
-
-                            </div>
-
-                            <div class="basis-1/2 flex flex-col" style="">
-                                <label for="id_profesor"
-                                    class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Seleccione
-                                    al docente
-                                </label>
-                                <select name="id_profesor" id="id_profesor"
-                                    class="border border-slate-600 bg-white p-2 rounded-md w-full">
-                                    <option value="">-- Seleccione al docente --</option>
-
-                                </select>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
 
-                        <div class="flex justify-end space-x-2  ">
-                            <button type="submit" id="submitBtn"
-                                class="px-4 py-2 bg-blue-800 text-white w-1/3 rounded-md hover:bg-blue-700 transition hover:cursor-pointer text-sm">Registrar
-                                asignacion</button>
-                        </div>
 
-                        <div class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default" ">
-                                                                                                                                                                                                                                                                    <table class="w-full text-xs text-left rtl:text-right text-body">
-                                                                                                                                                                                                                                                                        <thead
-                                                                                                                                                                                                                                                                            class="text-xs text-body bg-neutral-secondary-medium border-b border-default-medium bg-slate-600 text-white">
-                                                                                                                                                                                                                                                                            <tr>
-                                                                                                                                                                                                                                                                                <th scope="col" class="px-6 py-3 font-medium w-1/4">Curso</th>
-                                                                                                                                                                                                                                                                                <th scope="col" class="px-6 py-3 font-medium w-[20px]">Estado</th>
-                                                                                                                                                                                                                                                                                <th scope="col" class="px-6 py-3 font-medium">Profesor asignado</th>
-                                                                                                                                                                                                                                                                            </tr>
-                                                                                                                                                                                                                                                                        </thead>
-                                                                                                                                                                                                                                                                        <tbody>
-
-                                                                                                                                                                                                                                                                <tr class="bg-white">
-                                                                                                                                                                                                                                                                    <td colspan="3" class="px-6 py-4 text-center text-gray-600">No hay cursos
-                                                                                                                                                                                                                                                                        para el turno y
-                                                                                                                                                                                                                                                                        nivel seleccionados.</td>
-                                                                                                                                                                                                                                                                </tr>
-
-                                                                                                                                                                                                                                                                </tbody>
-                                                                                                                                                                                                                                                                </table>
-                                                                                                                                                                                                                                                            </div>
-
-
-                                                                                                                                                                                                                                                            <div class="mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-                                                                                                                                                                                                                                                                Seleccione una materia para ver la tabla de cursos y asignar profesor.
-                                                                                                                                                                                                                                                            </div>
+                        {{-- <div class="mt-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+                            Seleccione una materia para ver la tabla de cursos y asignar profesor.
+                        </div> --}}
 
 
 
 
-                                                                                                                                                                                                                                                        </div>
+                </div>
 
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                            </form>
-                                                                                                                                                                                                                                        </div>
+            </div>
+        </div>
+        </form>
+    </div>
 
-                                                                                                                                                                                                                                        <script>
-                                                                                                                                                                                                                                            function filterCursos() {
-                                                                                                                                                                                                                                                const turno = document.getElementById('turno').value;
-                                                                                                                                                                                                                                                const nivel = document.getElementById('nivel').value;
-                                                                                                                                                                                                                                                const materia = document.getElementById('id_materia').value;
-                                                                                                                                                                                                                                                const params = new URLSearchParams(window.location.search);
+    <script>
+        function filterCursos() {
+            const turno = document.getElementById('turno').value;
+            const nivel = document.getElementById('nivel').value;
+            const materia = document.getElementById('id_materia').value;
+            const params = new URLSearchParams(window.location.search);
 
-                                                                                                                                                                                                                                                if (turno) {
-                                                                                                                                                                                                                                                    params.set('turno', turno);
-                                                                                                                                                                                                                                                } else {
-                                                                                                                                                                                                                                                    params.delete('turno');
-                                                                                                                                                                                                                                                }
+            if (turno) {
+                params.set('turno', turno);
+            } else {
+                params.delete('turno');
+            }
 
-                                                                                                                                                                                                                                                if (nivel) {
-                                                                                                                                                                                                                                                    params.set('nivel', nivel);
-                                                                                                                                                                                                                                                } else {
-                                                                                                                                                                                                                                                    params.delete('nivel');
-                                                                                                                                                                                                                                                }
+            if (nivel) {
+                params.set('nivel', nivel);
+            } else {
+                params.delete('nivel');
+            }
 
-                                                                                                                                                                                                                                                if (materia) {
-                                                                                                                                                                                                                                                    params.set('id_materia', materia);
-                                                                                                                                                                                                                                                } else {
-                                                                                                                                                                                                                                                    params.delete('id_materia');
-                                                                                                                                                                                                                                                }
+            if (materia) {
+                params.set('id_materia', materia);
+            } else {
+                params.delete('id_materia');
+            }
 
-                                                                                                                                                                                                                                                const target = '{{ route('materia.asignacion') }}';
-                                                                                                                                                                                                                                                window.location.href = target + (params.toString().length ? '?' + params.toString() : '');
-                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                        </script>
-    @endsection
+            const target = '{{ route('materia.asignacion') }}';
+            window.location.href = target + (params.toString().length ? '?' + params.toString() : '');
+        }
+    </script>
+@endsection

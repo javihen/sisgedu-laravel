@@ -78,6 +78,7 @@ Route::post('/profesor/import', [ProfesorController::class, 'import'])->name('pr
 Route::post('/asignacion/store',[AsignacionController::class, 'store'])->name('asignacion.store');
 Route::delete('/asignacion/destroy/{id}', [AsignacionController::class, 'destroy'])->name('asignacion.destroy');
 Route::get('/asignacion/curso', [AsignacionController::class, 'asignacionxcurso'])->name('asignacion.curso');
+Route::get('/api/asignacion/curso', [AsignacionController::class, 'getAsignacionesCurso'])->name('asignacion.getAsignacionesCurso');
 //-------------------- MODULO ASISTENCIA --------------------//
 Route::post('/asistencia/store', [AsistenciaController::class, 'store'])->name('asistencia.store');
 Route::get('/api/inscritos-curso/{idCurso}', [AsistenciaController::class, 'obtenerInscritosPorCurso'])->name('asistencia.inscritos');
