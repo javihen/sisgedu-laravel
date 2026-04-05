@@ -172,7 +172,8 @@
                                 <div class="nav__dropdown-collapse mt-1">
                                     <div class="nav__dropdown-content">
                                         <a href="{{ route('profesor.index') }}" class="nav__dropdown-item">Listado</a>
-                                        <a href="#" class="nav__dropdown-item">Asignacion</a>
+                                        <a href="{{ route('asignacion.curso') }}"
+                                            class="nav__dropdown-item">Asignacion</a>
                                         <a href="#" class="nav__dropdown-item">Carga horaria</a>
                                     </div>
                                 </div>

@@ -176,6 +176,19 @@ class MateriaController extends Controller
             }
         }
 
-        return view('materia.asignacion', compact('profesores', 'materias', 'niveles', 'turnos', 'cursos', 'selectedTurno', 'selectedNivel', 'selectedMateria'));
+        // Datos para el árbol dinámico
+        $cursosTree = Curso::all()->groupBy(['turno', 'nivel', 'grado', 'paralelo']);
+
+        return view('curso.asignacionxcurso', [
+            'profesores' => $profesores,
+            'materias' => $materias,
+            'niveles' => $niveles,
+            'turnos' => $turnos,
+            'cursos' => $cursos,
+            'selectedTurno' => $selectedTurno,
+            'selectedNivel' => $selectedNivel,
+            'selectedMateria' => $selectedMateria,
+            'cursosTree' => $cursosTree
+        ]);
     }
 }

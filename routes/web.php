@@ -38,6 +38,7 @@ Route::get('/curso/{turno}/{nivel}', [CursoController::class, 'getCursos'])->nam
 // API: todos los cursos (para poblar selects)
 Route::get('/cursos', [CursoController::class, 'listAll'])->name('curso.listAll');
 Route::get('/cursos/nivel/{nivel}', [CursoController::class, 'getCursosNivel'])->name('curso.getCursosNivel');
+
 //-------------- MODULO ESTUDIANTE --------------------//
 
 Route::get('/estudiante', [EstudianteController::class, 'index'])->name('estudiante.index');
@@ -76,7 +77,7 @@ Route::post('/profesor/import', [ProfesorController::class, 'import'])->name('pr
 //-------------------- MODULO ASIGNACION --------------------//
 Route::post('/asignacion/store',[AsignacionController::class, 'store'])->name('asignacion.store');
 Route::delete('/asignacion/destroy/{id}', [AsignacionController::class, 'destroy'])->name('asignacion.destroy');
-
+Route::get('/asignacion/curso', [AsignacionController::class, 'asignacionxcurso'])->name('asignacion.curso');
 //-------------------- MODULO ASISTENCIA --------------------//
 Route::post('/asistencia/store', [AsistenciaController::class, 'store'])->name('asistencia.store');
 Route::get('/api/inscritos-curso/{idCurso}', [AsistenciaController::class, 'obtenerInscritosPorCurso'])->name('asistencia.inscritos');

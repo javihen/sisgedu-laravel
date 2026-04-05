@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asignacion;
+use App\Models\Curso;
 use App\Models\Gestion;
+use App\Models\Materia;
+use App\Models\Profesor;
 use Illuminate\Http\Request;
 
 class AsignacionController extends Controller
@@ -143,5 +146,69 @@ class AsignacionController extends Controller
             ]);
             return redirect()->route('profesor.perfil', $id)->with('error', 'Error al eliminar el profesor: ' . $e->getMessage());
         }
+    }
+
+    public function asignacionxcurso(Request $request)
+    {
+        $profesores = Profesor::where('estado', 1)->get();
+        $materias = Materia::all();
+        $niveles = [
+            0 => 'Inicial en Familia Comunitaria',
+            1 => 'Primaria Comunitaria Vocacional',
+            2 => 'Secundaria Comunitaria Productiva',
+        ];
+
+        $turnos = [
+            'M' => 'Mañana',
+            'T' => 'Tarde'
+        ];
+
+        $selectedTurno = $request->query('turno', '');
+        $selectedNivel = $request->query('nivel', '');
+        $selectedMateria = $request->query('id_materia', '');
+
+        if ($selectedNivel !== '' && $selectedMateria !== '') {
+            $existeMateria = Materia::where('id_materia', $selectedMateria)
+                ->where('nivel', $selectedNivel)
+                ->exists();
+
+            if (! $existeMateria) {
+                $selectedMateria = '';
+            }
+        }
+
+        $cursos = collect();
+
+        if ($selectedTurno !== '' && $selectedNivel !== '') {
+            if ($selectedMateria !== '') {
+                $cursos = Curso::where('turno', $selectedTurno)
+                    ->where('nivel', $selectedNivel)
+                    ->with(['asignaciones' => function($q) use ($selectedMateria) {
+                        $q->where('id_materia', $selectedMateria)
+                          ->where('id_gestion', session('gestion_activa'))
+                          ->with('profesor');
+                    }])
+                    ->get();
+            } else {
+                $cursos = Curso::where('turno', $selectedTurno)
+                    ->where('nivel', $selectedNivel)
+                    ->get();
+            }
+        }
+
+        // Datos para el árbol dinámico
+        $cursosTree = Curso::all()->groupBy(['turno', 'nivel', 'grado', 'paralelo']);
+
+        return view('curso.asignacionxcurso', [
+            'profesores' => $profesores,
+            'materias' => $materias,
+            'niveles' => $niveles,
+            'turnos' => $turnos,
+            'cursos' => $cursos,
+            'selectedTurno' => $selectedTurno,
+            'selectedNivel' => $selectedNivel,
+            'selectedMateria' => $selectedMateria,
+            'cursosTree' => $cursosTree
+        ]);
     }
 }
