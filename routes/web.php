@@ -62,7 +62,7 @@ Route::get('/materia', [MateriaController::class, 'index'])->name('materia.index
 Route::post('/materia/store', [MateriaController::class, 'store'])->name('materia.store');
 Route::delete('/materia/destroy/{id}', [MateriaController::class, 'destroy'])->name('materia.destroy');
 Route::get('/materia/nivel/{nivel}', [MateriaController::class, 'getMateriasByNivel'])->name('materia.getMateriasByNivel');
-Route::get('/materia/asignacion', [MateriaController::class, 'asignacion'])->name('materia.asignacion');
+Route::get('/materia/asignacion', [MateriaController::class, 'asignacion1'])->name('materia.asignacion');
 
 //----------------- MODULO PROFESOR ------------------------//
 Route::get('/profesor', [ProfesorController::class, 'index'])->name('profesor.index');

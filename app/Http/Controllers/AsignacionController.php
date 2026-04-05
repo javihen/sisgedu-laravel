@@ -211,4 +211,36 @@ class AsignacionController extends Controller
             'cursosTree' => $cursosTree
         ]);
     }
+
+    public function getAsignacionesCurso(Request $request)
+    {
+        $turno = $request->query('turno');
+        $nivel = $request->query('nivel');
+        $grado = $request->query('grado');
+        $paralelo = $request->query('paralelo');
+
+        $curso = Curso::where('turno', $turno)
+            ->where('nivel', $nivel)
+            ->where('grado', $grado)
+            ->where('paralelo', $paralelo)
+            ->with(['asignaciones' => function($q) {
+                $q->where('id_gestion', session('gestion_activa'))
+                  ->with('profesor', 'materia');
+            }])
+            ->first();
+
+        if (!$curso) {
+            return response()->json(['error' => 'Curso no encontrado'], 404);
+        }
+
+        $asignaciones = $curso->asignaciones->map(function($asignacion) {
+            return [
+                'materia' => $asignacion->materia->area,
+                'horas' => $asignacion->materia->horas ?? '',
+                'profesor' => $asignacion->profesor->nombres . ' ' . $asignacion->profesor->appaterno . ' ' . $asignacion->profesor->apmaterno
+            ];
+        });
+
+        return response()->json($asignaciones);
+    }
 }

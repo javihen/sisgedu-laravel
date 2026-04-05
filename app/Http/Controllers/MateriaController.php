@@ -191,4 +191,63 @@ class MateriaController extends Controller
             'cursosTree' => $cursosTree
         ]);
     }
+
+    public function asignacion1(Request $request){
+        // Datos base para el formulario
+        $profesores = Profesor::all();
+
+        $selectedTurno = $request->query('turno', '');
+        $selectedNivel = $request->query('nivel', '');
+        $selectedMateria = $request->query('id_materia', '');
+
+        $materias = Materia::when($selectedNivel !== '', function ($query) use ($selectedNivel) {
+            return $query->where('nivel', $selectedNivel);
+        })->orderBy('orden', 'asc')->get();
+
+        $niveles = [
+            0 => 'Inicial En familia comunitaria',
+            1 => 'Primaria Comunitaria Vocacional',
+            2 => 'Secundaria Comunitaria Productiva'
+        ];
+
+        $turnos = [
+            'M' => 'Mañana',
+            'T' => 'Tarde'
+        ];
+
+        $selectedTurno = $request->query('turno', '');
+        $selectedNivel = $request->query('nivel', '');
+        $selectedMateria = $request->query('id_materia', '');
+
+        if ($selectedNivel !== '' && $selectedMateria !== '') {
+            $existeMateria = Materia::where('id_materia', $selectedMateria)
+                ->where('nivel', $selectedNivel)
+                ->exists();
+
+            if (! $existeMateria) {
+                $selectedMateria = '';
+            }
+        }
+
+        $cursos = collect();
+
+        if ($selectedTurno !== '' && $selectedNivel !== '') {
+            if ($selectedMateria !== '') {
+                $cursos = Curso::where('turno', $selectedTurno)
+                    ->where('nivel', $selectedNivel)
+                    ->with(['asignaciones' => function($q) use ($selectedMateria) {
+                        $q->where('id_materia', $selectedMateria)
+                          ->where('id_gestion', session('gestion_activa'))
+                          ->with('profesor');
+                    }])
+                    ->get();
+            } else {
+                $cursos = Curso::where('turno', $selectedTurno)
+                    ->where('nivel', $selectedNivel)
+                    ->get();
+            }
+        }
+
+        return view('materia.asignacion', compact('profesores', 'materias', 'niveles', 'turnos', 'cursos', 'selectedTurno', 'selectedNivel', 'selectedMateria'));
+    }
 }
