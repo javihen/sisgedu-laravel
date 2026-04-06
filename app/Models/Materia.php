@@ -23,8 +23,12 @@ class Materia extends Model
     }
 
     public function asistencias()
-{
-    return $this->hasMany(Asistencia::class, 'idMateria', 'id_materia');
-}
+    {
+        return $this->hasMany(Asistencia::class, 'idMateria', 'id_materia');
+    }
 
+    public function cursos()
+    {
+        return $this->hasMany(CursoMateria::class, 'idMateria');
+    }
 }

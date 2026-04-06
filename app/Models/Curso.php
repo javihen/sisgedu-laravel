@@ -56,8 +56,12 @@ class Curso extends Model
     }
 
     public function asistencias()
-{
-    return $this->hasMany(Asistencia::class, 'idCurso', 'id');
-}
+    {
+        return $this->hasMany(Asistencia::class, 'idCurso', 'id');
+    }
 
+    public function materiasPlan()
+    {
+        return $this->hasMany(CursoMateria::class, 'idCurso');
+    }
 }
