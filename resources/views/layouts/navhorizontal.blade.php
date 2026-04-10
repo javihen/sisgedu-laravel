@@ -198,7 +198,8 @@
                                         <a href="{{ route('materia.index') }}" class="nav__dropdown-item">Materias</a>
                                         <a href="{{ route('materia.asignacion') }}"
                                             class="nav__dropdown-item">Asignacion</a>
-                                        <a href="#" class="nav__dropdown-item">Carga horaria</a>
+                                        <a href="{{ route('materia.cargaHoraria') }}" class="nav__dropdown-item">Carga
+                                            horaria</a>
                                     </div>
                                 </div>
                             </div>
