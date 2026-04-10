@@ -8,6 +8,7 @@ use App\Models\Gestion;
 use App\Models\Materia;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AsignacionController extends Controller
 {
@@ -223,24 +224,56 @@ class AsignacionController extends Controller
             ->where('nivel', $nivel)
             ->where('grado', $grado)
             ->where('paralelo', $paralelo)
-            ->with(['asignaciones' => function($q) {
-                $q->where('id_gestion', session('gestion_activa'))
-                  ->with('profesor', 'materia');
-            }])
             ->first();
 
         if (!$curso) {
             return response()->json(['error' => 'Curso no encontrado'], 404);
         }
 
-        $asignaciones = $curso->asignaciones->map(function($asignacion) {
-            return [
-                'materia' => $asignacion->materia->area,
-                'horas' => $asignacion->materia->horas ?? '',
-                'profesor' => 'PROF. '.$asignacion->profesor->nombres . ' ' . $asignacion->profesor->appaterno . ' ' . $asignacion->profesor->apmaterno
-            ];
-        });
+        $asignaciones = DB::table('curso_materia')
+            ->join('materias', 'curso_materia.idMateria', '=', 'materias.id_materia')
+            ->where('curso_materia.idCurso', $curso->id)
+            ->where('curso_materia.idGestion', session('gestion_activa'))
+            ->select('curso_materia.idCursoMateria', 'materias.area', 'curso_materia.horas_mes')
+            ->get();
 
-        return response()->json($asignaciones);
+        return response()->json([
+            'idCurso' => $curso->id,
+            'asignaciones' => $asignaciones
+        ]);
+    }
+
+    public function storeCursoMateria(Request $request)
+    {
+        $request->validate([
+            'idCurso' => 'required',
+            'id_materia' => 'required',
+            'horas_mes' => 'required|integer',
+        ]);
+
+        try {
+            DB::table('curso_materia')->insert([
+                'idCurso' => $request->idCurso,
+                'idMateria' => $request->id_materia,
+                'idGestion' => session('gestion_activa'),
+                'horas_mes' => $request->horas_mes,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Materia registrada correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroyCursoMateria($id)
+    {
+        try {
+            DB::table('curso_materia')->where('idCursoMateria', $id)->delete();
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 }

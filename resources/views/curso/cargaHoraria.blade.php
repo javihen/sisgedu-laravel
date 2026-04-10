@@ -79,9 +79,23 @@
                                                             @foreach ($paralelos as $paralelo => $cursos)
                                                                 <li
                                                                     class="relative pl-5  mb-3 before:absolute before:left-0 before:top-0 before:bottom-0 before:h-auto before:border-l before:border-gray-300 after:absolute after:left-0 after:top-2.5 after:w-2.5 after:h-px after:bg-gray-300">
+                                                                    @php
+                                                                        // Construimos el nombre descriptivo para mostrar al usuario
+                                                                        $nombreCompleto =
+                                                                            (is_numeric($grado)
+                                                                                ? $grado . 'º'
+                                                                                : $grado) .
+                                                                            ' ' .
+                                                                            $paralelo .
+                                                                            ' - ' .
+                                                                            ($niveles[$nivel] ?? 'Nivel ' . $nivel) .
+                                                                            ' (' .
+                                                                            ($turnos[$turno] ?? $turno) .
+                                                                            ')';
+                                                                    @endphp
                                                                     <span
                                                                         class="border text-xs border-gray-600 w-8 h-8 rounded-full flex items-center justify-center text-center cursor-pointer hover:bg-slate-100 transition"
-                                                                        onclick="selectParalelo('{{ $turno }}', '{{ $nivel }}', '{{ $grado }}', '{{ $paralelo }}')">
+                                                                        onclick="selectParalelo('{{ $turno }}', '{{ $nivel }}', '{{ $grado }}', '{{ $paralelo }}', '{{ $nombreCompleto }}')">
                                                                         {{ $paralelo }}
                                                                     </span>
                                                                 </li>
@@ -121,7 +135,21 @@
                     });
                 });
 
-                function selectParalelo(turno, nivel, grado, paralelo) {
+                // Variables globales para mantener el estado del curso seleccionado
+                let currentParams = {};
+
+                function selectParalelo(turno, nivel, grado, paralelo, nombreCurso) {
+                    currentParams = {
+                        turno,
+                        nivel,
+                        grado,
+                        paralelo
+                    };
+                    // Actualizar el texto del curso seleccionado
+                    document.getElementById('cursoSeleccionado').innerText = 'Curso: ' + nombreCurso;
+                    // Limpiar el id de curso oculto hasta que cargue
+                    document.getElementById('id_curso_hidden').value = '';
+
                     const tbody = document.getElementById('asignaciones-tbody');
                     tbody.innerHTML =
                         '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-gray-600">Cargando...</td></tr>';
@@ -151,11 +179,25 @@
                                     '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-gray-600">No hay asignaciones para este curso.</td></tr>';
                                 return;
                             }
-                            tbody.innerHTML = data.map(asignacion => `
-                                <tr class="bg-white border-b border-gray-400 hover:bg-gray-300">
-                                    <td class="px-6 py-3 font-bold w-1/3">${asignacion.materia}</td>
-                                    <td class="px-6 py-3">${asignacion.horas}</td>
-                                    <td class="px-6 py-3"><p class="border font-bold text-white bg-green-600 rounded-md p-1 w-fit">${asignacion.profesor}</p></td>
+                            tbody.innerHTML = data.map(item => `
+                                <tr class="bg-white border-b border-gray-400 hover:bg-gray-300 text-center">
+                                    <td class="px-4 py-3">Comunidad y Sociedad</td>
+                                    <td class="px-4 py-3">
+                                        <span class="border border-slate-400 px-2 py-1 rounded">${item.area}</span>
+                                    </td>
+                                    <td class="px-4 py-3 font-bold text-lg">${item.horas_mes} <i class="fa-regular fa-clock"></i></td>
+                                    <td class="px-4 py-3">
+                                        <form action="/curso-materia/${item.idCursoMateria}" method="POST" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
+                                                <i class="fa-regular fa-trash-can"></i> Eliminar
+                                            </button>
+                                        </form>
+                                        <button class="py-2 px-3 border border-blue-500 bg-white my-2 rounded-sm text-blue-500 hover:bg-blue-500 hover:text-white cursor-pointer">
+                                            <i class="fa-solid fa-chalkboard-user"></i> Profesor
+                                        </button>
+                                    </td>
                                 </tr>
                             `).join('');
                         })
@@ -197,28 +239,28 @@
                             <div class="basis-1/3 flex flex-col ">
                                 <label for="id_materia" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Horas
                                 </label>
-                                <select name="id_materia" id="id_materia"
-                                    class="border border-slate-600 bg-white p-2 rounded-md w-full"
-                                    onchange="filterCursos()">
-                                    <option value="">-- Seleccione una materia --</option>
-                                    <option value="">8 hrs</option>
-                                    <option value="">16 Hrs</option>
-                                    <option value="">24 Hrs</option>
-                                    <option value="">32 Hrs</option>
-                                    <option value="">40 Hrs</option>
-                                    <option value="">48 Hrs</option>
-
+                                <select name="horas_mes" id="horas_mes"
+                                    class="border border-slate-600 bg-white p-2 rounded-md w-full">
+                                    <option value="">-- Seleccione horas --</option>
+                                    <option value="8">8 hrs</option>
+                                    <option value="16">16 Hrs</option>
+                                    <option value="24">24 Hrs</option>
+                                    <option value="32">32 Hrs</option>
+                                    <option value="40">40 Hrs</option>
+                                    <option value="48">48 Hrs</option>
                                 </select>
                             </div>
 
                             <div class="basis-1/3 flex flex-col">
-                                <input type="button" value="Registrar"
+                                <input type="button" value="Registrar" onclick="registrarMateria()"
                                     class="border border-green-600 bg-white text-green-600 p-2 rounded-md w-full cursor-pointer hover:bg-green-700 hover:text-white transition top-4 relative">
                             </div>
 
                         </div>
 
                     </form>
+
+                    <span id="cursoSeleccionado" class="font-bold text-lg">Curso: Ninguno</span>
                     <div
                         class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
                         <table class="w-full text-xs text-left rtl:text-right text-body">
