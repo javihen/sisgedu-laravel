@@ -80,6 +80,8 @@ Route::post('/asignacion/store',[AsignacionController::class, 'store'])->name('a
 Route::delete('/asignacion/destroy/{id}', [AsignacionController::class, 'destroy'])->name('asignacion.destroy');
 Route::get('/asignacion/curso', [AsignacionController::class, 'asignacionxcurso'])->name('asignacion.curso');
 Route::get('/api/asignacion/curso', [AsignacionController::class, 'getAsignacionesCurso'])->name('asignacion.getAsignacionesCurso');
+Route::post('/curso-materia/store', [AsignacionController::class, 'storeCursoMateria'])->name('curso-materia.store');
+Route::delete('/curso-materia/{id}', [AsignacionController::class, 'destroyCursoMateria'])->name('curso-materia.destroy');
 //-------------------- MODULO ASISTENCIA --------------------//
 Route::post('/asistencia/store', [AsistenciaController::class, 'store'])->name('asistencia.store');
 Route::get('/api/inscritos-curso/{idCurso}', [AsistenciaController::class, 'obtenerInscritosPorCurso'])->name('asistencia.inscritos');

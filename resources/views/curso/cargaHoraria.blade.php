@@ -138,6 +138,51 @@
                 // Variables globales para mantener el estado del curso seleccionado
                 let currentParams = {};
 
+                function registrarMateria() {
+                    const idCurso = document.getElementById('idCurso').value;
+                    const idMateria = document.getElementById('id_materia').value;
+                    const horasMes = document.getElementById('horas_mes').value;
+
+                    if (!idCurso) {
+                        alert('Por favor, seleccione un paralelo desde el árbol de cursos.');
+                        return;
+                    }
+                    if (!idMateria) {
+                        alert('Por favor, seleccione una materia.');
+                        return;
+                    }
+                    if (!horasMes) {
+                        alert('Por favor, seleccione las horas.');
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('idCurso', idCurso);
+                    formData.append('id_materia', idMateria);
+                    formData.append('horas_mes', horasMes);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    fetch('{{ route('curso-materia.store') }}', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert(data.message);
+                                // Recargar asignaciones
+                                selectParalelo(currentParams.turno, currentParams.nivel, currentParams.grado, currentParams
+                                    .paralelo, document.getElementById('cursoSeleccionado').innerText.split(': ')[1]);
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error al registrar la materia.');
+                        });
+                }
+
                 function selectParalelo(turno, nivel, grado, paralelo, nombreCurso) {
                     currentParams = {
                         turno,
@@ -148,7 +193,7 @@
                     // Actualizar el texto del curso seleccionado
                     document.getElementById('cursoSeleccionado').innerText = 'Curso: ' + nombreCurso;
                     // Limpiar el id de curso oculto hasta que cargue
-                    document.getElementById('id_curso_hidden').value = '';
+                    document.getElementById('idCurso').value = '';
 
                     const tbody = document.getElementById('asignaciones-tbody');
                     tbody.innerHTML =
@@ -171,19 +216,21 @@
                         }) => {
                             if (status !== 200 || data.error) {
                                 tbody.innerHTML =
-                                    '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-red-600">No se encontró el curso o no hay asignaciones.</td></tr>';
+                                    '<tr class="bg-white"><td colspan="4" class="px-6 py-4 text-center text-red-600">No se encontró el curso o no hay asignaciones.</td></tr>';
                                 return;
                             }
-                            if (!Array.isArray(data) || data.length === 0) {
+                            // Setear idCurso en el hidden
+                            document.getElementById('idCurso').value = data.idCurso;
+                            if (!Array.isArray(data.asignaciones) || data.asignaciones.length === 0) {
                                 tbody.innerHTML =
-                                    '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-gray-600">No hay asignaciones para este curso.</td></tr>';
+                                    '<tr class="bg-white"><td colspan="4" class="px-6 py-4 text-center text-gray-600">No hay asignaciones para este curso.</td></tr>';
                                 return;
                             }
-                            tbody.innerHTML = data.map(item => `
+                            tbody.innerHTML = data.asignaciones.map(item => `
                                 <tr class="bg-white border-b border-gray-400 hover:bg-gray-300 text-center">
-                                    <td class="px-4 py-3">Comunidad y Sociedad</td>
+                                    <td class="px-4 py-3">${item.campo}</td>
                                     <td class="px-4 py-3">
-                                        <span class="border border-slate-400 px-2 py-1 rounded">${item.area}</span>
+                                        <span class="border border-slate-400 px-2 py-1 rounded">${item.area} (${item.abreviatura})</span>
                                     </td>
                                     <td class="px-4 py-3 font-bold text-lg">${item.horas_mes} <i class="fa-regular fa-clock"></i></td>
                                     <td class="px-4 py-3">
@@ -204,17 +251,18 @@
                         .catch(error => {
                             console.error('Error al cargar asignaciones:', error);
                             tbody.innerHTML =
-                                '<tr class="bg-white"><td colspan="3" class="px-6 py-4 text-center text-red-600">Error al cargar las asignaciones.</td></tr>';
+                                '<tr class="bg-white"><td colspan="4" class="px-6 py-4 text-center text-red-600">Error al cargar las asignaciones.</td></tr>';
                         });
+
                 }
             </script>
 
             <div class=" w-3/4 bg-white h-fit rounded border border-gray-400 px-4 py-1">
                 <div>
-                    <form class="space-y-4" id="formularioAsignacion" action="{{ route('asignacion.store') }}"
+                    <form class="space-y-4" id="formularioAsignacion" action="{{ route('curso-materia.store') }}"
                         method="post" class="form-adicionar">
                         @csrf
-                        <input type="hidden" name="_method" id="formMethod" value="POST">
+                        <input type="hidden" name="idCurso" id="idCurso" value="">
 
                         <div class="flex flex-row gap-1 mb-2">
                             <div class="basis-1/3 flex flex-col ">
@@ -269,38 +317,15 @@
                                 <tr class="text-center">
                                     <th scope="col" class="px-6 py-3 font-medium w-1/4">Campo</th>
                                     <th scope="col" class="px-6 py-3 font-medium w-1/4">Materias</th>
-                                    <th scope="col" class="px-6 py-3 font-medium w-[20px]">Horas</th>
+                                    <th scope="col" class="px-6 py-3 font-medium w-[15px]">Horas</th>
                                     <th scope="col" class="px-6 py-3 font-medium w-1/4">Opciones</th>
                                 </tr>
                             </thead>
                             <tbody id="asignaciones-tbody">
                                 <tr>
-                                    <td class="px-4">Ciencias y Tecnologia</td>
-                                    <td>
-                                        <span class="border border-slate-400 px-2 py-1 rounded">Tecnica Tecnologica
-                                            Especializada</span>
-                                    </td>
-                                    <td class="text-center font-bold text-lg">48 <i class="fa-regular fa-clock"></i></td>
-                                    <td>
-                                        <form action="#" method="POST" class="inline form-eliminar">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
-                                                <i class="fa-regular fa-trash-can"></i> Eliminar
-                                            </button>
-                                        </form>
-                                        <form action="#" method="POST" class="inline form-eliminar">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="py-2 px-3 border border-blue-500 bg-white my-2 rounded-sm text-blue-500 hover:bg-blue-500 hover:text-white cursor-pointer">
-                                                <i class="fa-solid fa-chalkboard-user"></i> Profesor
-                                            </button>
-                                        </form>
-                                    </td>
+                                    <td colspan="4" class="px-6 py-4 text-center text-gray-600">Seleccione un paralelo
+                                        para ver las asignaciones.</td>
                                 </tr>
-
                             </tbody>
                         </table>
                     </div>
