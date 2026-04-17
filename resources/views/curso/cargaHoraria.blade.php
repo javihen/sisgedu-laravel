@@ -138,6 +138,63 @@
                 // Variables globales para mantener el estado del curso seleccionado
                 let currentParams = {};
 
+                function eliminarAsignacion(idCursoMateria) {
+                    Swal.fire({
+                        title: "¿Estás seguro?",
+                        text: "Se eliminará la asignación de forma permanente.",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Sí, eliminar",
+                        cancelButtonText: "Cancelar"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const formData = new FormData();
+                            formData.append('_method', 'DELETE');
+                            formData.append('_token', '{{ csrf_token() }}');
+
+                            fetch(`/curso-materia/${idCursoMateria}`, {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            title: '¡Éxito!',
+                                            text: 'Asignación eliminada correctamente.',
+                                            icon: 'success',
+                                            confirmButtonText: 'Entendido'
+                                        }).then(() => {
+                                            // Recargar asignaciones
+                                            selectParalelo(currentParams.turno, currentParams.nivel,
+                                                currentParams.grado, currentParams
+                                                .paralelo, document.getElementById('cursoSeleccionado')
+                                                .innerText.split(': ')[1]);
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            title: 'Error',
+                                            text: data.message || 'No se pudo eliminar la asignación.',
+                                            icon: 'error',
+                                            confirmButtonText: 'Entendido'
+                                        });
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire({
+                                        title: 'Error',
+                                        text: 'Error al eliminar la asignación.',
+                                        icon: 'error',
+                                        confirmButtonText: 'Entendido'
+                                    });
+                                });
+                        }
+                    });
+                }
+
                 function registrarMateria() {
                     const idCurso = document.getElementById('idCurso').value;
                     const idMateria = document.getElementById('id_materia').value;
@@ -234,17 +291,14 @@
                                     </td>
                                     <td class="px-4 py-3 font-bold text-lg">${item.horas_mes} <i class="fa-regular fa-clock"></i></td>
                                     <td class="px-4 py-3">
-                                        <form action="/curso-materia/${item.idCursoMateria}" method="POST" class="inline">
-                                            @csrf
-                                            <input type="hidden" name="_method" value="DELETE">
-                                            <button type="submit" class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
-                                                <i class="fa-regular fa-trash-can"></i> Eliminar
-                                            </button>
-                                        </form>
+                                        <button onclick="eliminarAsignacion(${item.idCursoMateria})" class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
+                                            <i class="fa-regular fa-trash-can"></i> Eliminar
+                                        </button>
                                         <button class="py-2 px-3 border border-blue-500 bg-white my-2 rounded-sm text-blue-500 hover:bg-blue-500 hover:text-white cursor-pointer">
                                             <i class="fa-solid fa-chalkboard-user"></i> Profesor
                                         </button>
                                     </td>
+
                                 </tr>
                             `).join('');
                         })
@@ -315,9 +369,9 @@
                             <thead
                                 class="text-xs text-body bg-neutral-secondary-medium border-b border-default-medium bg-slate-600 text-white">
                                 <tr class="text-center">
-                                    <th scope="col" class="px-6 py-3 font-medium w-1/4">Campo</th>
-                                    <th scope="col" class="px-6 py-3 font-medium w-1/4">Materias</th>
-                                    <th scope="col" class="px-6 py-3 font-medium w-[15px]">Horas</th>
+                                    <th scope="col" class="px-6 py-3 font-medium w-1/8">Campo</th>
+                                    <th scope="col" class="px-6 py-3 font-medium w-1/3">Materias</th>
+                                    <th scope="col" class="px-6 py-3 font-medium w-1/8">Horas</th>
                                     <th scope="col" class="px-6 py-3 font-medium w-1/4">Opciones</th>
                                 </tr>
                             </thead>
