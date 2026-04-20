@@ -79,22 +79,25 @@ Haz clic en "Importar Citaciones"
 
 1. **App\Imports\CitacionImport.php**
     - Clase que procesa el archivo Excel
-    - Implementa ToCollection y WithHeadingRow
-    - Valida datos antes de insertar
+    - Implementa `ToCollection`
+    - Usa `Excel::import(...)` para leer XLSX/XLS/CSV
+    - Valida y crea citaciones para estudiantes y materias existentes
 
 2. **App\Http\Controllers\CitacionController.php**
     - Controlador CRUD completo para citaciones
     - Método `import()` para procesar el Excel
     - Método `showImportForm()` para mostrar el formulario
+    - Recibe el profesor seleccionado desde el formulario de importación
 
 3. **resources/views/citacion/import.blade.php**
     - Formulario de importación con validación
+    - Selecciona archivo, curso, gestión, profesor, fecha, hora, motivo, período y tipo
     - Instrucciones para el usuario
 
 4. **resources/views/citacion/index.blade.php**
-    - Listado de todas las citaciones
-    - Botones para editar y eliminar
-    - Integración con SweetAlert para confirmaciones
+    - Listado por estudiante con materias citadas en una sola columna
+    - Muestra curso(s), profesor(es), fechas, horas y tipos agrupados por estudiante
+    - Conserva PDF por estudiante y acciones de listado
 
 5. **resources/views/citacion/edit.blade.php**
     - Formulario para editar una citación
@@ -114,7 +117,7 @@ Haz clic en "Importar Citaciones"
 
 Durante la importación, los siguientes campos se asignan automáticamente:
 
-- **idProfesor**: ID del profesor autenticado (auth()->user()->id_profesor)
+- **idProfesor**: ID del profesor seleccionado en el formulario
 - **idGestion**: ID de la gestión seleccionada en el formulario
 - **idCurso**: ID del curso seleccionado en el formulario
 - **fecha**: Fecha ingresada en el formulario
@@ -132,7 +135,7 @@ El sistema valida:
 - ✅ Que la materia exista en la BD
 - ✅ Que el curso exista en la BD
 - ✅ Que la gestión exista en la BD
-- ✅ Que solo se procesen celdas con valor `1`
+- ✅ Que se procesen celdas con valor `1`, `x` o `yes`
 - ✅ Que la fecha sea válida
 - ✅ Que la hora tenga formato correcto (HH:MM)
 
@@ -203,9 +206,9 @@ php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider"
 
 **Solución**: Verifica que tu archivo Excel tenga la estructura correcta:
 
-- Primera fila con encabezados
+- Primera fila con encabezados de materias
 - Primera columna con IDs de estudiantes
-- Celdas de datos con valor `1`
+- Celdas de datos con valor `1`, `x` o `yes`
 
 ### Error: "Column not found in heap"
 
@@ -213,4 +216,4 @@ php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider"
 
 ---
 
-**Última actualización**: 17 de abril de 2026
+**Última actualización**: 19 de abril de 2026
