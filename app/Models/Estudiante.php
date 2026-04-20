@@ -40,4 +40,12 @@ class Estudiante extends Model
     return $this->hasMany(DetalleAsistencia::class, 'idEstudiante');
 }
 
+    /**
+     * Relación: un estudiante tiene muchas citaciones
+     */
+    public function citaciones()
+    {
+        return $this->hasMany(Citacion::class, 'idEstudiante', 'id_estudiante');
+    }
+
 }

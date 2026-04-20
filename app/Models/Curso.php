@@ -49,6 +49,14 @@ class Curso extends Model
         return $this->hasMany(Inscripcion::class, 'id_curso');
     }
 
+    /**
+     * Relación: un curso tiene muchas citaciones
+     */
+    public function citaciones()
+    {
+        return $this->hasMany(Citacion::class, 'idCurso', 'id');
+    }
+
     public function asignaciones()
     {
         /* Un curso tiene muchas (hasMany) asignaciones */

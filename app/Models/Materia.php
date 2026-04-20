@@ -31,4 +31,12 @@ class Materia extends Model
     {
         return $this->hasMany(CursoMateria::class, 'idMateria');
     }
+
+    /**
+     * Relación: una materia tiene muchas citaciones
+     */
+    public function citaciones()
+    {
+        return $this->hasMany(Citacion::class, 'idMateria', 'id_materia');
+    }
 }

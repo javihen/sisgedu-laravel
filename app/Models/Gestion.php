@@ -20,4 +20,12 @@ class Gestion extends Model
     return $this->hasMany(Asistencia::class, 'id_gestion', 'id_gestion');
 }
 
+    /**
+     * Relación: una gestión tiene muchas citaciones
+     */
+    public function citaciones()
+    {
+        return $this->hasMany(Citacion::class, 'idGestion', 'id_gestion');
+    }
+
 }

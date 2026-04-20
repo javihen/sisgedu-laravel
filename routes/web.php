@@ -10,6 +10,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\AsistenciaController;
+use App\Http\Controllers\CitacionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -102,3 +103,16 @@ Route::post('/admin/permisos', [PermisoController::class, 'store'])->name('permi
 Route::get('/admin/permisos/{id}/edit', [PermisoController::class, 'edit'])->name('permisos.edit')->middleware('permiso:gestionar_roles');
 Route::put('/admin/permisos/{id}', [PermisoController::class, 'update'])->name('permisos.update')->middleware('permiso:gestionar_roles');
 Route::delete('/admin/permisos/{id}', [PermisoController::class, 'destroy'])->name('permisos.destroy')->middleware('permiso:gestionar_roles');
+
+//----------------------- MODULO CITACIONES -----------------------//
+Route::get('/citacion', [CitacionController::class, 'index'])->name('citacion.index');
+Route::get('/citacion/import', [CitacionController::class, 'showImportForm'])->name('citacion.import');
+Route::post('/citacion/import', [CitacionController::class, 'import'])->name('citacion.import');
+Route::post('/citacion/store', [CitacionController::class, 'store'])->name('citacion.store');
+Route::get('/citacion/{citacion}/edit', [CitacionController::class, 'edit'])->name('citacion.edit');
+Route::put('/citacion/{citacion}', [CitacionController::class, 'update'])->name('citacion.update');
+Route::delete('/citacion/{citacion}', [CitacionController::class, 'destroy'])->name('citacion.destroy');
+// PDF Routes
+Route::get('/citacion/pdf/curso/{idCurso}', [CitacionController::class, 'generarPDFCurso'])->name('citacion.pdf.curso');
+Route::get('/citacion/pdf/general', [CitacionController::class, 'generarPDFGeneral'])->name('citacion.pdf.general');
+Route::get('/citacion/pdf/estudiante/{idEstudiante}', [CitacionController::class, 'generarPDFEstudiante'])->name('citacion.pdf.estudiante');

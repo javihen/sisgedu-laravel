@@ -32,4 +32,12 @@ class Profesor extends Model
     return $this->hasMany(Asistencia::class, 'idProfesor', 'id_profesor');
 }
 
+    /**
+     * Relación: un profesor tiene muchas citaciones
+     */
+    public function citaciones()
+    {
+        return $this->hasMany(Citacion::class, 'idProfesor', 'id_profesor');
+    }
+
 }
