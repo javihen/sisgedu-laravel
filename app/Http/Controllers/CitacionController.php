@@ -41,8 +41,9 @@ class CitacionController extends Controller
     {
         $cursos = Curso::all();
         $gestiones = Gestion::where('estado', 'A')->get();
+        $profesores = Profesor::all();
 
-        return view('citacion.import', compact('cursos', 'gestiones'));
+        return view('citacion.import', compact('cursos', 'gestiones', 'profesores'));
     }
 
     /**
@@ -54,6 +55,7 @@ class CitacionController extends Controller
             // Validar los datos del formulario
             $request->validate([
                 'archivo' => 'required|file|mimes:xlsx,xls,csv',
+                'idProfesor' => 'required|integer|exists:profesores,id_profesor',
                 'idCurso' => 'required|string|exists:cursos,id',
                 'idGestion' => 'required|integer|exists:gestiones,id_gestion',
                 'fecha' => 'required|date',
@@ -64,7 +66,7 @@ class CitacionController extends Controller
             ]);
 
             $file = $request->file('archivo');
-            $idProfesor = '';
+            $idProfesor = '1';
             $idGestion = $request->idGestion;
             $idCurso = $request->idCurso;
             $fecha = $request->fecha;

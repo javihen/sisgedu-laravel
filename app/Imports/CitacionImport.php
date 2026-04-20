@@ -6,8 +6,11 @@ use App\Models\Citacion;
 use App\Models\Estudiante;
 use App\Models\Materia;
 use App\Models\Curso;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Facades\Excel;
 
-class CitacionImport
+class CitacionImport implements ToCollection
 {
     protected $idProfesor;
     protected $idGestion;
@@ -34,29 +37,19 @@ class CitacionImport
     }
 
     /**
-     * @param Collection $collection
-     *
-     * Procesa el archivo Excel.
-     * Estructura esperada:
-     * - F1..P1: encabezados de materias (IDs o nombres)
-     * - A7..A* : IDs de estudiantes
-     * - F7..P*: valores 1 indican creación de citación
+     * Importa el archivo usando Laravel Excel
      */
     public function import($file)
     {
-        $filePath = is_string($file) ? $file : $file->getRealPath();
+        Excel::import($this, $file);
+    }
 
-        if (!file_exists($filePath)) {
-            return;
-        }
-
-        $xlsx = \Shuchkin\SimpleXLSX::parse($filePath);
-        if (! $xlsx) {
-            return;
-        }
-
-        $rows = $xlsx->rows();
-        $this->processRows($rows);
+    /**
+     * Recibe las filas del Excel y procesa el contenido
+     */
+    public function collection(Collection $rows)
+    {
+        $this->processRows($rows->toArray());
     }
 
     private function processRows(array $rows)
@@ -65,48 +58,64 @@ class CitacionImport
             return;
         }
 
-        // Leer encabezados de materias en la fila 1, desde columna F a P
+        // Leer encabezados de materias en la primera fila, sobre las columnas desde la segunda columna.
         $headers = [];
-        for ($colIndex = 5; $colIndex <= 15; $colIndex++) {
+        $totalCols = count($rows[0]);
+        for ($colIndex = 5; $colIndex < 16; $colIndex++) {
             $headers[$colIndex] = trim((string) ($rows[0][$colIndex] ?? ''));
         }
-
+        //dd($headers);
         if (empty(array_filter($headers))) {
             return;
         }
 
-        // Procesar filas a partir de la fila 7 (índice 6)
+        // Procesar filas a partir de la segunda fila
         $rowIndex = 6;
         while (isset($rows[$rowIndex])) {
             $idEstudiante = trim((string) ($rows[$rowIndex][0] ?? ''));
 
-            if ($idEstudiante === '' || $idEstudiante === null) {
+            /* dd([
+                'fila' => $rowIndex,
+                'idEstudiante' => $idEstudiante,
+                'estado_columna_E' => $rows[$rowIndex][4] ?? null
+            ]); */
+
+            if ($idEstudiante === '') {
                 break;
             }
 
+            $estado = strtolower(trim((string) ($rows[$rowIndex][4] ?? '')));
+
+            if ($estado !== 'efectivo') {
+                $rowIndex++;
+                continue;
+            }
             $estudiante = Estudiante::find($idEstudiante);
             if (!$estudiante) {
                 $rowIndex++;
                 continue;
-            }
+                }
 
             foreach ($headers as $colIndex => $headerValue) {
                 $cellValue = $rows[$rowIndex][$colIndex] ?? null;
-                if ((string) $cellValue !== '1' && (int) $cellValue !== 1) {
+                $cellNormalized = strtolower(trim((string) $cellValue));
+                //dd($cellNormalized);
+                if (!in_array($cellNormalized, ['1', 'x', 'yes'], true)) {
                     continue;
                 }
 
-                $idMateria = $this->obtenerIdMateria($headerValue);
+                //$idMateria = $this->obtenerIdMateria($headerValue);
+                $idMateria = (int) $headerValue;
                 if (!$idMateria) {
                     continue;
                 }
 
-                $materia = Materia::find($idMateria);
-                if (!$materia) {
+                /* if (!Materia::find($idMateria)) {
                     continue;
-                }
+                } */
 
                 try {
+
                     Citacion::create([
                         'idEstudiante' => $idEstudiante,
                         'idCurso' => $this->idCurso,
@@ -115,12 +124,12 @@ class CitacionImport
                         'idGestion' => $this->idGestion,
                         'fecha' => $this->fecha,
                         'hora' => $this->hora,
-                        'motivo' => $this->motivo,
+                        'motivo' => 'Aula Abierta',
                         'periodo' => $this->periodo,
                         'tipo' => $this->tipo,
                     ]);
                 } catch (\Exception $e) {
-                    continue;
+                    dd($e->getMessage());
                 }
             }
 
@@ -138,16 +147,13 @@ class CitacionImport
             return null;
         }
 
-        // Si el encabezado es un número, asumimos que es el ID de la materia
         if (is_numeric($headerValue)) {
-            return (int)$headerValue;
+            return (int) $headerValue;
         }
 
-        // Si es texto, buscar la materia por área o abreviatura
-        $materia = Materia::where('area', 'like', "%{$headerValue}%")
+        return Materia::where('area', 'like', "%{$headerValue}%")
             ->orWhere('abreviatura', 'like', "%{$headerValue}%")
-            ->first();
-
-        return $materia?->id_materia;
+            ->orWhere('nombre', 'like', "%{$headerValue}%")
+            ->first()?->id_materia;
     }
 }

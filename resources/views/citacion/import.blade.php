@@ -134,6 +134,27 @@
                     @enderror
                 </div>
 
+                <!-- Selección de Profesor -->
+                <div>
+                    <label for="idProfesor" class="block text-sm font-medium text-gray-700 mb-2">
+                        Profesor encargado
+                    </label>
+                    <select name="idProfesor" id="idProfesor"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#38BC9B]"
+                        required>
+                        <option value="">-- Selecciona un profesor --</option>
+                        @foreach ($profesores as $profesor)
+                            <option value="{{ $profesor->id_profesor }}"
+                                {{ old('idProfesor') == $profesor->id_profesor ? 'selected' : '' }}>
+                                {{ $profesor->nombres }} {{ $profesor->appaterno }} {{ $profesor->apmaterno }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('idProfesor')
+                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 <!-- Selección de Gestión -->
                 <div>
                     <label for="idGestion" class="block text-sm font-medium text-gray-700 mb-2">

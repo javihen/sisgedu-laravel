@@ -9,16 +9,19 @@ class Citacion extends Model
     protected $table = 'citaciones';
     protected $primaryKey = 'idCitacion';
     protected $fillable = [
-        'idEstudiante',
-        'idCurso',
-        'idProfesor',
-        'idMateria',
-        'idGestion',
-        'fecha',
-        'hora',
-        'motivo',
-        'periodo',
-        'tipo',
+    'idEstudiante',
+    'idCurso',
+    'idProfesor',
+    'idMateria',
+    'idGestion',
+    'fecha',
+    'hora',
+    'motivo',
+    'periodo',
+    'tipo'
+];
+    protected $casts = [
+        'fecha' => 'date',
     ];
     public $timestamps = true;
 

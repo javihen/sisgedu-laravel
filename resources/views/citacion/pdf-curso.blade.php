@@ -119,6 +119,33 @@
             font-size: 12px;
         }
 
+        .citation-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 18px;
+            background-color: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            page-break-inside: avoid;
+        }
+
+        .citation-card h2 {
+            margin-bottom: 12px;
+            font-size: 18px;
+            text-transform: uppercase;
+            color: #1a6d4e;
+        }
+
+        .citation-card p {
+            margin-bottom: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .citation-card strong {
+            color: #1f7a5b;
+        }
+
         .page-break {
             page-break-after: always;
         }
@@ -168,38 +195,47 @@
             Individuales: {{ $individuales }} | Grupales: {{ $grupales }}
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Nro</th>
-                    <th>Estudiante</th>
-                    <th>Materia</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Motivo</th>
-                    <th>Período</th>
-                    <th>Tipo</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($citaciones as $citacion)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>
-                            {{ $citacion->estudiante->nombres ?? 'N/A' }}
-                            {{ $citacion->estudiante->appaterno ?? '' }}
-                            {{ $citacion->estudiante->apmaterno ?? '' }}
-                        </td>
-                        <td>{{ $citacion->materia->abreviatura ?? 'N/A' }}</td>
-                        <td>{{ $citacion->fecha->format('d/m/Y') }}</td>
-                        <td>{{ $citacion->hora }}</td>
-                        <td>{{ $citacion->motivo }}</td>
-                        <td>{{ $citacion->periodo ?? '-' }}</td>
-                        <td>{{ ucfirst($citacion->tipo) }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        @php
+            $citacionesAgrupadas = $citaciones->groupBy(function ($citacion) {
+                return $citacion->idEstudiante .
+                    '|' .
+                    ($citacion->fecha?->format('Y-m-d') ?? '') .
+                    '|' .
+                    $citacion->hora .
+                    '|' .
+                    ($citacion->motivo ?? '') .
+                    '|' .
+                    ($citacion->periodo ?? '') .
+                    '|' .
+                    $citacion->tipo;
+            });
+        @endphp
+
+        @foreach ($citacionesAgrupadas as $group)
+            @php
+                $first = $group->first();
+                $materias = $group->pluck('materia.abreviatura')->filter()->unique()->values()->all();
+            @endphp
+
+            <div class="citation-card">
+                <h2>CITACIÓN</h2>
+                <p><strong>Estudiante:</strong>
+                    {{ $first->estudiante->nombres ?? 'N/A' }}
+                    {{ $first->estudiante->appaterno ?? '' }}
+                    {{ $first->estudiante->apmaterno ?? '' }}
+                </p>
+                <p><strong>Materias citadas:</strong> {{ count($materias) ? implode(', ', $materias) : 'N/A' }}</p>
+                <p><strong>Fecha:</strong> {{ $first->fecha->format('d/m/Y') }}</p>
+                <p><strong>Hora:</strong> {{ $first->hora }}</p>
+                <p><strong>Tipo:</strong> {{ ucfirst($first->tipo) }}</p>
+                <p><strong>Motivo:</strong> {{ $first->motivo }}</p>
+                <p><strong>Período:</strong> {{ $first->periodo ?? '-' }}</p>
+            </div>
+
+            @if ($loop->iteration % 5 == 0 && !$loop->last)
+                <div class="page-break"></div>
+            @endif
+        @endforeach
     @else
         <div class="no-data">
             No hay citaciones registradas para este curso.

@@ -66,66 +66,101 @@
                     </div>
                 </div>
 
+                @php
+                    $citacionesPorEstudiante = $citaciones->groupBy('idEstudiante');
+                @endphp
+
                 <table class="w-full">
                     <thead class="bg-gray-200 sticky top-12">
                         <tr class="text-center text-xs text-gray-700">
                             <th class="py-2 px-4">Nro</th>
                             <th class="py-2 px-4">Estudiante</th>
-                            <th class="py-2 px-4">Curso</th>
-                            <th class="py-2 px-4">Profesor</th>
-                            <th class="py-2 px-4">Materia</th>
-                            <th class="py-2 px-4">Fecha</th>
-                            <th class="py-2 px-4">Hora</th>
-                            <th class="py-2 px-4">Motivo</th>
-                            <th class="py-2 px-4">Tipo</th>
+                            <th class="py-2 px-4">Curso(s)</th>
+                            <th class="py-2 px-4">Profesor(es)</th>
+                            <th class="py-2 px-4">Materias citadas</th>
+                            <th class="py-2 px-4">Fecha(s)</th>
+                            <th class="py-2 px-4">Hora(s)</th>
+                            <th class="py-2 px-4">Tipo(s)</th>
                             <th class="py-2 px-4">Opciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($citaciones as $citacion)
+                        @foreach ($citacionesPorEstudiante as $group)
+                            @php
+                                $primera = $group->first();
+                                $cursos = $group
+                                    ->map(fn($item) => $item->curso?->getDisplayNameAttribute() ?? 'N/A')
+                                    ->filter()
+                                    ->unique()
+                                    ->values()
+                                    ->all();
+                                $profesores = $group
+                                    ->map(
+                                        fn($item) => trim(
+                                            ($item->profesor?->nombres ?? '') .
+                                                ' ' .
+                                                ($item->profesor?->appaterno ?? '') .
+                                                ' ' .
+                                                ($item->profesor?->apmaterno ?? ''),
+                                        ),
+                                    )
+                                    ->filter()
+                                    ->unique()
+                                    ->values()
+                                    ->all();
+                                $materias = $group
+                                    ->map(fn($item) => $item->materia?->abreviatura ?? 'N/A')
+                                    ->filter()
+                                    ->unique()
+                                    ->values()
+                                    ->all();
+                                $fechas = $group
+                                    ->map(fn($item) => $item->fecha->format('d/m/Y'))
+                                    ->filter()
+                                    ->unique()
+                                    ->values()
+                                    ->all();
+                                $horas = $group->map(fn($item) => $item->hora)->filter()->unique()->values()->all();
+                                $tipos = $group
+                                    ->map(fn($item) => ucfirst($item->tipo))
+                                    ->filter()
+                                    ->unique()
+                                    ->values()
+                                    ->all();
+                            @endphp
                             <tr class="text-xs text-center hover:bg-gray-100 border-b border-gray-300">
                                 <td class="px-4 py-2">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-2 text-left">
-                                    <div class="font-semibold">{{ $citacion->estudiante->nombres ?? 'N/A' }}</div>
-                                    <div class="text-gray-500 text-xs">{{ $citacion->estudiante->ci ?? 'N/A' }}</div>
+                                    <div class="font-semibold">{{ $primera->estudiante->nombres ?? 'N/A' }}</div>
+                                    <div class="text-gray-500 text-xs">{{ $primera->estudiante->ci ?? 'N/A' }}</div>
                                 </td>
-                                <td class="px-4 py-2">{{ $citacion->curso->nombre_curso ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">{{ $citacion->profesor->nombres ?? 'N/A' }}</td>
-                                <td class="px-4 py-2">
-                                    <span class="bg-gray-100 px-2 py-1 rounded">
-                                        {{ $citacion->materia->abreviatura ?? 'N/A' }}
-                                    </span>
+                                <td class="px-4 py-2 text-left">
+                                    <div class="text-gray-700 text-xs">{{ implode(', ', $cursos) }}</div>
                                 </td>
-                                <td class="px-4 py-2 font-semibold">{{ $citacion->fecha->format('d/m/Y') }}</td>
-                                <td class="px-4 py-2">{{ $citacion->hora }}</td>
-                                <td class="px-4 py-2 text-left text-gray-700">{{ substr($citacion->motivo, 0, 20) }}...
+                                <td class="px-4 py-2 text-left">
+                                    <div class="text-gray-700 text-xs">{{ implode(', ', $profesores) }}</div>
                                 </td>
-                                <td class="px-4 py-2">
-                                    <span
-                                        class="px-2 py-1 rounded text-white text-xs {{ $citacion->tipo == 'individual' ? 'bg-blue-500' : 'bg-purple-500' }}">
-                                        {{ ucfirst($citacion->tipo) }}
-                                    </span>
+                                <td class="px-4 py-2 text-left">
+                                    <div class="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
+                                        {{ implode(', ', $materias) }}
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2 text-left">
+                                    <div class="text-gray-700 text-xs">{{ implode(', ', $fechas) }}</div>
+                                </td>
+                                <td class="px-4 py-2 text-left">
+                                    <div class="text-gray-700 text-xs">{{ implode(', ', $horas) }}</div>
+                                </td>
+                                <td class="px-4 py-2 text-left">
+                                    <div class="text-gray-700 text-xs">{{ implode(', ', $tipos) }}</div>
                                 </td>
                                 <td class="px-4 py-2">
                                     <div class="flex justify-center gap-1">
-                                        <a href="{{ route('citacion.pdf.estudiante', $citacion->idEstudiante) }}"
+                                        <a href="{{ route('citacion.pdf.estudiante', $primera->idEstudiante) }}"
                                             title="PDF Estudiante"
                                             class="text-orange-600 hover:text-orange-900 border border-orange-600 hover:bg-orange-600 hover:text-white rounded bg-white py-1 px-1.5 transition text-xs">
-                                            <i class='bx bx-file-pdf'></i>
+                                            <i class="fa-regular fa-file-pdf"></i>
                                         </a>
-                                        <a href="{{ route('citacion.edit', $citacion->idCitacion) }}" title="Editar"
-                                            class="text-blue-600 hover:text-blue-900 border border-blue-600 hover:bg-blue-600 hover:text-white rounded bg-white py-1 px-1.5 transition text-xs">
-                                            <i class='bx bx-edit-alt'></i>
-                                        </a>
-                                        <form action="{{ route('citacion.destroy', $citacion->idCitacion) }}"
-                                            method="POST" class="inline form-eliminar">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" title="Eliminar"
-                                                class="text-red-600 border border-red-600 cursor-pointer hover:bg-red-600 hover:text-white rounded bg-white py-1 px-1.5 hover:transition text-xs">
-                                                <i class='bx bx-trash'></i>
-                                            </button>
-                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -134,9 +169,9 @@
                 </table>
 
                 <!-- Botones por Curso -->
-                <div class="px-4 py-4 border-t border-gray-200">
+                <div class="px-4 py-4 border-t border-gray-200 ">
                     <h3 class="text-sm font-bold mb-3 text-gray-700">Generar PDF por Curso:</h3>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap gap-2 justify-end">
                         @php
                             $citacionesPorCurso = $citaciones->groupBy('idCurso');
                         @endphp
@@ -146,7 +181,7 @@
                             @endphp
                             <a href="{{ route('citacion.pdf.curso', $idCurso) }}"
                                 class="text-xs bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded transition">
-                                <i class='bx bx-file-pdf mr-1'></i>{{ $curso->nombre_curso ?? 'Curso' }}
+                                <i class='bx bx-file-pdf mr-1'></i>{{ $curso->getDisplayNameAttribute() ?? 'Curso' }}
                                 ({{ $cursosCits->count() }})
                             </a>
                         @empty
