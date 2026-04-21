@@ -25,7 +25,7 @@
         }
 
         .header h1 {
-            color: #38BC9B;
+            text-align: center;
             font-size: 24px;
             margin-bottom: 5px;
         }
@@ -120,30 +120,62 @@
         }
 
         .citation-card {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 18px;
+            border: 1px solid #38BC9B;
+            border-radius: 0;
+            padding: 20px;
+            margin-bottom: 30px;
             background-color: #fff;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: none;
             page-break-inside: avoid;
         }
 
         .citation-card h2 {
-            margin-bottom: 12px;
-            font-size: 18px;
+            margin-bottom: 15px;
+            font-size: 16px;
             text-transform: uppercase;
-            color: #1a6d4e;
+            color: #38BC9B;
+            border-bottom: 2px solid #38BC9B;
+            padding-bottom: 8px;
         }
 
-        .citation-card p {
-            margin-bottom: 8px;
+        .citation-info {
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .citation-info p {
+            margin: 5px 0;
             font-size: 12px;
-            line-height: 1.4;
         }
 
-        .citation-card strong {
-            color: #1f7a5b;
+        .citation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .citation-table thead {
+            background-color: #38BC9B;
+            color: white;
+        }
+
+        .citation-table th {
+            padding: 10px;
+            text-align: left;
+            font-size: 11px;
+            border: 1px solid #38BC9B;
+        }
+
+        .citation-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            font-size: 11px;
+        }
+
+        .citation-table tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
         }
 
         .page-break {
@@ -169,8 +201,9 @@
     </div>
 
     <div class="header">
-        <h1>REPORTE DE CITACIONES</h1>
-        <div class="subtitle">Educación</div>
+        <h1>UNIDAD EDUCATIVA CONVENIO NIVEL SECUNDARIA</h1>
+        <h1>CRISTIANO VIDA NUEVA – TURNO MAÑANA</h1>
+        <div class="subtitle">CITACIONES - REPORTE POR CURSO</div>
     </div>
 
     <div class="info-section">
@@ -214,22 +247,97 @@
         @foreach ($citacionesAgrupadas as $group)
             @php
                 $first = $group->first();
-                $materias = $group->pluck('materia.abreviatura')->filter()->unique()->values()->all();
+                // Obtener materias y profesores usando la tabla asignaciones
+                $materias = $group
+                    ->map(function ($citacion) {
+                        // Buscar en asignaciones usando id_materia del curso
+                        $asignacion = \App\Models\Asignacion::where('id_materia', $citacion->idMateria)
+                            ->where('idcurso', $citacion->idCurso)
+                            ->first();
+
+                        // Obtener el profesor desde la asignación
+                        $nombreProfesor = 'N/A';
+                        if ($asignacion && $asignacion->profesor) {
+                            $nombreProfesor =
+                                trim(
+                                    ($asignacion->profesor->nombres ?? '') .
+                                        ' ' .
+                                        ($asignacion->profesor->appaterno ?? '') .
+                                        ' ' .
+                                        ($asignacion->profesor->apmaterno ?? ''),
+                                ) ?:
+                                'N/A';
+                        }
+
+                        return [
+                            'nombre' => $citacion->materia?->area ?? 'N/A',
+                            'profesor' => $nombreProfesor,
+                        ];
+                    })
+                    ->filter(function ($item) {
+                        return $item['nombre'] !== 'N/A' || $item['profesor'] !== 'N/A';
+                    })
+                    ->unique(function ($item) {
+                        return $item['nombre'] . '|' . $item['profesor'];
+                    })
+                    ->values()
+                    ->all();
             @endphp
 
             <div class="citation-card">
-                <h2>CITACIÓN</h2>
-                <p><strong>Estudiante:</strong>
-                    {{ $first->estudiante->nombres ?? 'N/A' }}
-                    {{ $first->estudiante->appaterno ?? '' }}
-                    {{ $first->estudiante->apmaterno ?? '' }}
-                </p>
-                <p><strong>Materias citadas:</strong> {{ count($materias) ? implode(', ', $materias) : 'N/A' }}</p>
-                <p><strong>Fecha:</strong> {{ $first->fecha->format('d/m/Y') }}</p>
-                <p><strong>Hora:</strong> {{ $first->hora }}</p>
-                <p><strong>Tipo:</strong> {{ ucfirst($first->tipo) }}</p>
-                <p><strong>Motivo:</strong> {{ $first->motivo }}</p>
-                <p><strong>Período:</strong> {{ $first->periodo ?? '-' }}</p>
+                <h2>UNIDAD EDUCATIVA CONVENIO NIVEL SECUNDARIA</h2>
+                <H3>CRISTIANO VIDA NUEVA – TURNO TARDE</H3>
+                <div class="citation-info">
+                    <div>
+                        <p>Se cita al padre/madre de familia o tutor del/la
+                            estudiante:<strong>{{ $first->estudiante->nombres ?? 'N/A' }}</strong> del curso <strong>5to
+                                "C"</strong> a
+                            la entrevista que
+                            se llevara acabo el dia <strong>Jueves a partir de horas 11:00 am</strong> para informar
+                            sobre el
+                            aprovechamiento acadmico de sus hijo(a), en las areas del <strong>PRIMER TRIMESTRE
+                                2026</strong>. La NO
+                            asistencia sera tomada en cuenta en acta y no se aceptara reclamos posteriores en caso de
+                            reprobacion en el trimestre correspondiente. debe pasar SOLO en las Areas que tiene
+                            observacion (tiqueado) que acontinuacion se detallan: </p>
+
+                    </div>
+                    {{-- <div>
+                        <p><strong>Fecha:</strong> {{ $first->fecha->format('d/m/Y') }}</p>
+                        <p><strong>Hora:</strong> {{ $first->hora }}</p>
+                    </div> --}}
+                </div>
+
+                {{-- <div style="margin-bottom: 15px;">
+                    <p><strong>Motivo:</strong> {{ $first->motivo ?? 'N/A' }}</p>
+                    <p><strong>Tipo:</strong> {{ ucfirst($first->tipo) }}
+                        @if ($first->periodo)
+                            | <strong>Período:</strong> {{ $first->periodo }}
+                        @endif
+                    </p>
+                </div> --}}
+
+                @if (count($materias) > 0)
+                    <table class="citation-table">
+                        <thead>
+                            <tr>
+                                <th>MATERIA</th>
+                                <th>PROFESOR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($materias as $materia)
+                                <tr>
+                                    <td>{{ $materia['nombre'] }}</td>
+                                    <td>{{ $materia['profesor'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+                <p><strong>Nota:</strong> El padre de familia o apoderado debe asistir junto a su hijo(a) y portar esta
+                    citación.</p>
+                <p style="margin-top: 20px; color: #666;">La Paz, {{ now()->format('F \\d\\e Y') }}</p>
             </div>
 
             @if ($loop->iteration % 5 == 0 && !$loop->last)
@@ -243,7 +351,11 @@
     @endif
 
     <div class="footer">
-        <p>Este documento fue generado automáticamente por el Sistema de Gestión Educativa</p>
+        <p><strong>Nota:</strong> El padre de familia o apoderado debe asistir junto a su hijo(a) y portar esta
+            citación.</p>
+        <p style="margin-top: 20px; color: #666;">La Paz, {{ now()->format('F \\d\\e Y') }}</p>
+        <p style="margin-top: 30px; color: #999; font-size: 10px;">Este documento fue generado automáticamente por el
+            Sistema de Gestión Educativa</p>
     </div>
 </body>
 
