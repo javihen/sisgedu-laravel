@@ -11,6 +11,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\CitacionController;
+use App\Http\Controllers\EntrevistaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -116,3 +117,12 @@ Route::delete('/citacion/{citacion}', [CitacionController::class, 'destroy'])->n
 Route::get('/citacion/pdf/curso/{idCurso}', [CitacionController::class, 'generarPDFCurso'])->name('citacion.pdf.curso');
 Route::get('/citacion/pdf/general', [CitacionController::class, 'generarPDFGeneral'])->name('citacion.pdf.general');
 Route::get('/citacion/pdf/estudiante/{idEstudiante}', [CitacionController::class, 'generarPDFEstudiante'])->name('citacion.pdf.estudiante');
+
+//----------------------- MODULO ENTREVISTAS -----------------------//
+Route::get('/entrevistas', [EntrevistaController::class, 'index'])->name('entrevistas.index');
+Route::get('/entrevistas/create', [EntrevistaController::class, 'create'])->name('entrevistas.create');
+Route::post('/entrevistas', [EntrevistaController::class, 'store'])->name('entrevistas.store');
+Route::get('/entrevistas/{entrevista}', [EntrevistaController::class, 'show'])->name('entrevistas.show');
+Route::get('/entrevistas/{entrevista}/edit', [EntrevistaController::class, 'edit'])->name('entrevistas.edit');
+Route::put('/entrevistas/{entrevista}', [EntrevistaController::class, 'update'])->name('entrevistas.update');
+Route::delete('/entrevistas/{entrevista}', [EntrevistaController::class, 'destroy'])->name('entrevistas.destroy');
