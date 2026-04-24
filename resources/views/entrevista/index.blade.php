@@ -1,8 +1,8 @@
 @extends('layouts.navhorizontal')
 
 @section('content')
-    <div class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl mx-auto">
+    <div class="ml-14 min-h-screen w-[calc(100%-80px)]  py-12 px-4 sm:px-6 lg:px-8 absolute">
+        <div class="w-full mx-auto">
             <div class="flex items-center justify-between mb-8">
                 <h1 class="text-3xl font-bold text-gray-900">Entrevistas con Padres</h1>
                 <a href="{{ route('entrevistas.create') }}"

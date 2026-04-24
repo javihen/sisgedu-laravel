@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.navhorizontal')
 
 @section('content')
-    <div class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="ml-14 min-h-screen w-[calc(100%-80px)]  min-h-screen  py-12 px-4 sm:px-6 lg:px-8 absolute">
         <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
             <h1 class="text-3xl font-bold text-gray-900 mb-8">Registrar Entrevista con Padres</h1>
 
