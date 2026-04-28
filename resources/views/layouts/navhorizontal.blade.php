@@ -386,7 +386,7 @@
     @yield('content')
 
 
-    <div class="flex justify-center">
+    {{-- <div class="flex justify-center">
         <footer class="bg-white rounded-lg shadow-sm w-content fixed bottom-0 z-10">
             <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
                 <span class="text-sm text-gray-500 sm:text-center mr-10 ">© 2023 <a href="#"
@@ -409,7 +409,7 @@
                 </ul>
             </div>
         </footer>
-    </div>
+    </div> --}}
 
     @if (session('swal'))
         <script>

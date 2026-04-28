@@ -235,6 +235,7 @@ class AsignacionController extends Controller
             ->where('curso_materia.idCurso', $curso->id)
             ->where('curso_materia.idGestion', session('gestion_activa'))
             ->select('curso_materia.idCursoMateria', 'materias.campo', 'materias.area', 'materias.abreviatura', 'curso_materia.horas_mes')
+            ->orderby('materias.orden')
             ->get();
 
         return response()->json([

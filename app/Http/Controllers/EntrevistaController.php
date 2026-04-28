@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Entrevista;
 use App\Models\Compromiso;
 use App\Models\Estudiante;
+use App\Models\Profesor;
 use Illuminate\Http\Request;
 
 class EntrevistaController extends Controller
@@ -31,8 +32,9 @@ class EntrevistaController extends Controller
     public function create()
     {
         $estudiantes = Estudiante::all();
+        $profesores = Profesor::all();
 
-        return view('entrevista.create', compact('estudiantes'));
+        return view('entrevista.create', compact('estudiantes', 'profesores'));
     }
 
     /**
@@ -43,7 +45,7 @@ class EntrevistaController extends Controller
      */
     public function store(Request $request)
     {
-        // Validar datos de la entrevista
+        //dd($request->all());        // Validar datos de la entrevista
         $validated = $request->validate([
             'idEstudiante' => 'required|string|exists:estudiantes,id_estudiante',
             'idProfesor' => 'required|integer|exists:profesores,id_profesor',
@@ -73,6 +75,7 @@ class EntrevistaController extends Controller
                 'asistio' => $validated['asistio'],
             ]);
 
+            
             // Guardar compromisos si existen
             if (!empty($validated['descripcion'])) {
                 foreach ($validated['descripcion'] as $key => $descripcion) {

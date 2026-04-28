@@ -34,19 +34,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {{-- Estudiante --}}
                         <div>
-                            <label for="idEstudiante" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="buscarEstudiante" class="block text-sm font-medium text-gray-700 mb-2">
                                 Estudiante <span class="text-red-500">*</span>
                             </label>
-                            <select name="idEstudiante" id="idEstudiante" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('idEstudiante') border-red-500 @enderror">
-                                <option value="">Seleccione un estudiante</option>
-                                @foreach ($estudiantes as $estudiante)
-                                    <option value="{{ $estudiante->id_estudiante }}"
-                                        {{ old('idEstudiante') == $estudiante->id_estudiante ? 'selected' : '' }}>
-                                        {{ $estudiante->nombres }} {{ $estudiante->appaterno }} {{ $estudiante->apmaterno }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="relative">
+                                <input type="text" id="buscarEstudiante" placeholder="Escriba el nombre del estudiante"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('idEstudiante') border-red-500 @enderror"
+                                    autocomplete="off">
+                                <input type="hidden" name="idEstudiante" id="idEstudiante" required
+                                    value="{{ old('idEstudiante', '') }}">
+                                <ul id="listadoEstudiantes"
+                                    class="hidden absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto z-50 mt-1">
+                                </ul>
+                            </div>
                             @error('idEstudiante')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -54,12 +54,19 @@
 
                         {{-- Profesor --}}
                         <div>
-                            <label for="idProfesor" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="buscarProfesor" class="block text-sm font-medium text-gray-700 mb-2">
                                 Profesor <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" name="idProfesor" id="idProfesor" required value="{{ old('idProfesor') }}"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('idProfesor') border-red-500 @enderror"
-                                placeholder="ID del profesor">
+                            <div class="relative">
+                                <input type="text" id="buscarProfesor" placeholder="Escriba el nombre del profesor"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('idProfesor') border-red-500 @enderror"
+                                    autocomplete="off">
+                                <input type="hidden" name="idProfesor" id="idProfesor" required
+                                    value="{{ old('idProfesor', '') }}">
+                                <ul id="listadoProfesores"
+                                    class="hidden absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-y-auto z-50 mt-1">
+                                </ul>
+                            </div>
                             @error('idProfesor')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -215,6 +222,94 @@
     </div>
 
     <script>
+        // Datos de estudiantes y profesores desde PHP
+        const estudiantesData = @json(
+            $estudiantes->map(fn($e) => [
+                    'id' => $e->id_estudiante,
+                    'nombre' => trim($e->nombres . ' ' . $e->appaterno . ' ' . $e->apmaterno),
+                ]));
+
+        const profesoresData = @json(
+            $profesores->map(fn($p) => [
+                    'id' => $p->id_profesor,
+                    'nombre' => trim($p->nombres . ' ' . $p->appaterno . ' ' . $p->apmaterno),
+                ]));
+
+        // Función para filtrar y mostrar opciones
+        function mostrarOpciones(inputId, listadoId, datos, inputValue) {
+            const listado = document.getElementById(listadoId);
+            const filtered = datos.filter(item =>
+                item.nombre.toLowerCase().includes(inputValue.toLowerCase())
+            );
+
+            if (inputValue.trim() === '' || filtered.length === 0) {
+                listado.classList.add('hidden');
+                return;
+            }
+
+            listado.innerHTML = '';
+            filtered.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'px-4 py-2 cursor-pointer hover:bg-blue-100 transition';
+                li.textContent = item.nombre;
+                li.addEventListener('click', function() {
+                    document.getElementById(inputId).value = item.nombre;
+                    document.getElementById(inputId === 'buscarEstudiante' ? 'idEstudiante' : 'idProfesor')
+                        .value = item.id;
+                    listado.classList.add('hidden');
+                });
+                listado.appendChild(li);
+            });
+
+            listado.classList.remove('hidden');
+        }
+
+        // Event listener para campo Estudiante
+        document.getElementById('buscarEstudiante').addEventListener('input', function() {
+            mostrarOpciones('buscarEstudiante', 'listadoEstudiantes', estudiantesData, this.value);
+        });
+
+        // Event listener para campo Profesor
+        document.getElementById('buscarProfesor').addEventListener('input', function() {
+            mostrarOpciones('buscarProfesor', 'listadoProfesores', profesoresData, this.value);
+        });
+
+        // Cerrar listados al hacer click fuera
+        document.addEventListener('click', function(event) {
+            const estudianteInput = document.getElementById('buscarEstudiante');
+            const profesorInput = document.getElementById('buscarProfesor');
+            const listadoEstudiantes = document.getElementById('listadoEstudiantes');
+            const listadoProfesores = document.getElementById('listadoProfesores');
+
+            if (!estudianteInput.contains(event.target) && !listadoEstudiantes.contains(event.target)) {
+                listadoEstudiantes.classList.add('hidden');
+            }
+            if (!profesorInput.contains(event.target) && !listadoProfesores.contains(event.target)) {
+                listadoProfesores.classList.add('hidden');
+            }
+        });
+
+        // Restaurar valores si existen (al recargar el formulario con errores)
+        window.addEventListener('load', function() {
+            const idEstudiante = document.getElementById('idEstudiante').value;
+            const idProfesor = document.getElementById('idProfesor').value;
+
+            if (idEstudiante) {
+                const est = estudiantesData.find(e => e.id == idEstudiante);
+                if (est) {
+                    document.getElementById('buscarEstudiante').value = est.nombre;
+                }
+            }
+
+            if (idProfesor) {
+                const prof = profesoresData.find(p => p.id == idProfesor);
+                if (prof) {
+                    document.getElementById('buscarProfesor').value = prof.nombre;
+                }
+            }
+        });
+
+        // Agregar compromisos
         document.addEventListener('DOMContentLoaded', function() {
             const agregarBtn = document.getElementById('agregarCompromiso');
             const container = document.getElementById('compromisosContainer');

@@ -240,6 +240,27 @@
                         });
                 }
 
+                // Función para obtener color pastel basado en el campo
+                function getColorByCampo(campo) {
+                    const colores = [
+                        'bg-red-100', // Rojo pastel
+                        'bg-orange-100', // Naranja pastel
+                        'bg-yellow-100', // Amarillo pastel
+                        'bg-emerald-100', // Verde pastel
+                        'bg-blue-100', // Azul pastel
+                        'bg-violet-100' // Violeta pastel
+                    ];
+
+                    // Crear hash simple del campo
+                    let hash = 0;
+                    for (let i = 0; i < campo.length; i++) {
+                        hash = ((hash << 5) - hash) + campo.charCodeAt(i);
+                        hash = hash & hash; // Convertir a entero de 32 bits
+                    }
+
+                    return colores[Math.abs(hash) % colores.length];
+                }
+
                 function selectParalelo(turno, nivel, grado, paralelo, nombreCurso) {
                     currentParams = {
                         turno,
@@ -283,14 +304,14 @@
                                     '<tr class="bg-white"><td colspan="4" class="px-6 py-4 text-center text-gray-600">No hay asignaciones para este curso.</td></tr>';
                                 return;
                             }
-                            tbody.innerHTML = data.asignaciones.map(item => `
-                                <tr class="bg-white border-b border-gray-400 hover:bg-gray-300 text-center">
-                                    <td class="px-4 py-3">${item.campo}</td>
-                                    <td class="px-4 py-3">
-                                        <span class="border border-slate-400 px-2 py-1 rounded">${item.area} (${item.abreviatura})</span>
+                            const rows = data.asignaciones.map(item => `
+                                <tr class="${getColorByCampo(item.campo)} border-b border-gray-400 hover:opacity-80 text-center transition">
+                                    <td class="px-4">${item.campo}</td>
+                                    <td class="px-4">
+                                        <span class="border border-slate-400 px-2 py-1 bg-white rounded">${item.area} (${item.abreviatura})</span>
                                     </td>
-                                    <td class="px-4 py-3 font-bold text-lg">${item.horas_mes} <i class="fa-regular fa-clock"></i></td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 font-bold text-lg">${item.horas_mes} <i class="fa-regular fa-clock"></i></td>
+                                    <td class="px-4">
                                         <button onclick="eliminarAsignacion(${item.idCursoMateria})" class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
                                             <i class="fa-regular fa-trash-can"></i> Eliminar
                                         </button>
@@ -298,9 +319,19 @@
                                             <i class="fa-solid fa-chalkboard-user"></i> Profesor
                                         </button>
                                     </td>
-
                                 </tr>
                             `).join('');
+
+                            // Calcular suma total de horas
+                            const totalHoras = data.asignaciones.reduce((sum, item) => sum + parseInt(item.horas_mes), 0);
+                            const totalRow = `
+                                <tr class="bg-slate-200 border-t-2 border-slate-600 font-bold text-center">
+                                    <td colspan="2" class="px-4 py-3">TOTAL</td>
+                                    <td class="px-4 py-3 font-bold text-lg">${totalHoras} <i class="fa-regular fa-clock"></i></td>
+                                    <td class="px-4 py-3"></td>
+                                </tr>
+                            `;
+                            tbody.innerHTML = rows + totalRow;
                         })
                         .catch(error => {
                             console.error('Error al cargar asignaciones:', error);
@@ -311,7 +342,7 @@
                 }
             </script>
 
-            <div class=" w-3/4 bg-white h-fit rounded border border-gray-400 px-4 py-1">
+            <div class=" w-3/4 bg-white h-fit rounded border px-4 py-1">
                 <div>
                     <form class="space-y-4" id="formularioAsignacion" action="{{ route('curso-materia.store') }}"
                         method="post" class="form-adicionar">
@@ -364,8 +395,8 @@
 
                     <span id="cursoSeleccionado" class="font-bold text-lg">Curso: Ninguno</span>
                     <div
-                        class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
-                        <table class="w-full text-xs text-left rtl:text-right text-body">
+                        class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default mb-12">
+                        <table class="w-full text-xs text-left rtl:text-right text-body ">
                             <thead
                                 class="text-xs text-body bg-neutral-secondary-medium border-b border-default-medium bg-slate-600 text-white">
                                 <tr class="text-center">
