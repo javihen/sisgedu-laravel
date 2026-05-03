@@ -1,0 +1,11 @@
+id_estudiante,calificacion,periodo,idAsignacion,id_gestion
+EST001,85.50,1,1,1
+EST002,92.00,1,1,1
+EST003,78.50,1,1,1
+EST004,88.25,1,1,1
+EST005,95.00,1,1,1
+EST006,81.75,1,2,1
+EST007,89.50,2,1,1
+EST008,76.25,2,1,1
+EST009,93.00,2,2,1
+EST010,87.50,2,2,1

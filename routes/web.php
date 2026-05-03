@@ -12,6 +12,7 @@ use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\CitacionController;
 use App\Http\Controllers\EntrevistaController;
+use App\Http\Controllers\NotaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -126,3 +127,9 @@ Route::get('/entrevistas/{entrevista}', [EntrevistaController::class, 'show'])->
 Route::get('/entrevistas/{entrevista}/edit', [EntrevistaController::class, 'edit'])->name('entrevistas.edit');
 Route::put('/entrevistas/{entrevista}', [EntrevistaController::class, 'update'])->name('entrevistas.update');
 Route::delete('/entrevistas/{entrevista}', [EntrevistaController::class, 'destroy'])->name('entrevistas.destroy');
+
+//----------------------- MODULO NOTAS -----------------------//
+Route::get('/notas', [NotaController::class, 'index'])->name('notas.index');
+Route::get('/notas/import', [NotaController::class, 'importForm'])->name('notas.import-form');
+Route::post('/notas/import', [NotaController::class, 'import'])->name('notas.import');
+Route::get('/notas/descargar-plantilla', [NotaController::class, 'descargarPlantilla'])->name('notas.descargar-plantilla');
