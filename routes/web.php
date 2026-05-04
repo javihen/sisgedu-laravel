@@ -133,3 +133,8 @@ Route::get('/notas', [NotaController::class, 'index'])->name('notas.index');
 Route::get('/notas/import', [NotaController::class, 'importForm'])->name('notas.import-form');
 Route::post('/notas/import', [NotaController::class, 'import'])->name('notas.import');
 Route::get('/notas/descargar-plantilla', [NotaController::class, 'descargarPlantilla'])->name('notas.descargar-plantilla');
+Route::post('/notas/upload-file', [NotaController::class, 'uploadFile'])->name('notas.upload-file');
+Route::post('/notas/preview-sheet', [NotaController::class, 'previewSheet'])->name('notas.preview-sheet');
+Route::get('/notas/centralizador/{idCurso}', [NotaController::class, 'showCentralizador'])->name('notas.centralizador');
+Route::post('/notas/delete-by-periodo', [NotaController::class, 'deleteByPeriodo'])->name('notas.delete-by-periodo');
+Route::post('/notas/import-data', [NotaController::class, 'importData'])->name('notas.import-data');
