@@ -252,8 +252,10 @@
 
                             <div class="nav__dropdown-collapse mt-1">
                                 <div class="nav__dropdown-content">
-                                    <a href="#" class="nav__dropdown-item">Registrar notas</a>
-                                    <a href="#" class="nav__dropdown-item">Ver calificaciones</a>
+                                    <a href="{{ route('notas.import') }}" class="nav__dropdown-item">Importar
+                                        notas</a>
+                                    <a href="{{ route('notas.index') }}" class="nav__dropdown-item">Ver
+                                        calificaciones</a>
                                     <a href="#" class="nav__dropdown-item">Promedios</a>
                                     <a href="#" class="nav__dropdown-item">Cuadro de honor</a>
                                     <a href="#" class="nav__dropdown-item">Reprobados x curso</a>

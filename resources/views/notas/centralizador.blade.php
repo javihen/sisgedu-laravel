@@ -11,7 +11,7 @@
         }
     </style>
 
-    <div class="mx-auto px-4 py-8 absolute left-14">
+    <div class="mx-auto px-4 py-8 absolute left-1/2 -translate-x-1/2">
         <div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-800">Centralizador de Calificaciones</h1>
@@ -58,7 +58,8 @@
                     <tr class="bg-gray-100 border-b border-gray-200">
                         <th class="border border-gray-200 px-3 py-2 text-left text-xs font-semibold text-gray-700">N°</th>
                         <th class="border border-gray-200 px-3 py-2 text-left text-xs font-semibold text-gray-700">CI</th>
-                        <th class="border border-gray-200 px-3 py-2 text-left text-xs font-semibold text-gray-700">APELLIDOS
+                        <th class="border border-gray-200 px-3 py-2 text-left text-xs font-semibold text-gray-700 ">
+                            APELLIDOS
                             Y NOMBRES</th>
                         <th class="border border-gray-200 px-3 py-2 text-left text-xs font-semibold text-gray-700">ESTADO
                         </th>
@@ -72,11 +73,11 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($students as $index => $student)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="{{ strtoupper($student->estado ?? '') !== 'E' ? 'bg-red-100' : 'hover:bg-gray-50' }}">
                             <td class="border border-gray-200 px-3 py-3 text-sm text-gray-900">{{ $index + 1 }}</td>
                             <td class="border border-gray-200 px-3 py-3 text-sm text-gray-900">{{ $student->ci ?? 'N/A' }}
                             </td>
-                            <td class="border border-gray-200 px-3 py-3 text-sm text-gray-900">
+                            <td class="border border-gray-200 px-3 py-3 text-sm text-gray-900 w-auto whitespace-nowrap">
                                 {{ trim("{$student->appaterno} {$student->apmaterno} {$student->nombres}") }}</td>
                             <td class="border border-gray-200 px-3 py-3 text-sm text-gray-900">
                                 {{ strtoupper($student->estado ?? 'N/A') }}</td>

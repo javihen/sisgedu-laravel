@@ -98,32 +98,39 @@ class NotaController extends Controller
             2 => 'Secundaria Comunitaria Productiva',
         ];
 
-        // Obtener materias para las columnas (Headers)
-        $materiasQuery = Materia::query();
-        if ($selectedNivel !== null && $selectedNivel !== '') {
-            $materiasQuery->where('nivel', $selectedNivel);
-        }
-        $materias = $materiasQuery->pluck('area', 'id_materia');
-
-        // Determinar qué cursos mostrar en las filas
-        $cursosQuery = Curso::query();
-        if ($selectedNivel !== null && $selectedNivel !== '') {
-            $cursosQuery->where('nivel', $selectedNivel);
-        }
-        $courses = $cursosQuery->orderBy('nivel')->orderBy('grado')->orderBy('paralelo')->get()->pluck('display_name', 'id');
-
-        // Construir la matriz de conteo de notas
+        // Inicializar variables vacías por defecto
+        $materias = collect();
+        $courses = collect();
         $matrix = [];
-        $notasQuery = Nota::join('asignaciones', 'notas.idAsignacion', '=', 'asignaciones.idAsignacion')
-            ->select('asignaciones.idcurso', 'asignaciones.id_materia', DB::raw('count(*) as total'));
 
-        if ($selectedGestion) $notasQuery->where('notas.id_gestion', $selectedGestion);
-        if ($selectedPeriodo) $notasQuery->where('notas.periodo', $selectedPeriodo);
+        // Solo procesar datos si se ha enviado el formulario de búsqueda
+        if ($request->has('id_gestion')) {
+            // Obtener materias para las columnas (Headers)
+            $materiasQuery = Materia::query();
+            if ($selectedNivel !== null && $selectedNivel !== '') {
+                $materiasQuery->where('nivel', $selectedNivel);
+            }
+            $materias = $materiasQuery->pluck('area', 'id_materia');
 
-        $results = $notasQuery->groupBy('asignaciones.idcurso', 'asignaciones.id_materia')->get();
+            // Determinar qué cursos mostrar en las filas
+            $cursosQuery = Curso::query();
+            if ($selectedNivel !== null && $selectedNivel !== '') {
+                $cursosQuery->where('nivel', $selectedNivel);
+            }
+            $courses = $cursosQuery->orderBy('nivel')->orderBy('grado')->orderBy('paralelo')->get()->pluck('display_name', 'id');
 
-        foreach ($results as $row) {
-            $matrix[$row->idcurso][$row->id_materia] = $row->total;
+            // Construir la matriz de conteo de notas
+            $notasQuery = Nota::join('asignaciones', 'notas.idAsignacion', '=', 'asignaciones.idAsignacion')
+                ->select('asignaciones.idcurso', 'asignaciones.id_materia', DB::raw('count(*) as total'));
+
+            if ($selectedGestion) $notasQuery->where('notas.id_gestion', $selectedGestion);
+            if ($selectedPeriodo) $notasQuery->where('notas.periodo', $selectedPeriodo);
+
+            $results = $notasQuery->groupBy('asignaciones.idcurso', 'asignaciones.id_materia')->get();
+
+            foreach ($results as $row) {
+                $matrix[$row->idcurso][$row->id_materia] = $row->total;
+            }
         }
 
         return view('notas.index', compact(
@@ -168,7 +175,7 @@ class NotaController extends Controller
             ->toArray();
 
         $materias = Materia::whereIn('id_materia', $materiaIds)
-            ->orderBy('area')
+            ->orderBy('orden')
             ->get();
 
         $studentIdsFromNotas = $notas->pluck('id_estudiante')->unique()->toArray();
