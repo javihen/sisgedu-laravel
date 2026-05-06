@@ -304,23 +304,34 @@
                                     '<tr class="bg-white"><td colspan="4" class="px-6 py-4 text-center text-gray-600">No hay asignaciones para este curso.</td></tr>';
                                 return;
                             }
-                            const rows = data.asignaciones.map(item => `
+                            const rows = data.asignaciones.map(item => {
+                                const tieneProfesor = item.prof_nombres != null;
+                                const profLabel = tieneProfesor ?
+                                    `${item.prof_appaterno} ${item.prof_nombres}` :
+                                    'Sin Profesor';
+                                const btnColorClass = tieneProfesor ?
+                                    'border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white' :
+                                    'border-red-500 bg-red-500 text-red-500 hover:bg-white hover:text-red-500';
+
+                                return `
                                 <tr class="${getColorByCampo(item.campo)} border-b border-gray-400 hover:opacity-80 text-center transition">
                                     <td class="px-4">${item.campo}</td>
                                     <td class="px-4">
                                         <span class="border border-slate-400 px-2 py-1 bg-white rounded">${item.area} (${item.abreviatura})</span>
                                     </td>
                                     <td class="px-4 font-bold text-lg">${item.horas_mes} <i class="fa-regular fa-clock"></i></td>
-                                    <td class="px-4">
+                                    <td class="px-4 text-left">
                                         <button onclick="eliminarAsignacion(${item.idCursoMateria})" class="py-2 px-3 border border-red-500 bg-white my-2 rounded-sm text-red-500 hover:bg-red-500 hover:text-white cursor-pointer">
                                             <i class="fa-regular fa-trash-can"></i> Eliminar
                                         </button>
-                                        <button class="py-2 px-3 border border-blue-500 bg-white my-2 rounded-sm text-blue-500 hover:bg-blue-500 hover:text-white cursor-pointer">
-                                            <i class="fa-solid fa-chalkboard-user"></i> Profesor
+                                        <button  onclick="abrirModalProfesor('${data.idCurso}', '${item.idMateria}', '${item.area}')"
+                                                class="py-2 px-3 border bg-white w-50 text-left my-2 rounded-sm cursor-pointer transition ${btnColorClass}">
+                                            <i class="fa-solid fa-chalkboard-user"></i> ${profLabel}
                                         </button>
                                     </td>
                                 </tr>
-                            `).join('');
+                            `;
+                            }).join('');
 
                             // Calcular suma total de horas
                             const totalHoras = data.asignaciones.reduce((sum, item) => sum + parseInt(item.horas_mes), 0);
@@ -339,6 +350,49 @@
                                 '<tr class="bg-white"><td colspan="4" class="px-6 py-4 text-center text-red-600">Error al cargar las asignaciones.</td></tr>';
                         });
 
+                }
+
+                function abrirModalProfesor(idCurso, idMateria, areaMateria) {
+                    document.getElementById('modal_idCurso').value = idCurso;
+                    document.getElementById('modal_idMateria').value = idMateria;
+                    document.getElementById('modalTitle').innerText = 'Asignar Profesor: ' + areaMateria;
+                    document.getElementById('modalProfesor').classList.remove('hidden');
+                }
+
+                function cerrarModal() {
+                    document.getElementById('modalProfesor').classList.add('hidden');
+                }
+
+                function guardarAsignacion() {
+                    const idCurso = document.getElementById('modal_idCurso').value;
+                    const idMateria = document.getElementById('modal_idMateria').value;
+                    const idProfesor = document.getElementById('modal_idProfesor').value;
+
+                    if (!idProfesor) {
+                        alert('Por favor, seleccione un profesor.');
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('idcurso[]', idCurso);
+                    formData.append('id_materia', idMateria);
+                    formData.append('id_profesor', idProfesor);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    fetch('{{ route('asignacion.store') }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            cerrarModal();
+                            selectParalelo(currentParams.turno, currentParams.nivel, currentParams.grado, currentParams
+                                .paralelo, document.getElementById('cursoSeleccionado').innerText.split(': ')[1]);
+                        })
+                        .catch(error => console.error('Error:', error));
                 }
             </script>
 
@@ -376,10 +430,15 @@
                                     class="border border-slate-600 bg-white p-2 rounded-md w-full">
                                     <option value="">-- Seleccione horas --</option>
                                     <option value="8">8 hrs</option>
+                                    <option value="12">12 Hrs</option>
                                     <option value="16">16 Hrs</option>
+                                    <option value="20">20 Hrs</option>
                                     <option value="24">24 Hrs</option>
+                                    <option value="28">28 Hrs</option>
                                     <option value="32">32 Hrs</option>
+                                    <option value="36">36 Hrs</option>
                                     <option value="40">40 Hrs</option>
+                                    <option value="44">44 Hrs</option>
                                     <option value="48">48 Hrs</option>
                                 </select>
                             </div>
@@ -459,4 +518,34 @@
             window.location.href = target + (params.toString().length ? '?' + params.toString() : '');
         }
     </script>
+
+    <!-- Modal para Asignar Profesor -->
+    <div id="modalProfesor" class="fixed inset-0 bg-gray-600/50 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-bold text-gray-900 text-center" id="modalTitle">Asignar Profesor</h3>
+                <div class="mt-4 px-2">
+                    <input type="hidden" id="modal_idCurso">
+                    <input type="hidden" id="modal_idMateria">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Seleccione Docente</label>
+                        <select id="modal_idProfesor"
+                            class="block w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm">
+                            <option value="">-- Seleccione un profesor --</option>
+                            @foreach ($profesores as $p)
+                                <option value="{{ $p->id_profesor }}">{{ $p->appaterno }} {{ $p->apmaterno }}
+                                    {{ $p->nombres }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 mt-4">
+                    <button onclick="guardarAsignacion()"
+                        class="px-4 py-2 bg-blue-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700">Asignar</button>
+                    <button onclick="cerrarModal()"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-200">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection

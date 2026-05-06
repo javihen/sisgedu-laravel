@@ -251,7 +251,7 @@ class MateriaController extends Controller
         return view('materia.asignacion', compact('profesores', 'materias', 'niveles', 'turnos', 'cursos', 'selectedTurno', 'selectedNivel', 'selectedMateria'));
     }
     public function cargaHoraria(Request $request){
-        $profesores = Profesor::where('estado', 1)->get();
+        $profesores = Profesor::all();
         $materias = Materia::all();
         $niveles = [
             0 => 'Inicial en Familia Comunitaria',

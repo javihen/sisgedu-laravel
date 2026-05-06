@@ -89,6 +89,10 @@ class AsignacionController extends Controller
                 ]);
             }
 
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Asignación registrada con éxito.']);
+            }
+
             return redirect()->route('profesor.perfil', $id);
         }catch (\Exception $e) {
             session()->flash('swal', [
@@ -151,7 +155,7 @@ class AsignacionController extends Controller
 
     public function asignacionxcurso(Request $request)
     {
-        $profesores = Profesor::where('estado', 1)->get();
+        $profesores = Profesor::where('estado', 'A')->orderBy('appaterno', 'asc')->get();
         $materias = Materia::all();
         $niveles = [
             0 => 'Inicial en Familia Comunitaria',
@@ -200,7 +204,7 @@ class AsignacionController extends Controller
         // Datos para el árbol dinámico
         $cursosTree = Curso::all()->groupBy(['turno', 'nivel', 'grado', 'paralelo']);
 
-        return view('curso.asignacionxcurso', [
+        return view('curso.cargaHoraria', [
             'profesores' => $profesores,
             'materias' => $materias,
             'niveles' => $niveles,
@@ -230,11 +234,23 @@ class AsignacionController extends Controller
             return response()->json(['error' => 'Curso no encontrado'], 404);
         }
 
+        $gestionActiva = session('gestion_activa');
+
         $asignaciones = DB::table('curso_materia')
             ->join('materias', 'curso_materia.idMateria', '=', 'materias.id_materia')
+            ->leftJoin('asignaciones', function($join) use ($gestionActiva) {
+                $join->on('curso_materia.idCurso', '=', 'asignaciones.idcurso')
+                     ->on('curso_materia.idMateria', '=', 'asignaciones.id_materia')
+                     ->where('asignaciones.id_gestion', '=', $gestionActiva);
+            })
+            ->leftJoin('profesores', 'asignaciones.id_profesor', '=', 'profesores.id_profesor')
             ->where('curso_materia.idCurso', $curso->id)
-            ->where('curso_materia.idGestion', session('gestion_activa'))
-            ->select('curso_materia.idCursoMateria', 'materias.campo', 'materias.area', 'materias.abreviatura', 'curso_materia.horas_mes')
+            ->where('curso_materia.idGestion', $gestionActiva)
+            ->select(
+                'curso_materia.idCursoMateria', 'curso_materia.idMateria', 'materias.campo',
+                'materias.area', 'materias.abreviatura', 'curso_materia.horas_mes',
+                'profesores.nombres as prof_nombres', 'profesores.appaterno as prof_appaterno'
+            )
             ->orderby('materias.orden')
             ->get();
 
