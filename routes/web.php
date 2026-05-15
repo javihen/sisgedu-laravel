@@ -13,6 +13,7 @@ use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\CitacionController;
 use App\Http\Controllers\EntrevistaController;
 use App\Http\Controllers\NotaController;
+use App\Http\Controllers\PromedioFinalController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,11 +26,11 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 //------------------------- MODULO GESTION --------------------------//
-Route::get('/panel', function(){
+Route::get('/panel', function () {
     return view('panel');
 });
-Route::get('/panel',[GestionController::class, 'index'])->name('panel');
-Route::post('/gestion/store',[GestionController::class, 'store'])->name('gestion.store');
+Route::get('/panel', [GestionController::class, 'index'])->name('panel');
+Route::post('/gestion/store', [GestionController::class, 'store'])->name('gestion.store');
 Route::post('/gestion/cambiar-estado/{id}', [GestionController::class, 'cambiarEstado'])->name('gestion.cambiarEstado');
 
 //-------------- MODULO CURSO ---------------------//
@@ -79,7 +80,7 @@ Route::post('/profesor/import', [ProfesorController::class, 'import'])->name('pr
 
 
 //-------------------- MODULO ASIGNACION --------------------//
-Route::post('/asignacion/store',[AsignacionController::class, 'store'])->name('asignacion.store');
+Route::post('/asignacion/store', [AsignacionController::class, 'store'])->name('asignacion.store');
 Route::delete('/asignacion/destroy/{id}', [AsignacionController::class, 'destroy'])->name('asignacion.destroy');
 Route::get('/asignacion/curso', [AsignacionController::class, 'asignacionxcurso'])->name('asignacion.curso');
 Route::get('/api/asignacion/curso', [AsignacionController::class, 'getAsignacionesCurso'])->name('asignacion.getAsignacionesCurso');
@@ -137,4 +138,5 @@ Route::post('/notas/upload-file', [NotaController::class, 'uploadFile'])->name('
 Route::post('/notas/preview-sheet', [NotaController::class, 'previewSheet'])->name('notas.preview-sheet');
 Route::get('/notas/centralizador/{idCurso}', [NotaController::class, 'showCentralizador'])->name('notas.centralizador');
 Route::post('/notas/delete-by-periodo', [NotaController::class, 'deleteByPeriodo'])->name('notas.delete-by-periodo');
+Route::get('/promedios-finales', [PromedioFinalController::class, 'index'])->name('promedios.finales');
 Route::post('/notas/import-data', [NotaController::class, 'importData'])->name('notas.import-data');

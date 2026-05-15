@@ -256,7 +256,8 @@
                                         notas</a>
                                     <a href="{{ route('notas.index') }}" class="nav__dropdown-item">Ver
                                         calificaciones</a>
-                                    <a href="#" class="nav__dropdown-item">Promedios</a>
+                                    <a href="{{ route('promedios.finales') }}" class="nav__dropdown-item">Promedios
+                                        Finales</a>
                                     <a href="#" class="nav__dropdown-item">Cuadro de honor</a>
                                     <a href="#" class="nav__dropdown-item">Reprobados x curso</a>
                                 </div>
