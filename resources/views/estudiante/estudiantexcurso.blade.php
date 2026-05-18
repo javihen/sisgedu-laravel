@@ -99,8 +99,9 @@
 
                             <td>
                                 <a href="#"
-                                    class="bg-[#1F1F1F] text-white px-2 py-2 rounded hover:text-[#1F1F1F] hover:bg-white border-2 border-[#1F1F1F] "><i
-                                        class="fa-solid fa-book"></i> Calificaciones</a>
+                                    class="btn-ver-boletin bg-[#1F1F1F] text-white px-2 py-2 rounded hover:text-[#1F1F1F] hover:bg-white border-2 border-[#1F1F1F]"
+                                    data-id="{{ $estudiante->id_estudiante }}"><i class="fa-solid fa-book"></i>
+                                    Calificaciones</a>
                                 <a href="#"
                                     class="bg-[#888888] text-white text-xs px-2 py-2 rounded hover:text-[#888888] hover:bg-white border-2 border-[#888888] "><i
                                         class="fa-solid fa-list-check"></i> Asistencias</a>
@@ -135,6 +136,86 @@
 
                 </table>
             </div>
+
+            <div id="boletinModal"
+                class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+                <div
+                    class="relative w-full max-w-6xl rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 overflow-hidden">
+                    <div
+                        class="flex flex-col gap-4 border-b border-slate-200 bg-white px-6 py-5 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Boletín de calificaciones</p>
+                            <h2 id="boletinTitulo" class="mt-2 text-2xl font-semibold text-slate-900">Estudiante</h2>
+                            <p id="boletinSubtitulo" class="text-sm text-slate-500">Curso • Gestión</p>
+                        </div>
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <button id="btnImprimirBoletin" type="button"
+                                class="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"><i
+                                    class="fa-solid fa-print mr-2"></i>Imprimir</button>
+                            <button id="closeBoletinModal" type="button"
+                                class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">Cerrar</button>
+                        </div>
+                    </div>
+                    <div class="print-area max-h-[76vh] overflow-hidden bg-slate-50">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full border-separate border-spacing-0 text-sm text-slate-700">
+                                <thead
+                                    class="sticky top-0 bg-slate-100 text-left text-xs uppercase tracking-wider text-slate-600">
+                                    <tr>
+                                        <th class="border-b border-slate-200 px-4 py-3">Área / Materia</th>
+                                        <th class="border-b border-slate-200 px-4 py-3 text-center">1er Tri</th>
+                                        <th class="border-b border-slate-200 px-4 py-3 text-center">2do Tri</th>
+                                        <th class="border-b border-slate-200 px-4 py-3 text-center">3er Tri</th>
+                                        <th class="border-b border-slate-200 px-4 py-3 text-center">P.Final</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="boletinBody" class="divide-y divide-slate-200 bg-white"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                #boletinModal.hidden {
+                    display: none;
+                }
+
+                #boletinModal {
+                    backdrop-filter: blur(6px);
+                }
+
+                .boletin-score-low {
+                    color: #b91c1c;
+                    font-weight: 600;
+                }
+
+                .boletin-final {
+                    background-color: #2563eb;
+                    color: white;
+                }
+
+                @media print {
+                    body * {
+                        visibility: hidden;
+                    }
+
+                    .print-area,
+                    .print-area * {
+                        visibility: visible;
+                    }
+
+                    #boletinModal {
+                        position: static;
+                        visibility: visible;
+                    }
+
+                    #boletinModal .print-area {
+                        max-height: none;
+                    }
+                }
+            </style>
+
             <div class="flex justify-end bg-white w-full  border border-slate-300 rounded-md mb-16 h-30">
                 <div class="flex my-auto flex-col mr-2">
                     <a href=""
@@ -159,7 +240,8 @@
                 <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">REGISTRO DE NUEVO ESTUDIANTE</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
-                <form class="space-y-4" id="formularioEstudiante" action="{{ route('estudiante.store') }}" method="post">
+                <form class="space-y-4" id="formularioEstudiante" action="{{ route('estudiante.store') }}"
+                    method="post">
                     @csrf
                     <input type="hidden" name="_method" id="formMethod" value="POST">
 
@@ -532,6 +614,104 @@
                 .catch(error => {
                     console.error('Error:', error);
                     alert('Error al actualizar el género');
+                });
+        }
+
+        const boletinRutaTemplate = '{{ route('boletin.obtener', ['idEstudiante' => ':id']) }}';
+
+        document.addEventListener('click', function(event) {
+            const button = event.target.closest('.btn-ver-boletin');
+            if (!button) {
+                return;
+            }
+
+            event.preventDefault();
+            const idEstudiante = button.getAttribute('data-id');
+            abrirBoletin(idEstudiante);
+        });
+
+        document.getElementById('closeBoletinModal').addEventListener('click', function() {
+            document.getElementById('boletinModal').classList.add('hidden');
+        });
+
+        document.getElementById('btnImprimirBoletin').addEventListener('click', function() {
+            window.print();
+        });
+
+        function formatNota(value) {
+            return value === null || value === undefined ? '-' : value;
+        }
+
+        function abrirBoletin(idEstudiante) {
+            const modal = document.getElementById('boletinModal');
+            const body = document.getElementById('boletinBody');
+            const titulo = document.getElementById('boletinTitulo');
+            const subtitulo = document.getElementById('boletinSubtitulo');
+
+            body.innerHTML =
+                '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Cargando boletín...</td></tr>';
+            modal.classList.remove('hidden');
+
+            const url = boletinRutaTemplate.replace(':id', encodeURIComponent(idEstudiante));
+
+            fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.error || 'Error al cargar el boletín.');
+                        });
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    const estudiante = data.estudiante || {};
+                    titulo.textContent = estudiante.nombre_completo || 'Estudiante';
+                    subtitulo.textContent =
+                        `${estudiante.curso || 'Sin curso'} • ${estudiante.gestion || 'Sin gestión'}`;
+
+                    if (!data.asignaciones || data.asignaciones.length === 0) {
+                        body.innerHTML =
+                            '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Este estudiante no tiene calificaciones registradas.</td></tr>';
+                        return;
+                    }
+
+                    body.innerHTML = data.asignaciones.map(asignacion => {
+                        const nota1 = formatNota(asignacion.notas['1']);
+                        const nota2 = formatNota(asignacion.notas['2']);
+                        const nota3 = formatNota(asignacion.notas['3']);
+                        const promedio = formatNota(asignacion.promedio_final);
+
+                        const nota1Class = asignacion.notas['1'] !== null && asignacion.notas['1'] < 51 ?
+                            'boletin-score-low' : '';
+                        const nota2Class = asignacion.notas['2'] !== null && asignacion.notas['2'] < 51 ?
+                            'boletin-score-low' : '';
+                        const nota3Class = asignacion.notas['3'] !== null && asignacion.notas['3'] < 51 ?
+                            'boletin-score-low' : '';
+
+                        return `
+                            <tr class="border-b border-slate-200 hover:bg-slate-100 odd:bg-white even:bg-slate-50">
+                                <td class="px-4 py-1 align-top w-fit">
+                                    <div class="text-sm font-medium text-slate-900">${asignacion.materia}</div>
+                                    <div class="mt-1 text-xs text-slate-500">${asignacion.profesor}</div>
+                                </td>
+                                <td class="px-4 py-1 text-center ${nota1Class}">${nota1}</td>
+                                <td class="px-4 py-1 text-center ${nota2Class}">${nota2}</td>
+                                <td class="px-4 py-1 text-center ${nota3Class}">${nota3}</td>
+                                <td class="px-4 py-1 text-center">
+                                    <span class="inline-flex min-w-[56px] items-center justify-center rounded-full px-3 py-1 text-sm font-semibold boletin-final">${promedio}</span>
+                                </td>
+                            </tr>`;
+                    }).join('');
+                })
+                .catch(error => {
+                    console.error('Error cargando boletín:', error);
+                    body.innerHTML =
+                        '<tr><td colspan="5" class="px-4 py-8 text-center text-red-600">No se pudo cargar el boletín. Intente de nuevo.</td></tr>';
                 });
         }
     </script>

@@ -106,8 +106,8 @@
                                                                     @foreach ($cursos as $curso)
                                                                         <button type="button"
                                                                             onclick="selectCourse({{ json_encode($curso->id) }}, {{ json_encode($curso->display_name) }})"
-                                                                            class="w-full text-left rounded-md border border-slate-200 px-3 py-2 text-slate-700 hover:bg-slate-50 transition">
-                                                                            {{ $curso->display_name }}
+                                                                            class="w-10 text-left rounded-full border border-slate-200 px-3 py-2 text-slate-700 hover:bg-slate-500 hover:text-white hover:border-transparent cursor-pointer transition">
+                                                                            {{ $curso->paralelo }}
                                                                         </button>
                                                                     @endforeach
                                                                 </li>
@@ -136,7 +136,7 @@
                     <div>
                         <h2 class="text-xl font-semibold text-slate-900">Listado de promedios finales -
                             {{ $cursoSeleccionado?->display_name ?? 'Todos los cursos' }}</h2>
-                        <p class="text-sm text-slate-500 mt-1">Ordenado por curso y apellidos.</p>
+                        {{-- <p class="text-sm text-slate-500 mt-1">Ordenado por curso y apellidos.</p> --}}
                     </div>
                     <div class="text-sm text-slate-600">Total: {{ $resultados->count() }} estudiantes</div>
                 </div>
@@ -223,7 +223,7 @@
                 searching: true,
                 ordering: true,
                 paging: true,
-                pageLength: 25,
+                pageLength: 10,
                 lengthChange: true,
                 language: {
                     search: 'Buscar:',
@@ -241,22 +241,34 @@
                         extend: 'excelHtml5',
                         text: 'Exportar Excel',
                         titleAttr: 'Exportar a Excel',
-                        className: '!bg-green-600 !text-white !rounded px-3 py-1'
+                        className: '!border-none !bg-green-600 !text-white !rounded px-3 py-1'
 
                     },
                     {
                         extend: 'pdfHtml5',
                         text: 'Exportar PDF',
                         titleAttr: 'Exportar a PDF',
-                        className: '!bg-rose-600 !text-white !rounded px-3 py-1'
+                        className: '!border-none !bg-rose-600 !text-white !rounded px-3 py-1'
                     },
                     {
                         extend: 'print',
                         text: 'Imprimir',
+                        title: '',
                         titleAttr: 'Imprimir reporte',
-                        className: '!bg-slate-700 !text-white !rounded px-3 py-1',
+                        className: '!border-none !bg-slate-700 !text-white !rounded px-3 py-1',
                         customize: function(win) {
 
+                            var printTitle = 'Reporte de Promedios Finales';
+                            var selectedCourseText = $('#selected-course-label').text();
+                            if (selectedCourseText && selectedCourseText !== 'Todos los cursos') {
+                                printTitle += ' - ' + selectedCourseText;
+                            } else {
+                                printTitle += ' - Todos los cursos';
+                            }
+
+                            // Set the document title for the print window (appears in browser print dialog)
+                            win.document.title = printTitle;
+                            $(win.document.body).prepend('<h1>' + printTitle + '</h1>');
                             // BODY
                             $(win.document.body)
                                 .css('font-size', '12px')

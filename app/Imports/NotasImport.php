@@ -45,7 +45,7 @@ class NotasImport
             }
             // 1. Obtener IDs de materias desde F1:P1
             $idsMaterias = [];
-            for ($col = 6; $col <= 16; $col++) { // F=6 hasta P=16
+            for ($col = 6; $col <= 18; $col++) { // F=6 hasta P=16
                 $cell = $sheet->getCellByColumnAndRow($col, 1);
                 $valor = trim($cell->getValue());
                 if (!empty($valor)) {
@@ -133,7 +133,6 @@ class NotasImport
 
             $this->notasCreadas = $notasCount;
             return true;
-
         } catch (\Exception $e) {
             throw new \Exception("Error procesando archivo: {$e->getMessage()}");
         }
@@ -161,7 +160,7 @@ class NotasImport
 
             // 1. Obtener IDs de materias desde F1:P1
             $idsMaterias = [];
-            for ($col = 6; $col <= 16; $col++) { // F=6 hasta P=16
+            for ($col = 6; $col <= 18; $col++) { // F=6 hasta P=16
                 $cell = $sheet->getCellByColumnAndRow($col, 1);
                 $valor = trim($cell->getValue());
                 if (!empty($valor)) {
@@ -248,7 +247,6 @@ class NotasImport
 
             $this->notasCreadas = $notasCount;
             return true;
-
         } catch (\Exception $e) {
             throw new \Exception("Error procesando hoja: {$e->getMessage()}");
         }
