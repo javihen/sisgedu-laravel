@@ -88,7 +88,7 @@
                                 <td class="border border-gray-200 px-2 py-3 text-center text-sm">
                                     @if (is_numeric($nota))
                                         <span
-                                            class="inline-flex items-center justify-center h-9 w-12 rounded-md font-semibold {{ $nota >= 60 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                            class="inline-flex items-center justify-center h-9 w-12 rounded-md font-semibold {{ $nota >= 50 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                             {{ number_format($nota, 0) }}
                                         </span>
                                     @else

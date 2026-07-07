@@ -21,7 +21,7 @@
 
 </head>
 
-<body class="min-h-screen bg-cover bg-center" style="background-image: url('/images/fondo2.jpg');">
+<body class="min-h-screen bg-cover bg-center" style="background-image: url('/images/equipoT.jpeg');">
     {{-- <div class="fondo"></div> --}}
     <div class="flex h-[700px] w-full relative z-10 ">
         {{-- <div class="w-full hidden md:inline-block">
@@ -30,10 +30,10 @@
                 alt="leftSideImage">
         </div> --}}
 
-        <div class="w-full flex flex-col items-center justify-center  ">
+        <div class="w-full h-full flex flex-col items-center justify-center  ">
 
             <form method="POST" action="{{ route('login.post') }}"
-                class="w-[500px] flex flex-col items-center justify-center bg-white/70 px-6 py-9 rounded-md backdrop-blur-xs shadow-lg">
+                class="w-[500px] flex flex-col items-center justify-center bg-white/50 px-6 py-9 rounded-md backdrop-blur-xs shadow-lg">
                 @csrf
                 <h2 class="text-4xl text-gray-900 font-medium">SISGEDU V.2</h2>
                 <p class="text-sm text-gray-700 mt-3">¡Bienvenido de nuevo! Por favor, inicie sesión para continuar

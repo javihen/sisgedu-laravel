@@ -193,7 +193,7 @@
                 class="bg-white rounded-md shadow-lg w-[800px] p-4 transform transition-all scale-100 opacity-100">
 
                 <!-- Título -->
-                <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">REGISTRO DE ASISTENCIA</h2>
+                <h2 class="text-md font-semibold mt-2 mb-2 text-left" id="modalTitle">REGISTRO DE ASISTENCIA</h2>
                 <hr class="border border-slate-200 mb-4">
                 <!-- Formulario -->
                 <form class="space-y-4" id="formularioAsistencia" method="post">
@@ -201,7 +201,7 @@
                     <input type="hidden" name="idCurso" id="inputIdCurso" value="{{ $curso->id }}">
                     <input type="hidden" name="id_gestion" id="inputIdGestion" value="">
 
-                    <div class="flex flex-row mt-4 gap-4">
+                    <div class="flex flex-row mt-[-32px] gap-4">
                         <div class="basis-1/2">
                             <label for="fechaAsistencia" class="text-xs relative top-3 left-3 bg-white px-2">Fecha</label>
                             <input type="date" name="fecha" id="fechaAsistencia"
@@ -222,17 +222,17 @@
                             rows="2"></textarea>
                     </div>
 
-                    <hr class="border border-slate-200 mb-4">
+                    <hr class="border border-slate-200 my-[-1px]">
                     <p class="font-semibold">Listado de estudiantes inscritos</p>
 
                     <!-- Tabla de estudiantes para asistencia -->
-                    <div class="overflow-auto max-h-96 border border-slate-300 rounded-md">
+                    <div class="overflow-auto max-h-96 border border-slate-300 rounded-md mt-[-12px]">
                         <table class="w-full">
                             <thead class="bg-[#64748B] text-white text-sm sticky top-0">
                                 <tr>
                                     <td class="py-2 px-2 text-center">Nro</td>
-                                    <td class="py-2 px-2">Código</td>
-                                    <td class="py-2 px-2">RUDE</td>
+                                    {{-- <td class="py-2 px-2">Código</td>
+                                    <td class="py-2 px-2">RUDE</td> --}}
                                     <td class="py-2 px-2">Estudiante</td>
                                     <td class="py-2 px-2 text-center">Estado</td>
                                     <td class="py-2 px-2">Observación</td>
@@ -407,11 +407,12 @@
                     data.forEach((inscripcion, index) => {
                         const estudiante = inscripcion.estudiante;
                         const row = document.createElement('tr');
+                        /*   */
                         row.className = 'border-t border-slate-400 hover:bg-slate-100';
                         row.innerHTML = `
                             <td class="py-2 px-2 text-center text-sm">${index + 1}</td>
-                            <td class="py-2 px-2 text-sm">${estudiante.id_estudiante}</td>
-                            <td class="py-2 px-2 text-sm">${estudiante.rude || '-'}</td>
+                            <td class="py-2 px-2 text-sm hidden">${estudiante.id_estudiante}</td>
+                            <td class="py-2 px-2 text-sm hidden">${estudiante.rude || '-'}</td>
                             <td class="py-2 px-2 text-sm">${estudiante.appaterno} ${estudiante.apmaterno} ${estudiante.nombres}</td>
                             <td class="py-2 px-2 text-center">
                                 <button type="button" class="btn-asistencia w-8 h-8 rounded-full border border-green-500 bg-green-100 flex items-center justify-center mx-auto cursor-pointer transition-colors" data-id="${estudiante.id_estudiante}" data-state="P">
