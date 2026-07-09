@@ -140,7 +140,7 @@
             <div id="boletinModal"
                 class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
                 <div
-                    class="relative w-full max-w-6xl rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 overflow-hidden">
+                    class="relative w-1/2 max-w-6xl rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 overflow-hidden py-2">
                     <div
                         class="flex flex-col gap-4 border-b border-slate-200 bg-white px-6 py-5 md:flex-row md:items-center md:justify-between">
                         <div>
@@ -694,10 +694,10 @@
                             'boletin-score-low' : '';
 
                         return `
-                            <tr class="border-b border-slate-200 hover:bg-slate-100 odd:bg-white even:bg-slate-50">
+                            <tr class="border-b border-slate-200 hover:bg-slate-200 odd:bg-white even:bg-slate-50">
                                 <td class="px-4 py-1 align-top w-fit">
                                     <div class="text-sm font-medium text-slate-900">${asignacion.materia}</div>
-                                    <div class="mt-1 text-xs text-slate-500">${asignacion.profesor}</div>
+                                    <div class="mt-1 text-[10px] text-slate-500">PROF. ${asignacion.profesor}</div>
                                 </td>
                                 <td class="px-4 py-1 text-center ${nota1Class}">${nota1}</td>
                                 <td class="px-4 py-1 text-center ${nota2Class}">${nota2}</td>
