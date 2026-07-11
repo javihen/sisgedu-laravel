@@ -25,7 +25,14 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Lobster&family=Madimi+One&family=Playwrite+GB+S:ital,wght@0,100..400;1,100..400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Story+Script&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <style>
+        @theme {
+
+            --font-pacifico: "Pacifico", cursive;
+
+        }
+
         .fondo {
             background-image: url('/images/patron5.jpg');
             background-repeat: repeat;
@@ -204,85 +211,94 @@
                                 </div>
                             </div>
                         @endif
-                        <div class="nav__dropdown">
-                            <a href="#"
-                                class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
-                                <div class="flex items-center">
-                                    <i class='bx bx-calendar nav__icon'></i>
-                                    <span class="nav__name">Horarios</span>
-                                </div>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
+                        @if (session()->has('usuario_permisos') && in_array('ver_horarios', session('usuario_permisos')))
+                            <div class="nav__dropdown">
+                                <a href="#"
+                                    class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                    <div class="flex items-center">
+                                        <i class='bx bx-calendar nav__icon'></i>
+                                        <span class="nav__name">Horarios</span>
+                                    </div>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
 
-                            <div class="nav__dropdown-collapse mt-1">
-                                <div class="nav__dropdown-content">
-                                    <a href="#" class="nav__dropdown-item">Crear horarios</a>
-                                    <a href="#" class="nav__dropdown-item">Listar</a>
-                                    <a href="#" class="nav__dropdown-item">Asignar aulas</a>
+                                <div class="nav__dropdown-collapse mt-1">
+                                    <div class="nav__dropdown-content">
+                                        <a href="#" class="nav__dropdown-item">Crear horarios</a>
+                                        <a href="#" class="nav__dropdown-item">Listar</a>
+                                        <a href="#" class="nav__dropdown-item">Asignar aulas</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="nav__dropdown">
-                            <a href="#"
-                                class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
-                                <div class="flex items-center">
-                                    {{-- <i class='bx bx-list-check nav__icon'></i> --}}
-                                    <i class="fa-solid fa-list-check nav__icon"></i>
-                                    <span class="nav__name">Asistencia</span>
-                                </div>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
+                        @endif
+                        @if (session()->has('usuario_permisos') && in_array('ver_asistencias', session('usuario_permisos')))
+                            <div class="nav__dropdown">
+                                <a href="#"
+                                    class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                    <div class="flex items-center">
+                                        {{-- <i class='bx bx-list-check nav__icon'></i> --}}
+                                        <i class="fa-solid fa-list-check nav__icon"></i>
+                                        <span class="nav__name">Asistencia</span>
+                                    </div>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
 
-                            <div class="nav__dropdown-collapse mt-1">
-                                <div class="nav__dropdown-content">
-                                    <a href="#" class="nav__dropdown-item">Registrar asistencia</a>
-                                    <a href="#" class="nav__dropdown-item">Ver asistencia</a>
+                                <div class="nav__dropdown-collapse mt-1">
+                                    <div class="nav__dropdown-content">
+                                        <a href="#" class="nav__dropdown-item">Registrar asistencia</a>
+                                        <a href="#" class="nav__dropdown-item">Ver asistencia</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="nav__dropdown">
-                            <a href="#"
-                                class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
-                                <div class="flex items-center">
-                                    <i class='bx bx-book-bookmark nav__icon'></i>
-                                    <span class="nav__name">Calificaciones</span>
-                                </div>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
+                        @endif
+                        @if (session()->has('usuario_permisos') && in_array('ver_calificaciones', session('usuario_permisos')))
+                            <div class="nav__dropdown">
+                                <a href="#"
+                                    class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                    <div class="flex items-center">
+                                        <i class='bx bx-book-bookmark nav__icon'></i>
+                                        <span class="nav__name">Calificaciones</span>
+                                    </div>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
 
-                            <div class="nav__dropdown-collapse mt-1">
-                                <div class="nav__dropdown-content">
-                                    <a href="{{ route('notas.import') }}" class="nav__dropdown-item">Importar
-                                        notas</a>
-                                    <a href="{{ route('notas.index') }}" class="nav__dropdown-item">Ver
-                                        calificaciones</a>
-                                    <a href="{{ route('promedios.finales') }}" class="nav__dropdown-item">Promedios
-                                        Finales</a>
-                                    <a href="#" class="nav__dropdown-item">Cuadro de honor</a>
-                                    <a href="#" class="nav__dropdown-item">Reprobados x curso</a>
+                                <div class="nav__dropdown-collapse mt-1">
+                                    <div class="nav__dropdown-content">
+                                        <a href="{{ route('notas.import') }}" class="nav__dropdown-item">Importar
+                                            notas</a>
+                                        <a href="{{ route('notas.index') }}" class="nav__dropdown-item">Ver
+                                            calificaciones</a>
+                                        <a href="{{ route('promedios.finales') }}"
+                                            class="nav__dropdown-item">Promedios
+                                            Finales</a>
+                                        <a href="#" class="nav__dropdown-item">Cuadro de honor</a>
+                                        <a href="#" class="nav__dropdown-item">Reprobados x curso</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="nav__dropdown">
-                            <a href="#"
-                                class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
-                                <div class="flex items-center">
-                                    <i class='bx bxs-report nav__icon'></i>
-                                    <span class="nav__name">Reportes</span>
-                                </div>
-                                <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
-                            </a>
+                        @endif
+                        @if (session()->has('usuario_permisos') && in_array('ver_reportes', session('usuario_permisos')))
+                            <div class="nav__dropdown">
+                                <a href="#"
+                                    class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                    <div class="flex items-center">
+                                        <i class='bx bxs-report nav__icon'></i>
+                                        <span class="nav__name">Reportes</span>
+                                    </div>
+                                    <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
+                                </a>
 
-                            <div class="nav__dropdown-collapse mt-1">
-                                <div class="nav__dropdown-content">
-                                    <a href="#" class="nav__dropdown-item">R. Estudiantes</a>
-                                    <a href="#" class="nav__dropdown-item">R. Docentes</a>
-                                    <a href="#" class="nav__dropdown-item">R. Asistencias</a>
-                                    <a href="#" class="nav__dropdown-item">R. Notas</a>
-                                    <a href="#" class="nav__dropdown-item">Exportar PDF/Excel</a>
+                                <div class="nav__dropdown-collapse mt-1">
+                                    <div class="nav__dropdown-content">
+                                        <a href="#" class="nav__dropdown-item">R. Estudiantes</a>
+                                        <a href="#" class="nav__dropdown-item">R. Docentes</a>
+                                        <a href="#" class="nav__dropdown-item">R. Asistencias</a>
+                                        <a href="#" class="nav__dropdown-item">R. Notas</a>
+                                        <a href="#" class="nav__dropdown-item">Exportar PDF/Excel</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
                         {{-- <div class="nav__dropdown">
                             <a href="#"
                                 class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
@@ -316,6 +332,14 @@
                                 class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
                                 <i class="fa-solid fa-chalkboard-user nav__icon"></i>
                                 <span class="nav__name ">Asignaturas</span>
+                            </a>
+                        @endif
+
+                        @if (session()->has('usuario_permisos') && in_array('ver_citaciones', session('usuario_permisos')))
+                            <a href="{{ route('citacion.index', session('profesor_id')) }}"
+                                class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <i class="fa-solid fa-people-group nav__icon"></i>
+                                <span class="nav__name ">Citaciones</span>
                             </a>
                         @endif
 

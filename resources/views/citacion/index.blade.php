@@ -4,18 +4,14 @@
     <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
         <div class="ml-3 w-full mt-2 h-12 bg-[#38BC9B] rounded-md flex justify-between items-center">
             <p class="text-white text-sm ml-4">
-                <i class='bx bx-list-check mr-2'></i>Listado de Citaciones
-                @if ($gestionActiva)
-                    <span class="ml-4 text-xs">| Gestión: {{ $gestionActiva->anio }}</span>
-                @endif
+                <i class='bx bx-list-check mr-2'></i>Listado de Reuniones de Citación
+
             </p>
             <div class="flex gap-2 mr-4">
-                @if ($citaciones->count() > 0)
-                    <a href="{{ route('citacion.pdf.general') }}"
-                        class="text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 hover:text-red-600 hover:bg-white hover:border-red-600 transition">
-                        <i class='bx bx-file-pdf mr-1'></i>PDF General
-                    </a>
-                @endif
+                <a href="{{ route('citacion.pdf.general') }}"
+                    class="text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 hover:text-red-600 hover:bg-white hover:border-red-600 transition">
+                    <i class='bx bx-file-pdf mr-1'></i>PDF General
+                </a>
                 <a href="{{ route('citacion.import') }}"
                     class="text-white bg-blue-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
                     <i class='bx bx-cloud-upload mr-2'></i>Importar
@@ -44,159 +40,25 @@
             </div>
         @endif
 
-        <div class="mx-3 mt-4 bg-white h-[calc(100vh-150px)] rounded border border-gray-400 overflow-y-auto">
-            @if ($citaciones->count() > 0)
-                <!-- Resumen de estadísticas -->
-                <div class="sticky top-0 bg-gradient-to-r from-[#e8f5f1] to-white px-4 py-3 border-b border-gray-200">
-                    <div class="flex justify-between items-center text-xs">
-                        <div>
-                            <strong>Total de Citaciones:</strong> {{ $citaciones->count() }}
-                            <span class="ml-4">
-                                <strong>Individual:</strong>
-                                {{ $citaciones->where('tipo', 'individual')->count() }}
-                            </span>
-                            <span class="ml-4">
-                                <strong>Grupal:</strong>
-                                {{ $citaciones->where('tipo', 'grupal')->count() }}
-                            </span>
-                        </div>
-                        <div>
-                            <strong>Cursos:</strong> {{ $citaciones->groupBy('idCurso')->count() }}
-                        </div>
-                    </div>
-                </div>
+        <div class="mx-3 mt-2 flex flex-row gap-1 w-full flex-wrap">
+            {{--  --}}
 
-                @php
-                    $citacionesPorEstudiante = $citaciones->groupBy('idEstudiante');
-                @endphp
-
-                <table class="w-full">
-                    <thead class="bg-gray-200 sticky top-12">
-                        <tr class="text-center text-xs text-gray-700">
-                            <th class="py-2 px-4">Nro</th>
-                            <th class="py-2 px-4">Estudiante</th>
-                            <th class="py-2 px-4">Curso(s)</th>
-                            <th class="py-2 px-4">Profesor(es)</th>
-                            <th class="py-2 px-4">Materias citadas</th>
-                            <th class="py-2 px-4">Fecha(s)</th>
-                            <th class="py-2 px-4">Hora(s)</th>
-                            <th class="py-2 px-4">Tipo(s)</th>
-                            <th class="py-2 px-4">Opciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($citacionesPorEstudiante as $group)
-                            @php
-                                $primera = $group->first();
-                                $cursos = $group
-                                    ->map(fn($item) => $item->curso?->getDisplayNameAttribute() ?? 'N/A')
-                                    ->filter()
-                                    ->unique()
-                                    ->values()
-                                    ->all();
-                                $profesores = $group
-                                    ->map(
-                                        fn($item) => trim(
-                                            ($item->profesor?->nombres ?? '') .
-                                                ' ' .
-                                                ($item->profesor?->appaterno ?? '') .
-                                                ' ' .
-                                                ($item->profesor?->apmaterno ?? ''),
-                                        ),
-                                    )
-                                    ->filter()
-                                    ->unique()
-                                    ->values()
-                                    ->all();
-                                $materias = $group
-                                    ->map(fn($item) => $item->materia?->abreviatura ?? 'N/A')
-                                    ->filter()
-                                    ->unique()
-                                    ->values()
-                                    ->all();
-                                $fechas = $group
-                                    ->map(fn($item) => $item->fecha->format('d/m/Y'))
-                                    ->filter()
-                                    ->unique()
-                                    ->values()
-                                    ->all();
-                                $horas = $group->map(fn($item) => $item->hora)->filter()->unique()->values()->all();
-                                $tipos = $group
-                                    ->map(fn($item) => ucfirst($item->tipo))
-                                    ->filter()
-                                    ->unique()
-                                    ->values()
-                                    ->all();
-                            @endphp
-                            <tr class="text-xs text-center hover:bg-gray-100 border-b border-gray-300">
-                                <td class="px-4 py-2">{{ $loop->iteration }}</td>
-                                <td class="px-4 py-2 text-left">
-                                    <div class="font-semibold">{{ $primera->estudiante->nombres ?? 'N/A' }}</div>
-                                    <div class="text-gray-500 text-xs">{{ $primera->estudiante->ci ?? 'N/A' }}</div>
-                                </td>
-                                <td class="px-4 py-2 text-left">
-                                    <div class="text-gray-700 text-xs">{{ implode(', ', $cursos) }}</div>
-                                </td>
-                                <td class="px-4 py-2 text-left">
-                                    <div class="text-gray-700 text-xs">{{ implode(', ', $profesores) }}</div>
-                                </td>
-                                <td class="px-4 py-2 text-left">
-                                    <div class="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
-                                        {{ implode(', ', $materias) }}
-                                    </div>
-                                </td>
-                                <td class="px-4 py-2 text-left">
-                                    <div class="text-gray-700 text-xs">{{ implode(', ', $fechas) }}</div>
-                                </td>
-                                <td class="px-4 py-2 text-left">
-                                    <div class="text-gray-700 text-xs">{{ implode(', ', $horas) }}</div>
-                                </td>
-                                <td class="px-4 py-2 text-left">
-                                    <div class="text-gray-700 text-xs">{{ implode(', ', $tipos) }}</div>
-                                </td>
-                                <td class="px-4 py-2">
-                                    <div class="flex justify-center gap-1">
-                                        <a href="{{ route('citacion.pdf.estudiante', $primera->idEstudiante) }}"
-                                            title="PDF Estudiante"
-                                            class="text-orange-600 hover:text-orange-900 border border-orange-600 hover:bg-orange-600 hover:text-white rounded bg-white py-1 px-1.5 transition text-xs">
-                                            <i class="fa-regular fa-file-pdf"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <!-- Botones por Curso -->
-                <div class="px-4 py-4 border-t border-gray-200 ">
-                    <h3 class="text-sm font-bold mb-3 text-gray-700">Generar PDF por Curso:</h3>
-                    <div class="flex flex-wrap gap-2 justify-end">
-                        @php
-                            $citacionesPorCurso = $citaciones->groupBy('idCurso');
-                        @endphp
-                        @forelse ($citacionesPorCurso as $idCurso => $cursosCits)
-                            @php
-                                $curso = $cursosCits->first()->curso;
-                            @endphp
-                            <a href="{{ route('citacion.pdf.curso', $idCurso) }}"
-                                class="text-xs bg-green-500 hover:bg-green-700 text-white px-3 py-1 rounded transition">
-                                <i class='bx bx-file-pdf mr-1'></i>{{ $curso->getDisplayNameAttribute() ?? 'Curso' }}
-                                ({{ $cursosCits->count() }})
-                            </a>
-                        @empty
-                        @endforelse
-                    </div>
+            <a href="{{ route('citacionv2.index') }}" target="_blank" rel="noopener noreferrer"
+                class="w-[245px] h-[176px] rounded-lg shadow border border-slate-400 overflow-hidden
+                      bg-[url('/images/patron4.jpg')] bg-cover bg-center bg-no-repeat
+                      flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 no-underline">
+                <div
+                    class="justify-center items-center flex-1 flex-col flex gap-1 bg-slate-500 hover:bg-slate-500/70 transition-colors duration-200 overflow-hidden">
+                    <img src="{{ asset('images/018-salon-de-clases.png') }}" alt="Logo" class="w-12 h-12">
+                    <p class="text-2xl font-[pacifico]">Aula Abierta</p>
+                    <hr class="w-1/3 border border-slate-200 my-1">
+                    <p class="text-xs">Segundo Trimestre</p>
                 </div>
-            @else
-                <div class="flex items-center justify-center h-full">
-                    <div class="text-center">
-                        <i class='bx bx-inbox text-gray-300 text-6xl mb-4'></i>
-                        <p class="text-gray-500 font-semibold">No hay citaciones registradas</p>
-                        <p class="text-gray-400 text-sm mt-2">Importa citaciones para comenzar</p>
-                    </div>
+                <div class="bg-slate-700 h-8 w-full flex justify-center items-center">
+                    <p class="text-white text-sm">Vigente</p>
                 </div>
-            @endif
+            </a>
+
         </div>
     </div>
 

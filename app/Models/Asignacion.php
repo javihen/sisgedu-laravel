@@ -35,4 +35,9 @@ class Asignacion extends Model
         /* Varias asignaciones pertenece a (belongs to) un profesor */
         return $this->belongsTo(Profesor::class, 'id_profesor', 'id_profesor');
     }
+    //Una Asignación puede tener muchas citaciones.
+    public function citaciones()
+    {
+        return $this->hasMany(CitacionV2::class, 'idAsignacion', 'idAsignacion');
+    }
 }

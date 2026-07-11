@@ -29,9 +29,11 @@ class CitacionController extends Controller
             $query->where('idGestion', $gestionActiva->id_gestion);
         }
 
-        $citaciones = $query->get();
 
-        return view('citacion.index', compact('citaciones', 'gestionActiva'));
+        $citaciones = $query->get();
+        $id = session('profesor_id'); // Obtener el ID del profesor autenticado
+        //dd($id);
+        return view('citacion.index', compact('citaciones', 'gestionActiva','id'));
     }
 
     /**

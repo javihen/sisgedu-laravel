@@ -11,6 +11,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\CitacionController;
+use App\Http\Controllers\CitacionV2Controller;
 use App\Http\Controllers\EntrevistaController;
 use App\Http\Controllers\NotaController;
 use App\Http\Controllers\PromedioFinalController;
@@ -120,6 +121,10 @@ Route::delete('/citacion/{citacion}', [CitacionController::class, 'destroy'])->n
 Route::get('/citacion/pdf/curso/{idCurso}', [CitacionController::class, 'generarPDFCurso'])->name('citacion.pdf.curso');
 Route::get('/citacion/pdf/general', [CitacionController::class, 'generarPDFGeneral'])->name('citacion.pdf.general');
 Route::get('/citacion/pdf/estudiante/{idEstudiante}', [CitacionController::class, 'generarPDFEstudiante'])->name('citacion.pdf.estudiante');
+
+//----------------------- MODULO CITACIONES V2 -----------------------//
+Route::get('/citacionv2', [CitacionV2Controller::class, 'index'])->name('citacionv2.index');
+
 
 //----------------------- MODULO ENTREVISTAS -----------------------//
 Route::get('/entrevistas', [EntrevistaController::class, 'index'])->name('entrevistas.index');
