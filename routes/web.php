@@ -124,8 +124,11 @@ Route::get('/citacion/pdf/estudiante/{idEstudiante}', [CitacionController::class
 
 //----------------------- MODULO CITACIONES V2 -----------------------//
 Route::get('/citacionv2', [CitacionV2Controller::class, 'index'])->name('citacionv2.index');
+// Cambio: la ruta del modal ahora usa la asignación concreta del profesor para abrir una sesión distinta por materia.
+Route::get('/citacion/asignacion/{idAsignacion}/estudiantes', [CitacionV2Controller::class, 'estudiantesPorAsignacion'])->name('citacion.asignacion.estudiantes');
 Route::get('/citacion/curso/{id}/estudiantes', [CitacionV2Controller::class, 'estudiantesPorCurso'])->name('citacion.curso.estudiantes');
 Route::post('/citacion/registrar', [CitacionV2Controller::class, 'registrar'])->name('citacion.registrar');
+Route::post('/citacion/toggle-registro', [CitacionV2Controller::class, 'toggleRegistro'])->name('citacion.toggle-registro');
 Route::post('/citacion/cerrar-sesion', [CitacionV2Controller::class, 'cerrarSesion'])->name('citacion.cerrar-sesion');
 Route::get('/citacion/imprimir-listado/{idAsignacion}', [CitacionV2Controller::class, 'imprimirListado'])->name('citacion.imprimir-listado');
 

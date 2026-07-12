@@ -84,7 +84,8 @@
                                     <button type="button"
                                         class="btn-ver-estudiantes text-blue-600 mr-2 border border-blue-600 hover:bg-blue-600 hover:text-white font-medium rounded text-xs px-3 py-1.5 transition"
                                         data-curso-id="{{ $asignacion->idcurso }}"
-                                        data-curso-nombre="{{ $asignacion->curso->display_name }}">
+                                        data-curso-nombre="{{ $asignacion->curso->display_name }}"
+                                        data-id-asignacion="{{ $asignacion->idAsignacion }}">
                                         <i class="fa-solid fa-list-ol"></i> Estudiantes
                                     </button>
                                     {{-- <a href="{{ route('citacion.pdf.asignacion', ['id' => $asignacion->id]) }}" --}}
@@ -125,14 +126,18 @@
         const tituloModalEstudiantes = document.getElementById('tituloModalEstudiantes');
         const subtituloModalEstudiantes = document.getElementById('subtituloModalEstudiantes');
 
-        const abrirModalEstudiantes = (cursoId, cursoNombre) => {
+        const abrirModalEstudiantes = (cursoId, cursoNombre, asignacionId) => {
             tituloModalEstudiantes.textContent = 'Estudiantes del curso';
             subtituloModalEstudiantes.textContent = cursoNombre || 'Curso';
             contenidoModalEstudiantes.innerHTML = '<p class="text-sm text-slate-500">Cargando estudiantes...</p>';
             modalEstudiantes.classList.remove('hidden');
             modalEstudiantes.classList.add('flex');
 
-            fetch(`/citacion/curso/${cursoId}/estudiantes`)
+            // Cambio: se abre el modal con la asignación concreta para no mezclar sesiones entre materias del mismo curso.
+            const ruta = asignacionId ? `/citacion/asignacion/${asignacionId}/estudiantes` :
+                `/citacion/curso/${cursoId}/estudiantes`;
+
+            fetch(ruta)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('No se pudo cargar la información');
@@ -156,7 +161,8 @@
         document.querySelectorAll('.btn-ver-estudiantes').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
-                abrirModalEstudiantes(this.dataset.cursoId, this.dataset.cursoNombre);
+                abrirModalEstudiantes(this.dataset.cursoId, this.dataset.cursoNombre, this.dataset
+                    .idAsignacion);
             });
         });
 
@@ -184,7 +190,8 @@
                 citarButton.className =
                     'btn-citar-estudiante rounded-full border border-orange-300 bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700 transition';
 
-                fetch('/citacion/registrar', {
+                // Cambio: se usa la ruta de alternancia para registrar o quitar al estudiante de detalle_citaciones.
+                fetch('/citacion/toggle-registro', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -194,7 +201,6 @@
                         },
                         body: JSON.stringify({
                             idEstudiante,
-                            idProfesor,
                             idAsignacion,
                             _token: csrfToken
                         })
@@ -218,11 +224,12 @@
                         return data;
                     })
                     .then(data => {
-                        console.log('Respuesta registrar', data);
                         if (data.success) {
-                            citarButton.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Citado';
+                            const isRemoved = Boolean(data.removed);
+                            citarButton.innerHTML =
+                                `<i class="fa-solid ${isRemoved ? 'fa-user-plus' : 'fa-check'} mr-1"></i> ${isRemoved ? 'Disponible' : 'Citado'}`;
                             citarButton.className =
-                                'btn-citar-estudiante rounded-full border border-orange-400 bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white transition';
+                                `btn-citar-estudiante rounded-full border px-3 py-1.5 text-xs font-semibold transition ${isRemoved ? 'border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200' : 'border-emerald-400 bg-emerald-500 text-white'}`;
                         } else {
                             citarButton.innerHTML =
                                 '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
@@ -231,7 +238,7 @@
                         }
                     })
                     .catch((error) => {
-                        console.error('Error registrar', error);
+                        console.error('Error toggle registro', error);
                         citarButton.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
                         citarButton.className =
                             'btn-citar-estudiante rounded-full border border-red-300 bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition';
@@ -285,14 +292,15 @@
                         return data;
                     })
                     .then(data => {
-                        console.log('Respuesta cerrar', data);
                         if (data.success) {
+                            // Cambio: al cerrar la sesión, se vuelve a cargar el modal para mostrar el botón de impresión y ocultar las acciones de citar.
                             cerrarButton.innerHTML = '<i class="fa-solid fa-lock mr-1"></i> Cerrado';
                             cerrarButton.className =
                                 'btn-cerrar-sesion rounded-full border border-red-400 bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition';
-                            const imprimirButton = document.querySelector('.btn-imprimir-listado');
-                            if (imprimirButton) {
-                                imprimirButton.classList.remove('pointer-events-none', 'opacity-50');
+                            const cursoId = cerrarButton.dataset.cursoId;
+                            const cursoNombre = cerrarButton.dataset.cursoNombre;
+                            if (cursoId) {
+                                abrirModalEstudiantes(cursoId, cursoNombre || 'Curso');
                             }
                         } else {
                             cerrarButton.innerHTML =

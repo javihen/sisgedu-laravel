@@ -21,6 +21,7 @@
             font-size: 18px;
             font-weight: bold;
             margin: 0;
+            text-align: center;
         }
 
         .subtitle {
@@ -56,7 +57,7 @@
     <div class="header">
         <p class="title">Listado Aula Abierta</p>
         <p class="subtitle">Asignación: {{ $asignacion->curso->display_name ?? 'Sin curso' }} · Materia:
-            {{ $asignacion->materia->nombre ?? ($asignacion->materia->name ?? 'Sin materia') }}</p>
+            {{ $asignacion->materia->area ?? ($asignacion->materia->area ?? 'Sin materia') }}</p>
         <p class="subtitle">Sesión: {{ $citacion->estado }} · Fecha: {{ $citacion->fecha }} · Hora: {{ $citacion->hora }}
         </p>
     </div>
@@ -67,9 +68,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Estudiante</th>
-                    <th>Estado</th>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 40%;">Estudiante</th>
+                    <th style="width: 20%;">Firma del estudiante</th>
+                    <th style="width: 20%;">Firma del PPMMFF o apoderado</th>
                     <th>Observación</th>
                 </tr>
             </thead>
@@ -77,9 +79,11 @@
                 @foreach ($detalles as $index => $detalle)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ trim(($detalle->estudiante->appaterno ?? '') . ' ' . ($detalle->estudiante->apmaterno ?? '') . ' ' . ($detalle->estudiante->nombres ?? '')) }}
+                        <td style="font-size:8px;">
+                            {{ trim(($detalle->estudiante->appaterno ?? '') . ' ' . ($detalle->estudiante->apmaterno ?? '') . ' ' . ($detalle->estudiante->nombres ?? '')) }}
                         </td>
-                        <td>{{ $detalle->estado }}</td>
+                        <td></td>
+                        <td></td>
                         <td>{{ $detalle->observacion ?: '-' }}</td>
                     </tr>
                 @endforeach

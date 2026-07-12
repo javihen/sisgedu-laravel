@@ -86,10 +86,90 @@ class CitacionV2Controller extends Controller
     }
 
     /**
-     * Recibe el id del curso seleccionado desde la vista.
-     * Consulta la asignación activa del profesor para esa gestión.
-     * Valida que exista una asignación y crea o reutiliza una citación abierta en CitacionV2.
-     * Devuelve la vista parcial con los estudiantes inscritos para ese curso.
+     * Nuevo método: carga la vista del modal usando la asignación específica del profesor.
+     * Esto permite que cada materia del mismo curso tenga su propia sesión de CitacionV2.
+     */
+    public function estudiantesPorAsignacion($idAsignacion)
+    {
+        $profesorId = session('profesor_id');
+        $gestionActiva = session('gestion_activa');
+
+        $asignacion = Asignacion::find($idAsignacion);
+
+        if (! $asignacion || ! $profesorId || ! $gestionActiva) {
+            return view('citacion.partials.estudiantes-modal-content', [
+                'curso' => null,
+                'estudiantes' => collect(),
+                'profesorId' => $profesorId,
+                'asignacionId' => $idAsignacion,
+            ]);
+        }
+
+        $curso = $asignacion->curso;
+        $asignacionId = $asignacion->idAsignacion;
+
+        // Cambio: se busca la sesión más reciente para esa asignación concreta y no para el curso completo.
+        $citacionActual = CitacionV2::where('idAsignacion', $asignacionId)
+            ->latest('idCitacionV2')
+            ->first();
+
+        if (! $citacionActual) {
+            DB::beginTransaction();
+
+            try {
+                $citacionActual = CitacionV2::create([
+                    'idAsignacion' => $asignacionId,
+                    'fecha' => now()->toDateString(),
+                    'hora' => now()->toTimeString(),
+                    'estado' => 'ABIERTO',
+                    'motivo' => '',
+                    'observacion' => '',
+                ]);
+
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+
+                Log::error('Error al crear la sesión de Aula Abierta por asignación', [
+                    'idAsignacion' => $asignacionId,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return view('citacion.partials.estudiantes-modal-content', [
+                    'curso' => $curso,
+                    'estudiantes' => collect(),
+                    'profesorId' => $profesorId,
+                    'asignacionId' => $asignacionId,
+                ]);
+            }
+        }
+
+        $query = Inscripcion::where('id_curso', $asignacion->idcurso)
+            ->with('estudiante');
+
+        if ($gestionActiva) {
+            $query->where('id_gestion', $gestionActiva);
+        }
+
+        $estudiantes = $query->get()
+            ->pluck('estudiante')
+            ->filter()
+            ->sortBy(function ($estudiante) {
+                return trim(($estudiante->appaterno ?? '').' '.($estudiante->apmaterno ?? '').' '.($estudiante->nombres ?? ''));
+            })
+            ->values();
+
+        // Cambio: se obtienen los estudiantes ya citados para esa sesión específica de la asignación.
+        $detallesRegistrados = \App\Models\detalleCitacion::where('idCitacionV2', $citacionActual->idCitacionV2)
+            ->pluck('id_estudiante')
+            ->toArray();
+
+        return view('citacion.partials.estudiantes-modal-content', compact('curso', 'estudiantes', 'profesorId', 'asignacionId', 'citacionActual', 'detallesRegistrados'));
+    }
+
+    /**
+     * Método legacy para compatibilidad con la ruta anterior del curso.
+     * Mantiene el flujo aunque el modal ahora se abre con la asignación concreta.
      */
     public function estudiantesPorCurso($id)
     {
@@ -122,58 +202,7 @@ class CitacionV2Controller extends Controller
             ]);
         }
 
-        $citacionAbierta = CitacionV2::where('idAsignacion', $asignacionId)
-            ->where('estado', 'ABIERTO')
-            ->latest('idCitacionV2')
-            ->first();
-
-        if (! $citacionAbierta) {
-            DB::beginTransaction();
-
-            try {
-                $citacionAbierta = CitacionV2::create([
-                    'idAsignacion' => $asignacionId,
-                    'fecha' => now()->toDateString(),
-                    'hora' => now()->toTimeString(),
-                    'estado' => 'ABIERTO',
-                    'motivo' => '',
-                    'observacion' => '',
-                ]);
-
-                DB::commit();
-            } catch (\Throwable $e) {
-                DB::rollBack();
-
-                Log::error('Error al crear la sesión de Aula Abierta', [
-                    'idAsignacion' => $asignacionId,
-                    'error' => $e->getMessage(),
-                ]);
-
-                return view('citacion.partials.estudiantes-modal-content', [
-                    'curso' => $curso,
-                    'estudiantes' => collect(),
-                    'profesorId' => $profesorId,
-                    'asignacionId' => $asignacionId,
-                ]);
-            }
-        }
-
-        $query = Inscripcion::where('id_curso', $id)
-            ->with('estudiante');
-
-        if ($gestionActiva) {
-            $query->where('id_gestion', $gestionActiva);
-        }
-
-        $estudiantes = $query->get()
-            ->pluck('estudiante')
-            ->filter()
-            ->sortBy(function ($estudiante) {
-                return trim(($estudiante->appaterno ?? '').' '.($estudiante->apmaterno ?? '').' '.($estudiante->nombres ?? ''));
-            })
-            ->values();
-
-        return view('citacion.partials.estudiantes-modal-content', compact('curso', 'estudiantes', 'profesorId', 'asignacionId', 'citacionAbierta'));
+        return $this->estudiantesPorAsignacion($asignacionId);
     }
 
     /**
@@ -266,6 +295,68 @@ class CitacionV2Controller extends Controller
                 'message' => 'No se pudo registrar el estudiante.',
             ], 500);
         }
+    }
+
+    /**
+     * Recibe el id del estudiante y la asignación seleccionada desde la vista.
+     * Alterna el registro del estudiante en detalleCitacion para la sesión activa.
+     * Si ya existe un registro, lo elimina; si no, lo crea.
+     * Devuelve una respuesta JSON para actualizar el botón desde AJAX.
+     */
+    public function toggleRegistro(Request $request)
+    {
+        $request->validate([
+            'idEstudiante' => ['required', 'string'],
+            'idAsignacion' => ['required', 'integer'],
+        ]);
+
+        $citacion = CitacionV2::where('idAsignacion', $request->idAsignacion)
+            ->latest('idCitacionV2')
+            ->first();
+
+        if (! $citacion) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No existe una sesión activa para esta asignación.',
+            ], 404);
+        }
+
+        if ($citacion->estado === 'CERRADO') {
+            return response()->json([
+                'success' => false,
+                'message' => 'La sesión ya está cerrada; no se pueden registrar más estudiantes.',
+            ], 409);
+        }
+
+        $detalleExistente = \App\Models\detalleCitacion::where('idCitacionV2', $citacion->idCitacionV2)
+            ->where('id_estudiante', $request->idEstudiante)
+            ->first();
+
+        if ($detalleExistente) {
+            $detalleExistente->delete();
+
+            return response()->json([
+                'success' => true,
+                'removed' => true,
+                'message' => 'Estudiante removido de la sesión.',
+            ]);
+        }
+
+        $detalle = DB::transaction(function () use ($citacion, $request) {
+            return \App\Models\detalleCitacion::create([
+                'estado' => 'Pendiente',
+                'observacion' => '',
+                'id_estudiante' => $request->idEstudiante,
+                'idCitacionV2' => $citacion->idCitacionV2,
+            ]);
+        });
+
+        return response()->json([
+            'success' => true,
+            'removed' => false,
+            'message' => 'Estudiante registrado correctamente.',
+            'detalleId' => $detalle->idDetalleCitacion,
+        ]);
     }
 
     /**
