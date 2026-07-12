@@ -111,6 +111,8 @@ Route::delete('/admin/permisos/{id}', [PermisoController::class, 'destroy'])->na
 
 //----------------------- MODULO CITACIONES -----------------------//
 Route::get('/citacion', [CitacionController::class, 'index'])->name('citacion.index');
+Route::get('/citacion/curso/{id}/estudiantes', [CitacionV2Controller::class, 'estudiantesPorCurso'])->name('citacion.curso.estudiantes');
+Route::post('/citacion/registrar', [CitacionV2Controller::class, 'registrar'])->name('citacion.registrar');
 Route::get('/citacion/import', [CitacionController::class, 'showImportForm'])->name('citacion.import');
 Route::post('/citacion/import', [CitacionController::class, 'import'])->name('citacion.import');
 Route::post('/citacion/store', [CitacionController::class, 'store'])->name('citacion.store');

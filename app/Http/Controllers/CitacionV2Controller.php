@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\CitacionV2;
 use App\Models\Gestion;
 use App\Models\Asignacion;
+use App\Models\Curso;
+use App\Models\Inscripcion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CitacionV2Controller extends Controller
 {
@@ -79,5 +82,75 @@ class CitacionV2Controller extends Controller
     public function destroy(CitacionV2 $citacionV2)
     {
         //
+    }
+
+    public function estudiantesPorCurso($id)
+    {
+        $curso = Curso::findOrFail($id);
+
+        $query = Inscripcion::where('id_curso', $id)
+            ->with('estudiante');
+
+        if (session('gestion_activa')) {
+            $query->where('id_gestion', session('gestion_activa'));
+        }
+
+        $estudiantes = $query->get()
+            ->pluck('estudiante')
+            ->filter()
+            ->sortBy(function ($estudiante) {
+                return trim(($estudiante->appaterno ?? '') . ' ' . ($estudiante->apmaterno ?? '') . ' ' . ($estudiante->nombres ?? ''));
+            })
+            ->values();
+
+        $profesorId = session('profesor_id');
+        $asignacionId = null;
+
+        if ($profesorId) {
+            $asignacion = Asignacion::where('idcurso', $id)
+                ->where('id_profesor', $profesorId)
+                ->where('id_gestion', session('gestion_activa'))
+                ->first();
+
+            $asignacionId = $asignacion?->idAsignacion;
+        }
+
+        return view('citacion.partials.estudiantes-modal-content', compact('curso', 'estudiantes', 'profesorId', 'asignacionId'));
+    }
+
+    public function registrar(Request $request)
+    {
+        $request->validate([
+            'idEstudiante' => 'required|string',
+            'idProfesor' => 'required|integer',
+            'idAsignacion' => 'required|integer',
+        ]);
+
+        try {
+            $citacion = CitacionV2::create([
+                'idAsignacion' => $request->idAsignacion,
+                'fecha' => now()->toDateString(),
+                'hora' => now()->toTimeString(),
+                'estado' => 'Citado',
+                'motivo' => 'Citación desde modal',
+                'observacion' => 'Registro generado desde el modal de estudiantes',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estudiante citado correctamente.',
+                'citacionId' => $citacion->idCitacionV2,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error al registrar citación desde modal', [
+                'request' => $request->all(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo registrar la citación.',
+            ], 500);
+        }
     }
 }

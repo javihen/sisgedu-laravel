@@ -81,10 +81,12 @@
                                         {{ $asignacion->materia->area }}</p>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <a href=""
-                                        class="text-blue-600 mr-2 border border-blue-600 hover:bg-blue-600 hover:text-white font-medium rounded text-xs px-3 py-1.5 transition">
+                                    <button type="button"
+                                        class="btn-ver-estudiantes text-blue-600 mr-2 border border-blue-600 hover:bg-blue-600 hover:text-white font-medium rounded text-xs px-3 py-1.5 transition"
+                                        data-curso-id="{{ $asignacion->idcurso }}"
+                                        data-curso-nombre="{{ $asignacion->curso->display_name }}">
                                         <i class="fa-solid fa-list-ol"></i> Estudiantes
-                                    </a>
+                                    </button>
                                     {{-- <a href="{{ route('citacion.pdf.asignacion', ['id' => $asignacion->id]) }}" --}}
                                     <a href=""
                                         class="text-red-600 hover:text-red-900 border border-red-600 hover:bg-red-600 hover:text-white font-medium rounded text-xs px-3 py-1.5 transition">
@@ -98,7 +100,127 @@
         </div>
     </div>
 
+    <div id="modalEstudiantes" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/70 p-4">
+        <div class="w-full max-w-3xl rounded-xl bg-white shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                <div>
+                    <h3 id="tituloModalEstudiantes" class="text-lg font-semibold text-slate-800">Estudiantes del curso</h3>
+                    <p id="subtituloModalEstudiantes" class="text-sm text-slate-500">Cargando información...</p>
+                </div>
+                <button type="button" id="cerrarModalEstudiantes"
+                    class="rounded-full border border-slate-300 px-3 py-1 text-slate-600 hover:bg-slate-100">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="contenidoModalEstudiantes" class="max-h-[70vh] overflow-y-auto p-6">
+                <p class="text-sm text-slate-500">Seleccione un curso para ver sus estudiantes.</p>
+            </div>
+        </div>
+    </div>
+
     <script>
+        const modalEstudiantes = document.getElementById('modalEstudiantes');
+        const contenidoModalEstudiantes = document.getElementById('contenidoModalEstudiantes');
+        const tituloModalEstudiantes = document.getElementById('tituloModalEstudiantes');
+        const subtituloModalEstudiantes = document.getElementById('subtituloModalEstudiantes');
+
+        const abrirModalEstudiantes = (cursoId, cursoNombre) => {
+            tituloModalEstudiantes.textContent = 'Estudiantes del curso';
+            subtituloModalEstudiantes.textContent = cursoNombre || 'Curso';
+            contenidoModalEstudiantes.innerHTML = '<p class="text-sm text-slate-500">Cargando estudiantes...</p>';
+            modalEstudiantes.classList.remove('hidden');
+            modalEstudiantes.classList.add('flex');
+
+            fetch(`/citacion/curso/${cursoId}/estudiantes`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No se pudo cargar la información');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    contenidoModalEstudiantes.innerHTML = html;
+                })
+                .catch(() => {
+                    contenidoModalEstudiantes.innerHTML =
+                        '<p class="text-sm text-red-600">No se pudo cargar la lista de estudiantes.</p>';
+                });
+        };
+
+        const cerrarModalEstudiantes = () => {
+            modalEstudiantes.classList.add('hidden');
+            modalEstudiantes.classList.remove('flex');
+        };
+
+        document.querySelectorAll('.btn-ver-estudiantes').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                abrirModalEstudiantes(this.dataset.cursoId, this.dataset.cursoNombre);
+            });
+        });
+
+        document.getElementById('cerrarModalEstudiantes').addEventListener('click', cerrarModalEstudiantes);
+        modalEstudiantes.addEventListener('click', function(event) {
+            if (event.target === modalEstudiantes) {
+                cerrarModalEstudiantes();
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.btn-citar-estudiante')) {
+                return;
+            }
+
+            const button = event.target.closest('.btn-citar-estudiante');
+            const idEstudiante = button.dataset.idEstudiante;
+            const idProfesor = button.dataset.idProfesor;
+            const idAsignacion = button.dataset.idAsignacion;
+
+            if (!idEstudiante || !idProfesor || !idAsignacion) {
+                alert('Faltan datos para registrar la citación.');
+                return;
+            }
+
+            button.disabled = true;
+            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Procesando...';
+            button.className =
+                'btn-citar-estudiante rounded-full border border-orange-300 bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700 transition';
+
+            fetch('/citacion/registrar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
+                    },
+                    body: JSON.stringify({
+                        idEstudiante,
+                        idProfesor,
+                        idAsignacion
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        button.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Citado';
+                        button.className =
+                            'btn-citar-estudiante rounded-full border border-orange-400 bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white transition';
+                    } else {
+                        button.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
+                        button.className =
+                            'btn-citar-estudiante rounded-full border border-red-300 bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition';
+                    }
+                })
+                .catch(() => {
+                    button.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
+                    button.className =
+                        'btn-citar-estudiante rounded-full border border-red-300 bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition';
+                })
+                .finally(() => {
+                    button.disabled = false;
+                });
+        });
+
         // Implementar SweetAlert para eliminar citaciones
         document.querySelectorAll('.form-eliminar').forEach(form => {
             form.addEventListener('submit', function(e) {

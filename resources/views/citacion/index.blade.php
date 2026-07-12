@@ -43,7 +43,7 @@
         <div class="mx-3 mt-2 flex flex-row gap-1 w-full flex-wrap">
             {{--  --}}
 
-            <a href="{{ route('citacionv2.index') }}" target="_blank" rel="noopener noreferrer"
+            <a href="{{ route('citacionv2.index') }}" rel="noopener noreferrer"
                 class="w-[245px] h-[176px] rounded-lg shadow border border-slate-400 overflow-hidden
                       bg-[url('/images/patron4.jpg')] bg-cover bg-center bg-no-repeat
                       flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 no-underline">
