@@ -111,8 +111,6 @@ Route::delete('/admin/permisos/{id}', [PermisoController::class, 'destroy'])->na
 
 //----------------------- MODULO CITACIONES -----------------------//
 Route::get('/citacion', [CitacionController::class, 'index'])->name('citacion.index');
-Route::get('/citacion/curso/{id}/estudiantes', [CitacionV2Controller::class, 'estudiantesPorCurso'])->name('citacion.curso.estudiantes');
-Route::post('/citacion/registrar', [CitacionV2Controller::class, 'registrar'])->name('citacion.registrar');
 Route::get('/citacion/import', [CitacionController::class, 'showImportForm'])->name('citacion.import');
 Route::post('/citacion/import', [CitacionController::class, 'import'])->name('citacion.import');
 Route::post('/citacion/store', [CitacionController::class, 'store'])->name('citacion.store');
@@ -126,6 +124,10 @@ Route::get('/citacion/pdf/estudiante/{idEstudiante}', [CitacionController::class
 
 //----------------------- MODULO CITACIONES V2 -----------------------//
 Route::get('/citacionv2', [CitacionV2Controller::class, 'index'])->name('citacionv2.index');
+Route::get('/citacion/curso/{id}/estudiantes', [CitacionV2Controller::class, 'estudiantesPorCurso'])->name('citacion.curso.estudiantes');
+Route::post('/citacion/registrar', [CitacionV2Controller::class, 'registrar'])->name('citacion.registrar');
+Route::post('/citacion/cerrar-sesion', [CitacionV2Controller::class, 'cerrarSesion'])->name('citacion.cerrar-sesion');
+Route::get('/citacion/imprimir-listado/{idAsignacion}', [CitacionV2Controller::class, 'imprimirListado'])->name('citacion.imprimir-listado');
 
 
 //----------------------- MODULO ENTREVISTAS -----------------------//

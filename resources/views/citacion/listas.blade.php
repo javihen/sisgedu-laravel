@@ -119,6 +119,7 @@
     </div>
 
     <script>
+        const csrfToken = '{{ csrf_token() }}';
         const modalEstudiantes = document.getElementById('modalEstudiantes');
         const contenidoModalEstudiantes = document.getElementById('contenidoModalEstudiantes');
         const tituloModalEstudiantes = document.getElementById('tituloModalEstudiantes');
@@ -167,58 +168,149 @@
         });
 
         document.addEventListener('click', function(event) {
-            if (!event.target.closest('.btn-citar-estudiante')) {
-                return;
-            }
+            const citarButton = event.target.closest('.btn-citar-estudiante');
+            if (citarButton) {
+                const idEstudiante = citarButton.dataset.idEstudiante;
+                const idProfesor = citarButton.dataset.idProfesor;
+                const idAsignacion = citarButton.dataset.idAsignacion;
 
-            const button = event.target.closest('.btn-citar-estudiante');
-            const idEstudiante = button.dataset.idEstudiante;
-            const idProfesor = button.dataset.idProfesor;
-            const idAsignacion = button.dataset.idAsignacion;
+                if (!idEstudiante || !idProfesor || !idAsignacion) {
+                    alert('Faltan datos para registrar la citación.');
+                    return;
+                }
 
-            if (!idEstudiante || !idProfesor || !idAsignacion) {
-                alert('Faltan datos para registrar la citación.');
-                return;
-            }
+                citarButton.disabled = true;
+                citarButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Procesando...';
+                citarButton.className =
+                    'btn-citar-estudiante rounded-full border border-orange-300 bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700 transition';
 
-            button.disabled = true;
-            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Procesando...';
-            button.className =
-                'btn-citar-estudiante rounded-full border border-orange-300 bg-orange-100 px-3 py-1.5 text-xs font-semibold text-orange-700 transition';
-
-            fetch('/citacion/registrar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content')
-                    },
-                    body: JSON.stringify({
-                        idEstudiante,
-                        idProfesor,
-                        idAsignacion
+                fetch('/citacion/registrar', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            idEstudiante,
+                            idProfesor,
+                            idAsignacion,
+                            _token: csrfToken
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        button.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Citado';
-                        button.className =
-                            'btn-citar-estudiante rounded-full border border-orange-400 bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white transition';
-                    } else {
-                        button.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
-                        button.className =
+                    .then(async response => {
+                        const text = await response.text();
+                        let data = {};
+
+                        try {
+                            data = text ? JSON.parse(text) : {};
+                        } catch (error) {
+                            data = {
+                                raw: text
+                            };
+                        }
+
+                        if (!response.ok) {
+                            throw new Error(data.message || 'Error al procesar la solicitud');
+                        }
+
+                        return data;
+                    })
+                    .then(data => {
+                        console.log('Respuesta registrar', data);
+                        if (data.success) {
+                            citarButton.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Citado';
+                            citarButton.className =
+                                'btn-citar-estudiante rounded-full border border-orange-400 bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white transition';
+                        } else {
+                            citarButton.innerHTML =
+                                '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
+                            citarButton.className =
+                                'btn-citar-estudiante rounded-full border border-red-300 bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition';
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error registrar', error);
+                        citarButton.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
+                        citarButton.className =
                             'btn-citar-estudiante rounded-full border border-red-300 bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition';
-                    }
-                })
-                .catch(() => {
-                    button.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
-                    button.className =
-                        'btn-citar-estudiante rounded-full border border-red-300 bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition';
-                })
-                .finally(() => {
-                    button.disabled = false;
-                });
+                    })
+                    .finally(() => {
+                        citarButton.disabled = false;
+                    });
+            }
+
+            const cerrarButton = event.target.closest('.btn-cerrar-sesion');
+            if (cerrarButton) {
+                const idAsignacion = cerrarButton.dataset.idAsignacion;
+
+                if (!idAsignacion) {
+                    alert('No hay asignación para cerrar la sesión.');
+                    return;
+                }
+
+                cerrarButton.disabled = true;
+                cerrarButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Cerrando...';
+
+                fetch('/citacion/cerrar-sesion', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            idAsignacion,
+                            _token: csrfToken
+                        })
+                    })
+                    .then(async response => {
+                        const text = await response.text();
+                        let data = {};
+
+                        try {
+                            data = text ? JSON.parse(text) : {};
+                        } catch (error) {
+                            data = {
+                                raw: text
+                            };
+                        }
+
+                        if (!response.ok) {
+                            throw new Error(data.message || 'Error al procesar la solicitud');
+                        }
+
+                        return data;
+                    })
+                    .then(data => {
+                        console.log('Respuesta cerrar', data);
+                        if (data.success) {
+                            cerrarButton.innerHTML = '<i class="fa-solid fa-lock mr-1"></i> Cerrado';
+                            cerrarButton.className =
+                                'btn-cerrar-sesion rounded-full border border-red-400 bg-red-500 px-3 py-1.5 text-xs font-semibold text-white transition';
+                            const imprimirButton = document.querySelector('.btn-imprimir-listado');
+                            if (imprimirButton) {
+                                imprimirButton.classList.remove('pointer-events-none', 'opacity-50');
+                            }
+                        } else {
+                            cerrarButton.innerHTML =
+                                '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
+                            cerrarButton.className =
+                                'btn-cerrar-sesion rounded-full border border-red-300 bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition';
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error cerrar', error);
+                        cerrarButton.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i> Error';
+                        cerrarButton.className =
+                            'btn-cerrar-sesion rounded-full border border-red-300 bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition';
+                    })
+                    .finally(() => {
+                        cerrarButton.disabled = false;
+                    });
+            }
         });
 
         // Implementar SweetAlert para eliminar citaciones

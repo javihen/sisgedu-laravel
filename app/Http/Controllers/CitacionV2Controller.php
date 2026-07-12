@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Asignacion;
 use App\Models\CitacionV2;
 use App\Models\Curso;
-use App\Models\Gestion;
 use App\Models\Inscripcion;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CitacionV2Controller extends Controller
@@ -84,15 +85,84 @@ class CitacionV2Controller extends Controller
         //
     }
 
+    /**
+     * Recibe el id del curso seleccionado desde la vista.
+     * Consulta la asignación activa del profesor para esa gestión.
+     * Valida que exista una asignación y crea o reutiliza una citación abierta en CitacionV2.
+     * Devuelve la vista parcial con los estudiantes inscritos para ese curso.
+     */
     public function estudiantesPorCurso($id)
     {
         $curso = Curso::findOrFail($id);
+        $profesorId = session('profesor_id');
+        $gestionActiva = session('gestion_activa');
+
+        if (! $profesorId || ! $gestionActiva) {
+            return view('citacion.partials.estudiantes-modal-content', [
+                'curso' => $curso,
+                'estudiantes' => collect(),
+                'profesorId' => $profesorId,
+                'asignacionId' => null,
+            ]);
+        }
+
+        $asignacion = Asignacion::where('idcurso', $id)
+            ->where('id_profesor', $profesorId)
+            ->where('id_gestion', $gestionActiva)
+            ->first();
+
+        $asignacionId = $asignacion?->idAsignacion;
+
+        if (! $asignacionId) {
+            return view('citacion.partials.estudiantes-modal-content', [
+                'curso' => $curso,
+                'estudiantes' => collect(),
+                'profesorId' => $profesorId,
+                'asignacionId' => null,
+            ]);
+        }
+
+        $citacionAbierta = CitacionV2::where('idAsignacion', $asignacionId)
+            ->where('estado', 'ABIERTO')
+            ->latest('idCitacionV2')
+            ->first();
+
+        if (! $citacionAbierta) {
+            DB::beginTransaction();
+
+            try {
+                $citacionAbierta = CitacionV2::create([
+                    'idAsignacion' => $asignacionId,
+                    'fecha' => now()->toDateString(),
+                    'hora' => now()->toTimeString(),
+                    'estado' => 'ABIERTO',
+                    'motivo' => '',
+                    'observacion' => '',
+                ]);
+
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollBack();
+
+                Log::error('Error al crear la sesión de Aula Abierta', [
+                    'idAsignacion' => $asignacionId,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return view('citacion.partials.estudiantes-modal-content', [
+                    'curso' => $curso,
+                    'estudiantes' => collect(),
+                    'profesorId' => $profesorId,
+                    'asignacionId' => $asignacionId,
+                ]);
+            }
+        }
 
         $query = Inscripcion::where('id_curso', $id)
             ->with('estudiante');
 
-        if (session('gestion_activa')) {
-            $query->where('id_gestion', session('gestion_activa'));
+        if ($gestionActiva) {
+            $query->where('id_gestion', $gestionActiva);
         }
 
         $estudiantes = $query->get()
@@ -103,54 +173,167 @@ class CitacionV2Controller extends Controller
             })
             ->values();
 
-        $profesorId = session('profesor_id');
-        $asignacionId = null;
-
-        if ($profesorId) {
-            $asignacion = Asignacion::where('idcurso', $id)
-                ->where('id_profesor', $profesorId)
-                ->where('id_gestion', session('gestion_activa'))
-                ->first();
-
-            $asignacionId = $asignacion?->idAsignacion;
-        }
-
-        return view('citacion.partials.estudiantes-modal-content', compact('curso', 'estudiantes', 'profesorId', 'asignacionId'));
+        return view('citacion.partials.estudiantes-modal-content', compact('curso', 'estudiantes', 'profesorId', 'asignacionId', 'citacionAbierta'));
     }
 
+    /**
+     * Recibe el id del estudiante y la asignación seleccionada desde la vista.
+     * Consulta si ya existe un detalle para esa misma citación y estudiante.
+     * Valida la información mínima y registra el estudiante solo si aún no fue agregado.
+     * Devuelve una respuesta JSON para controlar el botón desde AJAX.
+     */
     public function registrar(Request $request)
     {
         $request->validate([
-            'idEstudiante' => 'required|string',
-            'idProfesor' => 'required|integer',
-            'idAsignacion' => 'required|integer',
+            'idEstudiante' => ['required', 'string'],
+            'idAsignacion' => ['required', 'integer'],
+            'idProfesor' => ['nullable', 'integer'],
         ]);
 
+        $profesorId = $request->idProfesor ?: session('profesor_id');
+        $gestionActiva = session('gestion_activa');
+
+        if (! $profesorId || ! $gestionActiva) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No existe una sesión activa de profesor o gestión.',
+            ], 422);
+        }
+
+        $asignacion = Asignacion::find($request->idAsignacion);
+        if (! $asignacion) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La asignación seleccionada no existe.',
+            ], 404);
+        }
+
         try {
-            $citacion = CitacionV2::create([
-                'idAsignacion' => $request->idAsignacion,
-                'fecha' => now()->toDateString(),
-                'hora' => now()->toTimeString(),
-                'estado' => 'Citado',
-                'motivo' => 'Aula Abierta',
-                'observacion' => 'Ninguna',
-            ]);
+            $citacion = CitacionV2::where('idAsignacion', $request->idAsignacion)
+                ->where('estado', 'ABIERTO')
+                ->latest('idCitacionV2')
+                ->first();
+
+            if (! $citacion) {
+                $citacion = DB::transaction(function () use ($request) {
+                    return CitacionV2::create([
+                        'idAsignacion' => $request->idAsignacion,
+                        'fecha' => now()->toDateString(),
+                        'hora' => now()->toTimeString(),
+                        'estado' => 'ABIERTO',
+                        'motivo' => '',
+                        'observacion' => '',
+                    ]);
+                });
+            }
+
+            $detalleExistente = \App\Models\detalleCitacion::where('idCitacionV2', $citacion->idCitacionV2)
+                ->where('id_estudiante', $request->idEstudiante)
+                ->first();
+
+            if ($detalleExistente) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'El estudiante ya fue registrado en esta sesión.',
+                    'alreadyRegistered' => true,
+                ]);
+            }
+
+            $detalle = DB::transaction(function () use ($citacion, $request) {
+                return \App\Models\detalleCitacion::create([
+                    'estado' => 'Pendiente',
+                    'observacion' => '',
+                    'id_estudiante' => $request->idEstudiante,
+                    'idCitacionV2' => $citacion->idCitacionV2,
+                ]);
+            });
 
             return response()->json([
                 'success' => true,
-                'message' => 'Estudiante citado correctamente.',
+                'message' => 'Estudiante registrado correctamente.',
+                'alreadyRegistered' => false,
+                'detalleId' => $detalle->idDetalleCitacion,
                 'citacionId' => $citacion->idCitacionV2,
             ]);
         } catch (\Throwable $e) {
-            Log::error('Error al registrar citación desde modal', [
+            Log::error('Error al registrar estudiante en la citación', [
                 'request' => $request->all(),
                 'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'No se pudo registrar la citación.',
+                'message' => 'No se pudo registrar el estudiante.',
             ], 500);
         }
+    }
+
+    /**
+     * Recibe el id de la asignación seleccionada.
+     * Consulta la citación abierta para esa asignación y la actualiza a CERRADO.
+     * Devuelve una respuesta JSON para indicar si el cierre fue exitoso.
+     */
+    public function cerrarSesion(Request $request)
+    {
+        $request->validate([
+            'idAsignacion' => 'required|integer',
+        ]);
+
+        try {
+            $citacion = CitacionV2::where('idAsignacion', $request->idAsignacion)
+                ->where('estado', 'ABIERTO')
+                ->latest('idCitacionV2')
+                ->first();
+
+            if (! $citacion) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No existe una sesión abierta para esta asignación.',
+                ], 404);
+            }
+
+            $citacion->estado = 'CERRADO';
+            $citacion->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Sesión cerrada correctamente.',
+                'citacionId' => $citacion->idCitacionV2,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error al cerrar la sesión de Aula Abierta', [
+                'request' => $request->all(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo cerrar la sesión.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Recibe el id de la asignación seleccionada.
+     * Consulta la citación cerrada y obtiene solo los estudiantes registrados en detalleCitacion.
+     * Devuelve un PDF con el listado generado a partir de esa sesión.
+     */
+    public function imprimirListado($idAsignacion)
+    {
+        $citacion = CitacionV2::where('idAsignacion', $idAsignacion)
+            ->where('estado', 'CERRADO')
+            ->latest('idCitacionV2')
+            ->firstOrFail();
+
+        $detalles = \App\Models\detalleCitacion::where('idCitacionV2', $citacion->idCitacionV2)
+            ->with('estudiante')
+            ->get();
+
+        $asignacion = Asignacion::findOrFail($idAsignacion);
+        $curso = $asignacion->curso;
+
+        $pdf = Pdf::loadView('citacion.pdf-listado', compact('citacion', 'detalles', 'asignacion', 'curso'));
+
+        return $pdf->stream('listado-aula-abierta.pdf');
     }
 }

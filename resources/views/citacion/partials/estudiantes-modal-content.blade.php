@@ -1,13 +1,36 @@
 <div class="space-y-4">
-    <div class="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+    <div
+        class="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <p class="text-sm font-semibold text-slate-800">{{ $curso->display_name ?? 'Curso' }}</p>
             <p class="text-xs text-slate-500">Lista de estudiantes inscritos</p>
         </div>
-        <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-            {{ $estudiantes->count() }} {{ $estudiantes->count() === 1 ? 'estudiante' : 'estudiantes' }}
-        </span>
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+                {{ $estudiantes->count() }} {{ $estudiantes->count() === 1 ? 'estudiante' : 'estudiantes' }}
+            </span>
+            @if (!empty($citacionAbierta))
+                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
+                    Sesión: {{ $citacionAbierta->estado }}
+                </span>
+            @endif
+        </div>
     </div>
+
+    @if (!empty($citacionAbierta))
+        <div class="flex flex-wrap items-center justify-end gap-2">
+            <button type="button"
+                class="btn-cerrar-sesion rounded-full border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100"
+                data-id-asignacion="{{ $asignacionId }}">
+                <i class="fa-solid fa-lock mr-1"></i> Cerrar
+            </button>
+            <a href="{{ route('citacion.imprimir-listado', ['idAsignacion' => $asignacionId]) }}"
+                class="btn-imprimir-listado rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100"
+                target="_blank">
+                <i class="fa-solid fa-print mr-1"></i> Imprimir Listado
+            </a>
+        </div>
+    @endif
 
     @if ($estudiantes->isEmpty())
         <div
