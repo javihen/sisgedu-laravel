@@ -7,9 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Estudiante extends Model
 {
     protected $primaryKey = 'id_estudiante';
+
     protected $keyType = 'string';
+
     // La clave primaria no es autoincremental
     public $incrementing = false;
+
     protected $fillable = [
         'id_estudiante',
         'estado',
@@ -23,12 +26,11 @@ class Estudiante extends Model
         'observacion',
     ];
 
-    //esta funcion nos recupera todas las inscripciones de un estudiante
+    // esta funcion nos recupera todas las inscripciones de un estudiante
     public function inscripciones()
     {
         return $this->hasMany(Inscripcion::class, 'id_estudiante', 'id_estudiante');
     }
-
 
     public function getIdCursoAttribute()
     {
@@ -36,9 +38,9 @@ class Estudiante extends Model
     }
 
     public function asistencias()
-{
-    return $this->hasMany(DetalleAsistencia::class, 'idEstudiante');
-}
+    {
+        return $this->hasMany(DetalleAsistencia::class, 'idEstudiante');
+    }
 
     /**
      * Relación: un estudiante tiene muchas citaciones
@@ -48,4 +50,8 @@ class Estudiante extends Model
         return $this->hasMany(Citacion::class, 'idEstudiante', 'id_estudiante');
     }
 
+    public function detalleCitaciones()
+    {
+        return $this->hasMany(detalleCitacion::class, 'id_estudiante', 'id_estudiante');
+    }
 }

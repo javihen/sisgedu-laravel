@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CitacionV2;
-use App\Models\Gestion;
 use App\Models\Asignacion;
+use App\Models\CitacionV2;
 use App\Models\Curso;
+use App\Models\Gestion;
 use App\Models\Inscripcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +18,7 @@ class CitacionV2Controller extends Controller
     public function index()
     {
         // Obtener la gestión activa
-        //$gestionActiva = Gestion::where('estado', 'A')->first();
+        // $gestionActiva = Gestion::where('estado', 'A')->first();
         $id = session('profesor_id'); // Obtener el ID del profesor autenticado
         $asignaciones = Asignacion::select('asignaciones.*')
             ->join('cursos', 'cursos.id', '=', 'asignaciones.idcurso')
@@ -32,7 +32,7 @@ class CitacionV2Controller extends Controller
             ->with(['curso', 'materia']) // si quieres los modelos relacionados además
             ->get();
 
-        //return view('curso.curso-profesor', compact('asignaciones'));
+        // return view('curso.curso-profesor', compact('asignaciones'));
         return view('citacion.listas', compact('asignaciones'));
     }
 
@@ -99,7 +99,7 @@ class CitacionV2Controller extends Controller
             ->pluck('estudiante')
             ->filter()
             ->sortBy(function ($estudiante) {
-                return trim(($estudiante->appaterno ?? '') . ' ' . ($estudiante->apmaterno ?? '') . ' ' . ($estudiante->nombres ?? ''));
+                return trim(($estudiante->appaterno ?? '').' '.($estudiante->apmaterno ?? '').' '.($estudiante->nombres ?? ''));
             })
             ->values();
 
@@ -132,8 +132,8 @@ class CitacionV2Controller extends Controller
                 'fecha' => now()->toDateString(),
                 'hora' => now()->toTimeString(),
                 'estado' => 'Citado',
-                'motivo' => 'Citación desde modal',
-                'observacion' => 'Registro generado desde el modal de estudiantes',
+                'motivo' => 'Aula Abierta',
+                'observacion' => 'Ninguna',
             ]);
 
             return response()->json([

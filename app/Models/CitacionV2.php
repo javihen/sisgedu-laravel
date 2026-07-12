@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class CitacionV2 extends Model
 {
     protected $table = 'citacion_v2_s';
+
     protected $primaryKey = 'idCitacionV2';
+
     protected $fillable = [
         'idAsignacion',
         'fecha',
@@ -16,9 +18,16 @@ class CitacionV2 extends Model
         'motivo',
         'observacion',
     ];
-    //"Una citación pertenece a una asignación."
+
+    // "Una citación pertenece a una asignación."
     public function asignacion()
     {
         return $this->belongsTo(Asignacion::class, 'idAsignacion', 'idAsignacion');
+    }
+
+    // "Una citación puede tener muchos detalles de citación."
+    public function detalleCitaciones()
+    {
+        return $this->hasMany(detalleCitacion::class, 'idCitacionV2', 'idCitacionV2');
     }
 }

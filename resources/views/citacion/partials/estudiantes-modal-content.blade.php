@@ -20,16 +20,16 @@
                 <thead class="bg-slate-100 text-left text-xs uppercase tracking-wider text-slate-600">
                     <tr>
                         <th class="px-4 py-3">N°</th>
-                        <th class="px-4 py-3">Código</th>
+                        {{-- <th class="px-4 py-3">Código</th> --}}
                         <th class="px-4 py-3">Estudiante</th>
-                        <th class="px-4 py-3">Estado</th>
+                        <th class="px-4 py-3" colspan="2">Estado</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200 bg-white">
                     @foreach ($estudiantes as $index => $estudiante)
                         <tr class="hover:bg-slate-50">
                             <td class="px-4 py-3">{{ $index + 1 }}</td>
-                            <td class="px-4 py-3">{{ $estudiante->id_estudiante }}</td>
+                            {{-- <td class="px-4 py-3">{{ $estudiante->id_estudiante }}</td> --}}
                             <td class="px-4 py-3">
                                 {{ trim(($estudiante->appaterno ?? '') . ' ' . ($estudiante->apmaterno ?? '') . ' ' . ($estudiante->nombres ?? '')) }}
                             </td>
