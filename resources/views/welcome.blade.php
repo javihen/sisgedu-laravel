@@ -21,80 +21,71 @@
 
 </head>
 
-<body class="min-h-screen bg-cover bg-center" style="background-image: url('/images/equipoT.jpeg');">
-    {{-- <div class="fondo"></div> --}}
-    <div class="flex h-[700px] w-full relative z-10 ">
-        {{-- <div class="w-full hidden md:inline-block">
-            <img class="h-full"
-                src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/login/leftSideImage.png"
-                alt="leftSideImage">
-        </div> --}}
+<body class="min-h-screen bg-cover bg-center" style="background-image: url('/images/fondoVN.png');">
+    <div class="relative z-10 flex min-h-screen w-full items-center justify-center px-4 py-6 sm:px-6 lg:px-8">
+        <form method="POST" action="{{ route('login.post') }}"
+            class="w-full max-w-[500px] rounded-xl border border-white/40 bg-white/60 px-4 py-6 shadow-xl backdrop-blur-md sm:px-6 sm:py-8 md:px-8 lg:px-10 lg:py-9">
+            @csrf
+            <h2 class="text-center text-3xl font-semibold text-gray-900 sm:text-4xl">SISGEDU V.2</h2>
+            <p class="mt-3 text-center text-sm text-gray-700 sm:text-base">
+                ¡Bienvenido de nuevo! Por favor, inicie sesión para continuar
+            </p>
 
-        <div class="w-full h-full flex flex-col items-center justify-center  ">
+            <div class="my-5 flex items-center gap-3 sm:gap-4">
+                <div class="h-px flex-1 bg-gray-400"></div>
+                <p class="text-center text-xs text-gray-700 sm:text-sm">Ingresa tus credenciales</p>
+                <div class="h-px flex-1 bg-gray-400"></div>
+            </div>
 
-            <form method="POST" action="{{ route('login.post') }}"
-                class="w-[500px] flex flex-col items-center justify-center bg-white/50 px-6 py-9 rounded-md backdrop-blur-xs shadow-lg">
-                @csrf
-                <h2 class="text-4xl text-gray-900 font-medium">SISGEDU V.2</h2>
-                <p class="text-sm text-gray-700 mt-3">¡Bienvenido de nuevo! Por favor, inicie sesión para continuar
-                </p>
+            <div
+                class="flex items-center w-full h-12 rounded-full border border-gray-500 bg-transparent overflow-hidden pl-4 gap-2 sm:pl-6">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z"
+                        fill="#364153" />
+                </svg>
 
+                <input type="text" name="username"
+                    class="h-full w-full bg-transparent text-sm text-gray-700 uppercase outline-none placeholder-gray-500/80"
+                    placeholder="Usuario" required>
+            </div>
 
+            <div
+                class="mt-4 flex items-center w-full h-12 rounded-full border border-gray-500 bg-transparent overflow-hidden pl-4 gap-2 sm:pl-6 sm:mt-6">
+                <svg width="13" height="17" viewBox="0 0 13 17" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M13 8.5c0-.938-.729-1.7-1.625-1.7h-.812V4.25C10.563 1.907 8.74 0 6.5 0S2.438 1.907 2.438 4.25V6.8h-.813C.729 6.8 0 7.562 0 8.5v6.8c0 .938.729 1.7 1.625 1.7h9.75c.896 0 1.625-.762 1.625-1.7zM4.063 4.25c0-1.406 1.093-2.55 2.437-2.55s2.438 1.144 2.438 2.55V6.8H4.061z"
+                        fill="#364153" />
+                </svg>
+                <input type="password" name="password"
+                    class="h-full w-full bg-transparent text-sm text-gray-700 outline-none placeholder-gray-500/80"
+                    placeholder="Contraseña" required>
+            </div>
 
-                <div class="flex items-center gap-4 w-full my-5">
-                    <div class="w-full h-px bg-gray-400"></div>
-                    <p class="w-full text-nowrap text-sm text-gray-700">Ingresa tus credenciales
-                    </p>
-                    <div class="w-full h-px bg-gray-400"></div>
+            <div
+                class="mt-6 flex flex-col gap-3 text-gray-500/80 sm:mt-8 sm:flex-row sm:items-center sm:justify-between">
+                {{-- <div class="flex items-center gap-2">
+                    <input class="h-5" type="checkbox" id="checkbox">
+                    <label class="text-sm text-gray-700" for="checkbox">Recuérdame</label>
                 </div>
+                <a class="text-sm text-gray-700 underline" href="#">¿Olvidó su contraseña?</a> --}}
+            </div>
 
-                <div
-                    class="flex items-center w-full bg-transparent border border-gray-500 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                            d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z"
-                            fill="#364153" />
-                    </svg>
-
-                    <input type="text" name="username"
-                        class="uppercase bg-transparent text-gray-700 placeholder-gray-500/80 outline-none text-sm w-full h-full"
-                        required>
-                </div>
-
-                <div
-                    class="flex items-center mt-6 w-full bg-transparent border border-gray-500 h-12 rounded-full overflow-hidden pl-6 gap-2">
-                    <svg width="13" height="17" viewBox="0 0 13 17" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M13 8.5c0-.938-.729-1.7-1.625-1.7h-.812V4.25C10.563 1.907 8.74 0 6.5 0S2.438 1.907 2.438 4.25V6.8h-.813C.729 6.8 0 7.562 0 8.5v6.8c0 .938.729 1.7 1.625 1.7h9.75c.896 0 1.625-.762 1.625-1.7zM4.063 4.25c0-1.406 1.093-2.55 2.437-2.55s2.438 1.144 2.438 2.55V6.8H4.061z"
-                            fill="#364153" />
-                    </svg>
-                    <input type="password" name="password"
-                        class="bg-transparent text-gray-700 placeholder-gray-500/80 outline-none text-sm w-full h-full"
-                        required>
-                </div>
-
-                <div class="w-full flex items-center justify-between mt-8 text-gray-500/80">
-                    <div class="flex items-center gap-2">
-                        <input class="h-5" type="checkbox" id="checkbox">
-                        <label class="text-sm text-gray-700" for="checkbox">Recuerdame</label>
-                    </div>
-                    <a class="text-sm underline text-gray-700" href="#">Olvido su contrasena?</a>
-                </div>
-
-                <button type="submit"
-                    class="mt-8 w-full h-11 rounded-full text-white bg-indigo-500 hover:opacity-90 transition-opacity">
-                    Iniciar sesion
-                </button>
-                <button type="button"
-                    class="w-full mt-4 text-gray-700 border border-gray-500 cursor-pointer hover:text-white hover:bg-gray-600 flex items-center justify-center h-12 rounded-full hover:animate-pulse">
-                    Soy Estudiante
-                </button>
-                <p class="text-gray-700 text-sm mt-4 ">No tienes una cuenta? <a class="text-indigo-700 hover:underline"
-                        href="#">Registrate</a></p>
-            </form>
-        </div>
+            <button type="submit"
+                class="mt-6 h-11 w-full rounded-full bg-indigo-500 text-white transition-opacity hover:opacity-90 sm:mt-8">
+                Iniciar sesión
+            </button>
+            <button type="button"
+                class="mt-4 flex h-12 w-full items-center justify-center rounded-full border border-gray-500 text-gray-700 transition hover:bg-gray-600 hover:text-white hover:animate-pulse">
+                Soy Estudiante
+            </button>
+            <p class="mt-4 text-center text-sm text-gray-700">
+                ¿No tienes una cuenta?
+                <a class="text-indigo-700 hover:underline" href="#">Regístrate</a>
+            </p>
+        </form>
     </div>
 </body>
 
