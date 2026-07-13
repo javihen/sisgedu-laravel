@@ -22,10 +22,10 @@
         <div class="flex flex-wrap items-center justify-end gap-2">
             @if ($citacionActual->estado === 'ABIERTO')
                 <button type="button"
-                    class="btn-cerrar-sesion rounded-full border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100"
+                    class="cursor-pointer btn-cerrar-sesion rounded-full border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 transition hover:bg-red-100"
                     data-id-asignacion="{{ $asignacionId }}" data-curso-id="{{ $curso->id }}"
                     data-curso-nombre="{{ $curso->display_name ?? 'Curso' }}">
-                    <i class="fa-solid fa-lock mr-1"></i> Cerrar
+                    <i class="fa-solid fa-lock mr-1"></i> Cerrar sesion
                 </button>
             @else
                 <a href="{{ route('citacion.imprimir-listado', ['idAsignacion' => $asignacionId]) }}"
@@ -89,7 +89,7 @@
                                         !empty($citacionActual) && $citacionActual->estado === 'CERRADO';
                                 @endphp
                                 <button type="button"
-                                    class="btn-citar-estudiante rounded-full border px-3 py-1.5 text-xs font-semibold transition {{ $botonDeshabilitado ? 'cursor-not-allowed border-slate-300 bg-slate-200 text-slate-500' : ($estaCitado ? 'border-emerald-400 bg-emerald-500 text-white' : 'border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200') }}"
+                                    class="cursor-pointer btn-citar-estudiante rounded-full border px-3 py-1.5 text-xs font-semibold transition {{ $botonDeshabilitado ? 'cursor-not-allowed border-slate-300 bg-slate-200 text-slate-500' : ($estaCitado ? 'border-emerald-400 bg-emerald-500 text-white' : 'border-slate-300 bg-slate-100 text-slate-600 hover:bg-slate-200') }}"
                                     data-id-estudiante="{{ $estudiante->id_estudiante }}"
                                     data-id-profesor="{{ $profesorId }}" data-id-asignacion="{{ $asignacionId }}"
                                     data-estado-inicial="{{ $estaCitado ? 'citado' : 'disponible' }}"

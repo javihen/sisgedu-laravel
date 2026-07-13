@@ -89,9 +89,14 @@
                                         <i class="fa-solid fa-list-ol"></i> Estudiantes
                                     </button>
                                     {{-- <a href="{{ route('citacion.pdf.asignacion', ['id' => $asignacion->id]) }}" --}}
-                                    <a href=""
-                                        class="text-red-600 hover:text-red-900 border border-red-600 hover:bg-red-600 hover:text-white font-medium rounded text-xs px-3 py-1.5 transition">
-                                        <i class="fa-regular fa-file-pdf"></i> PDF
+                                    @if ($asignacion->citaciones->isNotEmpty() && $asignacion->citaciones->first()->estado === 'CERRADO')
+                                        <a href="{{ route('citacion.imprimir-listado', ['idAsignacion' => $asignacion->idAsignacion]) }}"
+                                            target="_blank"
+                                            class="text-red-600 hover:text-red-900 border border-red-600 hover:bg-red-600 hover:text-white font-medium rounded text-xs px-3 py-1.5 transition">
+                                            <i class="fa-regular fa-file-pdf"></i> Imprimir listado
+                                        </a>
+                                    @else
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

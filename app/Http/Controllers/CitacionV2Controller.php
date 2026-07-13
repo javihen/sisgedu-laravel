@@ -23,14 +23,14 @@ class CitacionV2Controller extends Controller
         $id = session('profesor_id'); // Obtener el ID del profesor autenticado
         $asignaciones = Asignacion::select('asignaciones.*')
             ->join('cursos', 'cursos.id', '=', 'asignaciones.idcurso')
-            ->join('materias', 'materias.id_materia', '=', 'asignaciones.id_materia') // opcional
+            ->join('materias', 'materias.id_materia', '=', 'asignaciones.id_materia')
             ->where('asignaciones.id_profesor', $id)
             ->where('id_gestion', session('gestion_activa'))
             ->where('cursos.nivel', '2')
             ->orderBy('cursos.nivel', 'asc')
             ->orderBy('cursos.grado', 'asc')
             ->orderBy('cursos.paralelo', 'asc')
-            ->with(['curso', 'materia']) // si quieres los modelos relacionados además
+            ->with(['curso', 'materia', 'citaciones']) // <-- Agregar aquí
             ->get();
 
         // return view('curso.curso-profesor', compact('asignaciones'));
