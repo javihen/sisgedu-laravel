@@ -8,8 +8,10 @@ class Curso extends Model
 {
     // Indica a Eloquent que la clave primaria es string
     protected $keyType = 'string';
+
     // La clave primaria no es autoincremental
     public $incrementing = false;
+
     protected $fillable = [
         'id',
         'nombre_curso',
@@ -34,10 +36,10 @@ class Curso extends Model
 
         $grado = $this->grado;
         $paralelo = $this->paralelo;
-        $nivelText = $nivelMap[$this->nivel] ?? 'NIVEL ' . $this->nivel;
+        $nivelText = $nivelMap[$this->nivel] ?? 'NIVEL '.$this->nivel;
 
         // Formatear grado como ordinal (1 -> 1º)
-        $ordinal = is_numeric($grado) ? $grado . 'o' : $grado;
+        $ordinal = is_numeric($grado) ? $grado.'o' : $grado;
 
         $parts = array_filter([$ordinal, $nivelText, $paralelo]);
 
@@ -49,27 +51,34 @@ class Curso extends Model
         return $this->hasMany(Inscripcion::class, 'id_curso');
     }
 
-    /**
-     * Relación: un curso tiene muchas citaciones
-     */
+    // un curso tiene muchas citaciones
     public function citaciones()
     {
         return $this->hasMany(Citacion::class, 'idCurso', 'id');
     }
 
+    // un curso puede tener muchas asignaciones
     public function asignaciones()
     {
         /* Un curso tiene muchas (hasMany) asignaciones */
         return $this->hasMany(Asignacion::class, 'idcurso', 'id');
     }
 
+    // un curso puede tener muchas asistencias
     public function asistencias()
     {
         return $this->hasMany(Asistencia::class, 'idCurso', 'id');
     }
 
+    // un curso puede tener muchas materias
     public function materiasPlan()
     {
         return $this->hasMany(CursoMateria::class, 'idCurso');
+    }
+
+    // un curso puede tener muchos asesores
+    public function asesores()
+    {
+        return $this->hasMany(AsesoresCursos::class, 'id', 'id');
     }
 }

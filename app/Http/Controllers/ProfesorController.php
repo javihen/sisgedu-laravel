@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Profesor;
 use App\Models\Usuario;
 use App\Models\Asignacion;
+use App\Models\AsesoresCursos;
+use App\Models\Curso;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -16,9 +18,19 @@ class ProfesorController extends Controller
      */
     public function index()
     {
-        $profesores = Profesor::orderBy('appaterno','asc')->get();
+        $gestionId = session('gestion_activa');
 
-        return view('profesor.index', compact('profesores'));
+        $profesores = Profesor::with(['asesoresCursos' => function ($query) use ($gestionId) {
+            $query->where('id_gestion', $gestionId)
+                ->with('curso');
+        }])->orderBy('appaterno','asc')->get();
+
+        $cursos = Curso::orderBy('nivel')
+            ->orderBy('grado')
+            ->orderBy('paralelo')
+            ->get();
+
+        return view('profesor.index', compact('profesores', 'cursos'));
     }
 
     /**
@@ -206,6 +218,43 @@ class ProfesorController extends Controller
         }
 
         return back()->with('success', 'Estado actualizado correctamente.');
+    }
+
+    public function guardarAsesorCurso(Request $request, $id)
+    {
+        $request->validate([
+            'curso_id' => 'required|exists:cursos,id',
+        ]);
+
+        $gestionId = session('gestion_activa');
+
+        if (!$gestionId) {
+            return back()->with('error', 'No hay una gestión activa seleccionada.');
+        }
+
+        $profesor = Profesor::findOrFail($id);
+
+        $asesoria = AsesoresCursos::where('id_profesor', $profesor->id_profesor)
+            ->where('id_gestion', $gestionId)
+            ->first();
+
+        if ($asesoria) {
+            $asesoria->update([
+                'id' => $request->curso_id,
+                'estado' => $asesoria->estado ?? 'A',
+                'observaciones' => $asesoria->observaciones ?? '',
+            ]);
+        } else {
+            AsesoresCursos::create([
+                'estado' => 'A',
+                'observaciones' => '',
+                'id_profesor' => $profesor->id_profesor,
+                'id' => $request->curso_id,
+                'id_gestion' => $gestionId,
+            ]);
+        }
+
+        return back()->with('success', 'Asignación de asesoría registrada correctamente.');
     }
 
     /**

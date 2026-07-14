@@ -78,6 +78,7 @@ Route::delete('/profesor/destroy/{id}', [ProfesorController::class, 'destroy'])-
 Route::get('/profesor/perfil/{id}', [ProfesorController::class, 'perfil'])->name('profesor.perfil');
 Route::put('/profesor/{id}', [ProfesorController::class, 'update'])->name('profesor.update');
 Route::post('/profesor/cambiar-estado/{id}', [ProfesorController::class, 'cambiarEstado'])->name('profesor.cambiarEstado');
+Route::post('/profesor/{id}/asesor-curso', [ProfesorController::class, 'guardarAsesorCurso'])->name('profesor.asesor-curso.store');
 Route::post('/profesor/import', [ProfesorController::class, 'import'])->name('profesor.import');
 
 

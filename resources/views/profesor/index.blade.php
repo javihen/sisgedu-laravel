@@ -61,6 +61,7 @@
                             <th>Fuente de financiamiento</th>
                             <th>Rol</th>
                             <th>Estado</th>
+                            <th>Asesor</th>
                             <th>Opciones</th>
                         </tr>
                     </thead>
@@ -100,7 +101,17 @@
                                         </form>
                                     @endif
                                 </td>
-
+                                <td>
+                                    @php
+                                        $asesoria = $profesor->asesoresCursos->first();
+                                    @endphp
+                                    <button type="button"
+                                        class="open-asesor-modal w-fit mx-auto py-1 px-2 border rounded bg-white hover:text-white cursor-pointer {{ $asesoria && $asesoria->curso ? 'border-emerald-600 text-emerald-600 hover:bg-emerald-600' : 'border-gray-600 text-gray-600 hover:bg-gray-600' }}"
+                                        data-profesor-id="{{ $profesor->id_profesor }}"
+                                        data-curso-id="{{ $asesoria?->curso?->id ?? '' }}">
+                                        {{ $asesoria && $asesoria->curso ? $asesoria->curso->display_name : 'Asignar' }}
+                                    </button>
+                                </td>
                                 <td class="px-4 py-2 border-b border-gray-300 flex justify-center items-center gap-2">
                                     <a href="{{ route('profesor.perfil', $profesor->id_profesor) }}"
                                         class="bg-slate-600 text-white py-2 px-3 border border-black shadow hover:bg-slate-700 rounded">Perfil
@@ -231,6 +242,35 @@
                             class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition">Cancelar</button>
                         <button type="submit" id="submitBtn"
                             class="px-4 py-2 bg-blue-600 text-white w-1/2 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="modalAsesor"
+            class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div id="modalAsesorContent"
+                class="bg-white rounded-md shadow-lg w-[420px] p-4 transform transition-all scale-95 opacity-0">
+                <h2 class="text-md font-semibold mb-4 text-left">Asignar curso asesor</h2>
+                <hr class="border border-slate-200 mb-4">
+                <form id="formAsesorCurso" method="post">
+                    @csrf
+                    <div class="space-y-3">
+                        <label for="cursoAsesorSelect" class="text-xs font-medium text-gray-700">Seleccione el
+                            curso</label>
+                        <select id="cursoAsesorSelect" name="curso_id" required
+                            class="w-full border border-slate-600 bg-white p-2 rounded-md">
+                            <option value="">Seleccione un curso</option>
+                            @foreach ($cursos as $curso)
+                                <option value="{{ $curso->id }}">{{ $curso->display_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-2 mt-6">
+                        <button type="button" id="closeModalAsesor"
+                            class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-400 hover:text-white transition">Cancelar</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">Guardar</button>
                     </div>
                 </form>
             </div>
@@ -380,6 +420,34 @@
                             }
                         });
                     });
+                });
+
+                const modalAsesor = document.getElementById('modalAsesor');
+                const modalAsesorContent = document.getElementById('modalAsesorContent');
+                const closeModalAsesorBtn = document.getElementById('closeModalAsesor');
+                const formAsesorCurso = document.getElementById('formAsesorCurso');
+                const cursoAsesorSelect = document.getElementById('cursoAsesorSelect');
+
+                document.querySelectorAll('.open-asesor-modal').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const profesorId = this.dataset.profesorId;
+                        const cursoId = this.dataset.cursoId || '';
+
+                        formAsesorCurso.action = `/profesor/${profesorId}/asesor-curso`;
+                        cursoAsesorSelect.value = cursoId;
+
+                        modalAsesor.classList.remove('hidden');
+                        setTimeout(() => {
+                            modalAsesorContent.classList.remove('scale-95', 'opacity-0');
+                        }, 10);
+                    });
+                });
+
+                closeModalAsesorBtn.addEventListener('click', () => {
+                    modalAsesorContent.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        modalAsesor.classList.add('hidden');
+                    }, 200);
                 });
 
                 // Modal de subida
