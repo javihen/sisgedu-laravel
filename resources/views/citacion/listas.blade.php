@@ -1,13 +1,13 @@
 @extends('layouts.navhorizontal')
 
 @section('content')
-    <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
-        <div class="ml-3 w-full mt-2 h-12 bg-[#38BC9B] rounded-md flex justify-between items-center">
-            <p class="text-white text-sm ml-4">
+    <div class="w-full px-2 pb-6 pt-2 sm:px-4 lg:pl-[72px] lg:pr-4" style="font-family: 'poppins'">
+        <div
+            class="mt-2 flex h-auto min-h-12 flex-col gap-2 rounded-md bg-[#38BC9B] px-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+            <p class="text-sm text-white">
                 <i class='bx bx-list-check mr-2'></i>Listado de Cursos asignados
-
             </p>
-            <div class="flex gap-2 mr-4">
+            <div class="flex gap-2">
                 {{-- <a href="{{ route('citacion.pdf.general') }}"
                     class="text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 hover:text-red-600 hover:bg-white hover:border-red-600 transition">
                     <i class='bx bx-file-pdf mr-1'></i>PDF General
@@ -20,9 +20,9 @@
         </div>
 
         @if (session('success'))
-            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full ml-[18px] mr-4">
+            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="mt-3 w-full">
                 <div
-                    class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded shadow-md flex justify-between items-center">
+                    class="flex items-center justify-between rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700 shadow-md">
                     <span>{{ session('success') }}</span>
                     <button @click="show = false"
                         class="ml-4 font-bold text-green-700 hover:text-green-900">&times;</button>
@@ -31,77 +31,84 @@
         @endif
 
         @if (session('error'))
-            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="w-full ml-4 mr-4">
+            <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show" x-transition class="mt-3 w-full">
                 <div
-                    class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-md flex justify-between items-center">
+                    class="flex items-center justify-between rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700 shadow-md">
                     <span>{{ session('error') }}</span>
                     <button @click="show = false" class="ml-4 font-bold text-red-700 hover:text-red-900">&times;</button>
                 </div>
             </div>
         @endif
 
-
-
-
-        <div class="flex justify-center items-center mt-4 w-full">
-            <div
-                class=" bg-white m-2 w-2/3 flex relative overflow-x-auto bg-neutral-primary-soft rounded-md shadow-[0_8px_15px_rgba(0,0,0,0.15)]">
-                <table class="w-full text-sm text-left rtl:text-right text-body">
-                    <caption class="p-5 text-lg font-medium text-left rtl:text-right text-heading">
-                        Aula Abierta - 2do Trimestre 2026
-                        <p class="mt-1.5 text-sm font-normal text-body">El listado fue asignado desde sistemas si daria el
-                            caso de no estar registrado su curso apersonarse por favor con el administrador del sitio.</p>
-                    </caption>
-                    <thead class="text-xs text-center text-white bg-slate-600 border-b border-t border-default-medium">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 font-medium">
-                                No
-                            </th>
-                            <th scope="col" class="px-6 py-3 font-medium">
-                                Curso
-                            </th>
-                            <th scope="col" class="px-6 py-3 font-medium">
-                                Area
-                            </th>
-                            <th scope="col" class="px-6 py-3 font-medium">
-                                Opciones
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($asignaciones as $index => $asignacion)
-                            <tr class="bg-neutral-primary-soft border-b border-slate-200 hover:bg-neutral-primary-medium">
-                                <td class="px-6 py-4 text-center">{{ $index + 1 }}</td>
-                                <td class="px-6 py-4 font-medium text-heading whitespace-nowrap">
-                                    {{ $asignacion->curso->display_name }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <p
-                                        class="text-[10px] font-bold border border-green-700 py-1 text-center rounded-md text-white bg-green-700">
-                                        {{ $asignacion->materia->area }}</p>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <button type="button"
-                                        class="btn-ver-estudiantes text-blue-600 mr-2 border border-blue-600 hover:bg-blue-600 hover:text-white font-medium rounded text-xs px-3 py-1.5 transition"
-                                        data-curso-id="{{ $asignacion->idcurso }}"
-                                        data-curso-nombre="{{ $asignacion->curso->display_name }}"
-                                        data-id-asignacion="{{ $asignacion->idAsignacion }}">
-                                        <i class="fa-solid fa-list-ol"></i> Estudiantes
-                                    </button>
-                                    {{-- <a href="{{ route('citacion.pdf.asignacion', ['id' => $asignacion->id]) }}" --}}
-                                    @if ($asignacion->citaciones->isNotEmpty() && $asignacion->citaciones->first()->estado === 'CERRADO')
-                                        <a href="{{ route('citacion.imprimir-listado', ['idAsignacion' => $asignacion->idAsignacion]) }}"
-                                            target="_blank"
-                                            class="text-red-600 hover:text-red-900 border border-red-600 hover:bg-red-600 hover:text-white font-medium rounded text-xs px-3 py-1.5 transition">
-                                            <i class="fa-regular fa-file-pdf"></i> Imprimir listado
-                                        </a>
-                                    @else
-                                    @endif
-                                </td>
+        <div class="mt-4 flex w-full justify-center">
+            <div class="w-full overflow-hidden rounded-md bg-white shadow-[0_8px_15px_rgba(0,0,0,0.15)] lg:w-2/3">
+                <div class="overflow-x-auto">
+                    <table class="w-full md:min-w-[560px] text-sm text-left text-body rtl:text-right">
+                        <caption class="p-4 text-left text-lg font-medium text-heading sm:p-5 rtl:text-right">
+                            Aula Abierta - 2do Trimestre 2026
+                            <p class="mt-1.5 text-[10px] sm:text-sm font-normal text-body">El listado fue asignado desde
+                                sistemas
+                                si daria
+                                el
+                                caso de no estar registrado su curso apersonarse por favor con el administrador del sitio.
+                            </p>
+                        </caption>
+                        <thead class="border-b border-t border-default-medium bg-slate-600 text-center text-xs text-white">
+                            <tr>
+                                <th scope="col" class="px-3 py-3 font-medium sm:px-6 hidden sm:block">
+                                    No
+                                </th>
+                                <th scope="col" class="px-3 py-3 font-medium sm:px-6 w-1/5">
+                                    Curso
+                                </th>
+                                <th scope="col" class="px-3 py-3 font-medium sm:px-6 hidden sm:block">
+                                    Area
+                                </th>
+                                <th scope="col" class="px-3 py-3 font-medium sm:px-6 w-2/5">
+                                    Opciones
+                                </th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($asignaciones as $index => $asignacion)
+                                <tr
+                                    class="border-b border-slate-200 bg-neutral-primary-soft hover:bg-neutral-primary-medium text-center sm:text-left">
+                                    <td class="px-3 py-4 text-center sm:px-6 hidden sm:block">{{ $index + 1 }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 font-medium text-heading sm:px-6">
+                                        {{ $asignacion->curso->display_name }}
+                                        <p
+                                            class="text-xs text-blue-500 border border-blue-500 rounded w-fit px-1 py-0.5 text-center sm:hidden">
+                                            {{ $asignacion->materia->area }}</p>
+                                    </td>
+                                    <td class="px-3 py-4 sm:px-6 hidden md:block">
+                                        <p
+                                            class="rounded-md border border-green-700 bg-green-700 py-1 text-center text-[10px] font-bold text-white">
+                                            {{ $asignacion->materia->area }}</p>
+                                    </td>
+                                    <td class="px-3 py-4 sm:px-6">
+                                        <div class="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+                                            <button type="button"
+                                                class="btn-ver-estudiantes rounded border border-blue-600 px-3 py-1.5 text-xs font-medium text-blue-600 transition hover:bg-blue-600 hover:text-white"
+                                                data-curso-id="{{ $asignacion->idcurso }}"
+                                                data-curso-nombre="{{ $asignacion->curso->display_name }}"
+                                                data-id-asignacion="{{ $asignacion->idAsignacion }}">
+                                                <i class="fa-solid fa-list-ol"></i><br class="md:hidden"> Estudiantes
+                                            </button>
+                                            {{-- <a href="{{ route('citacion.pdf.asignacion', ['id' => $asignacion->id]) }}" --}}
+                                            @if ($asignacion->citaciones->isNotEmpty() && $asignacion->citaciones->first()->estado === 'CERRADO')
+                                                <a href="{{ route('citacion.imprimir-listado', ['idAsignacion' => $asignacion->idAsignacion]) }}"
+                                                    target="_blank"
+                                                    class="rounded border border-red-600 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-600 hover:text-red-100">
+                                                    <i class="fa-regular fa-file-pdf"></i> Imprimir
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

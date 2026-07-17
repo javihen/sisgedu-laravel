@@ -71,6 +71,10 @@
             display: none;
         }
 
+        .nav-mobile-open {
+            transform: translateX(0);
+        }
+
         .nav__dropdown-collapse.show {
             display: block;
         }
@@ -93,36 +97,44 @@
     </style>
 </head>
 
-<body>
-
+<body class="min-h-screen bg-slate-50">
 
     {{-- Esta linea colocara un fondo repetido detras del contenido --}}
     <div class="fondo"></div>
 
-    <header class="relative z-10 bg-white px-1.5 flex justify-between align-items-center h-15 border-b-slate-200">
-        <div class=" ml-16 flex flex-row items-center h-full">
-            <p style='font-family: "Playwrite GB S", cursive;'>Sistema de Gestion Educativa</p>
-            <div class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm mx-2">Gestion
-                {{ session('gestion') }}
+    <header class="relative z-40 border-b border-slate-200 bg-white px-3 py-3 shadow-sm sm:px-4 lg:px-4">
+        <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <button id="navToggle" type="button"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 text-slate-700 lg:hidden">
+                    <i class="bx bx-menu text-xl"></i>
+                </button>
+                <div class="flex flex-row gap-1 sm:items-center sm:ml-12">
+                    <p class="text-[12px] sm:text-[16px] font-semibold text-slate-700"
+                        style='font-family: "Playwrite GB S", cursive;'>Sistema de Gestion Educativa</p>
+                    <div class="w-fit rounded-sm bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
+                        Gestion {{ session('gestion') }}
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-center">
+                <div class="rounded-md bg-[#E3DFE7] px-3 py-2 font-medium text-slate-700 text-[10px] sm:text-[14px]"
+                    style='font-family: "Poppins", cursive;'>
+                    PROF. {{ session('usuario_nombre') }}
+                </div>
             </div>
         </div>
-        <div class=" mr-4 h-full flex items-center justify-center">
-            <div class="bg-[#E3DFE7] m-auto py-2 px-3 rounded-md text-[14px]"
-                style='font-family: "Poppins",
-                cursive;'>
-                PROF. {{ session('usuario_nombre') }}
-            </div>
-        </div>
-
     </header>
 
-    <div class="nav fixed top-0 pl-2 pr-2 py-4 h-screen bg-[#334155] z-10 w-14 hover:w-[220px] transition-all duration-300"
+    <div id="navOverlay" class="fixed inset-0 z-30 hidden bg-slate-950/50 lg:hidden"></div>
+
+    <div class="nav fixed left-0 top-0 z-40 h-screen w-[260px] -translate-x-full bg-[#334155] pl-2 pr-2 py-4 shadow-2xl transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-14 lg:hover:w-[220px] lg:transition-all"
         id="navbar">
-        <nav class="nav__container h-screen flex-col justify-between pb-12 overflow-auto scroll-w ">
+        <nav class="nav__container h-screen flex-col justify-between overflow-auto pb-12 scroll-w">
             <div>
                 <a href="#"
-                    class="flex items-center py-3 pl-2 rounded-md text-white nav__logo font-semibold mb-10 align-items-center">
-                    <i class="fa-solid fa-brain nav__icon text-2xl mr-4"></i>
+                    class="nav__logo mb-10 flex items-center rounded-md py-3 pl-2 font-semibold text-white align-items-center">
+                    <i class="fa-solid fa-brain nav__icon mr-4 text-2xl"></i>
                     <span class="ml-2">Menu</span>
                 </a>
 
@@ -205,7 +217,8 @@
                                         <a href="{{ route('materia.index') }}" class="nav__dropdown-item">Materias</a>
                                         <a href="{{ route('materia.asignacion') }}"
                                             class="nav__dropdown-item">Asignacion</a>
-                                        <a href="{{ route('materia.cargaHoraria') }}" class="nav__dropdown-item">Carga
+                                        <a href="{{ route('materia.cargaHoraria') }}"
+                                            class="nav__dropdown-item">Carga
                                             horaria</a>
                                     </div>
                                 </div>
@@ -403,14 +416,16 @@
                 </div>
             </div>
             <a href="{{ route('logout') }}"
-                class="flex items-center w-[190px] py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white fixed bottom-0 mb-4">
+                class="fixed bottom-0 mb-4 flex w-[190px] items-center rounded-md py-3 pl-2 text-white hover:text-slate-700 hover:bg-white">
                 <i class="fa-solid fa-right-from-bracket nav__icon ml-1"></i>
                 <span class="nav__name">Salir</span>
             </a>
         </nav>
     </div>
 
-    @yield('content')
+    <div class="relative z-10 min-h-screen w-full pt-2 lg:pt-4 lg:pl-14">
+        @yield('content')
+    </div>
 
 
     {{-- <div class="flex justify-center">
@@ -461,11 +476,61 @@
             });
 
             const navbar = document.getElementById('navbar');
-            navbar.addEventListener('mouseleave', function() {
+            const navOverlay = document.getElementById('navOverlay');
+            const navToggle = document.getElementById('navToggle');
+
+            const cerrarMenuMovil = () => {
+                if (window.innerWidth < 1024) {
+                    navbar.classList.remove('translate-x-0');
+                    navbar.classList.remove('nav-mobile-open');
+                    navOverlay.classList.add('hidden');
+                }
+            };
+
+            const abrirMenuMovil = () => {
+                if (window.innerWidth < 1024) {
+                    navbar.classList.add('translate-x-0');
+                    navbar.classList.add('nav-mobile-open');
+                    navOverlay.classList.remove('hidden');
+                }
+            };
+
+            navToggle?.addEventListener('click', function() {
+                if (navbar.classList.contains('translate-x-0') || navbar.classList.contains(
+                        'nav-mobile-open')) {
+                    cerrarMenuMovil();
+                } else {
+                    abrirMenuMovil();
+                }
+            });
+
+            navOverlay?.addEventListener('click', cerrarMenuMovil);
+
+            document.querySelectorAll('#navbar a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) {
+                        cerrarMenuMovil();
+                    }
+                });
+            });
+
+            navbar?.addEventListener('mouseleave', function() {
                 const collapses = document.querySelectorAll('.nav__dropdown-collapse');
                 collapses.forEach(collapse => {
                     collapse.classList.remove('show');
                 });
+            });
+
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    navbar.classList.add('translate-x-0');
+                    navbar.classList.remove('nav-mobile-open');
+                    navOverlay.classList.add('hidden');
+                } else {
+                    navbar.classList.remove('translate-x-0');
+                    navbar.classList.remove('nav-mobile-open');
+                    navOverlay.classList.add('hidden');
+                }
             });
         });
     </script>

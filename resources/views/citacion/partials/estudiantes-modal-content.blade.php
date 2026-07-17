@@ -50,7 +50,8 @@
                         <th class="px-4 py-3">N°</th>
                         {{-- <th class="px-4 py-3">Código</th> --}}
                         <th class="px-4 py-3">Estudiante</th>
-                        <th class="px-4 py-3" colspan="2">Estado</th>
+                        <th class="px-4 py-3 hidden sm:block" colspan="2">Estado</th>
+                        <th class="px-4 py-3">Opcion</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200 bg-white">
@@ -58,10 +59,10 @@
                         <tr class="hover:bg-slate-50">
                             <td class="px-4 py-3">{{ $index + 1 }}</td>
                             {{-- <td class="px-4 py-3">{{ $estudiante->id_estudiante }}</td> --}}
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 text-xs sm:text-base">
                                 {{ trim(($estudiante->appaterno ?? '') . ' ' . ($estudiante->apmaterno ?? '') . ' ' . ($estudiante->nombres ?? '')) }}
                             </td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 hidden sm:block">
                                 @if ($estudiante->estado === 'E')
                                     <span
                                         class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">Efectivo</span>
