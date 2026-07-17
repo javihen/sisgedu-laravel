@@ -1,13 +1,13 @@
 @extends('layouts.navhorizontal')
 
 @section('content')
-    <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
+    <div class="ml-1 sm:ml-1 w-[calc(100%-30px)] sm:w-[calc(100%-90px)] absolute" style="font-family: 'poppins'">
         <div class="ml-3 w-full mt-2 h-12 bg-[#38BC9B] rounded-md flex justify-between items-center">
             <p class="text-white text-sm ml-4">
                 <i class='bx bx-list-check mr-2'></i>Listado de Reuniones de Citación
 
             </p>
-            <div class="flex gap-2 mr-4">
+            {{-- <div class="flex gap-2 mr-4">
                 <a href="{{ route('citacion.pdf.general') }}"
                     class="text-white bg-red-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 hover:text-red-600 hover:bg-white hover:border-red-600 transition">
                     <i class='bx bx-file-pdf mr-1'></i>PDF General
@@ -16,7 +16,7 @@
                     class="text-white bg-blue-600 border border-transparent shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
                     <i class='bx bx-cloud-upload mr-2'></i>Importar
                 </a>
-            </div>
+            </div> --}}
         </div>
 
         @if (session('success'))
@@ -41,10 +41,8 @@
         @endif
 
         <div class="mx-3 mt-2 flex flex-row gap-1 w-full flex-wrap">
-            {{--  --}}
-
             <a href="{{ route('citacionv2.index') }}" rel="noopener noreferrer"
-                class="w-[245px] h-[176px] rounded-lg shadow border border-slate-400 overflow-hidden
+                class="w-full sm:w-[245px] h-[176px] rounded-lg shadow border border-slate-400 overflow-hidden
                       bg-[url('/images/patron4.jpg')] bg-cover bg-center bg-no-repeat
                       flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 no-underline">
                 <div

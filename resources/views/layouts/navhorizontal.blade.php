@@ -102,7 +102,7 @@
     {{-- Esta linea colocara un fondo repetido detras del contenido --}}
     <div class="fondo"></div>
 
-    <header class="relative z-40 border-b border-slate-200 bg-white px-3 py-3 shadow-sm sm:px-4 lg:px-4">
+    <header class=" z-40 border-b border-slate-200 bg-white px-3 py-3 shadow-sm sm:px-4 lg:px-4 sticky top-0">
         <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
             <div class="flex items-center gap-3">
                 <button id="navToggle" type="button"
@@ -423,7 +423,7 @@
         </nav>
     </div>
 
-    <div class="relative z-10 min-h-screen w-full pt-2 lg:pt-4 lg:pl-14">
+    <div class="relative z-10 min-h-screen ml-1 w-[calc(100%-10px)] sm:w-[calc(100%-90px)] pt-2 lg:pt-4 lg:pl-14">
         @yield('content')
     </div>
 

@@ -1,7 +1,7 @@
 @extends('layouts.navhorizontal')
 
 @section('content')
-    <div class="ml-14 w-[calc(100%-80px)] absolute" style="font-family: 'poppins'">
+    <div class="ml-1 sm:ml-1 w-[calc(100%-30px)] sm:w-[calc(100%-90px)] absolute" style="font-family: 'poppins'">
         <div class=" ml-3 w-full mt-2 h-12 bg-[#38BC9B] rounded-md flex justify-center items-center ">
             <p class="text-white text-sm ">Listado de cursos asignados al profesor</p>
         </div>
@@ -9,7 +9,7 @@
             @foreach ($asignaciones as $asignacion)
                 {{-- card --}}
                 <div
-                    class="w-[245px] h-[176px] bg-white rounded-lg shadow flex flex-col overflow-hidden border border-slate-400">
+                    class="w-full mx-5 sm:mx-0 sm:w-[245px] h-[176px] bg-white rounded-lg shadow flex flex-col overflow-hidden border border-slate-400">
                     {{-- encabezado --}}
                     <div class="w-full h-[57px] bg-[#F4F2FF] flex items-center px-5">
                         <div class="">

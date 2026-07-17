@@ -77,7 +77,7 @@
                                     <td class="whitespace-nowrap px-3 py-4 font-medium text-heading sm:px-6">
                                         {{ $asignacion->curso->display_name }}
                                         <p
-                                            class="text-xs text-blue-500 border border-blue-500 rounded w-fit px-1 py-0.5 text-center sm:hidden">
+                                            class="text-[10px] text-blue-500 border border-blue-500 rounded w-fit px-1 py-0.5 text-center sm:hidden">
                                             {{ $asignacion->materia->area }}</p>
                                     </td>
                                     <td class="px-3 py-4 sm:px-6 hidden md:block">
@@ -113,7 +113,8 @@
         </div>
     </div>
 
-    <div id="modalEstudiantes" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/70 p-4">
+    <div id="modalEstudiantes"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/70 p-4 mt-20 sm:mt-0">
         <div class="w-full max-w-3xl rounded-xl bg-white shadow-xl">
             <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
                 <div>
