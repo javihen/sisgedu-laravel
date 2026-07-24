@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Asignacion;
 use App\Models\CitacionV2;
 use App\Models\Curso;
+use App\Models\detalleCitacion;
 use App\Models\Inscripcion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -35,6 +36,13 @@ class CitacionV2Controller extends Controller
 
         // return view('curso.curso-profesor', compact('asignaciones'));
         return view('citacion.listas', compact('asignaciones'));
+    }
+
+    public function index2()
+    {
+        $citacion = detalleCitacion::all();
+
+        return view('citacion.panelControl', compact('citacion'));
     }
 
     /**
@@ -425,6 +433,18 @@ class CitacionV2Controller extends Controller
 
         $pdf = Pdf::loadView('citacion.pdf-listado', compact('citacion', 'detalles', 'asignacion', 'curso'));
 
-        return $pdf->stream('listado-aula-abierta.pdf');
+        return $pdf->download('listado-aula-abierta.pdf');
+    }
+
+    public function contarCitaciones()
+    {
+        $citaciones = CitacionV2::count();
+        $profesores = DB::table('citacion_v2_s')
+            ->join('asignaciones', 'asignaciones.idAsignacion', '=', 'citacion_v2_s.idAsignacion')
+            ->join('profesores', 'profesores.id_profesor', '=', 'asignaciones.id_profesor')
+            ->where()
+            ->get();
+
+        dd($profesores);
     }
 }

@@ -2,7 +2,7 @@
     <div
         class="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <p class="text-sm font-semibold text-slate-800">{{ $curso->display_name ?? 'Curso' }}</p>
+            <p class="text-sm font-semibold text-slate-800">{{ $citacionActual->asignacion->materia->area ?? '' }}</p>
             <p class="text-xs text-slate-500">Lista de estudiantes inscritos</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">

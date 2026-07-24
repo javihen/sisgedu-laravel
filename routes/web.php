@@ -1,20 +1,20 @@
 <?php
 
 use App\Http\Controllers\AsignacionController;
-use App\Http\Controllers\CursoController;
-use App\Http\Controllers\EstudianteController;
-use App\Http\Controllers\MateriaController;
-use App\Http\Controllers\ProfesorController;
-use App\Http\Controllers\GestionController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\RolController;
-use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\AsistenciaController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CitacionController;
 use App\Http\Controllers\CitacionV2Controller;
+use App\Http\Controllers\CursoController;
 use App\Http\Controllers\EntrevistaController;
+use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\GestionController;
+use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\NotaController;
+use App\Http\Controllers\PermisoController;
+use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\PromedioFinalController;
+use App\Http\Controllers\RolController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,7 +26,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-//------------------------- MODULO GESTION --------------------------//
+// ------------------------- MODULO GESTION --------------------------//
 Route::get('/panel', function () {
     return view('panel');
 });
@@ -34,7 +34,7 @@ Route::get('/panel', [GestionController::class, 'index'])->name('panel');
 Route::post('/gestion/store', [GestionController::class, 'store'])->name('gestion.store');
 Route::post('/gestion/cambiar-estado/{id}', [GestionController::class, 'cambiarEstado'])->name('gestion.cambiarEstado');
 
-//-------------- MODULO CURSO ---------------------//
+// -------------- MODULO CURSO ---------------------//
 Route::get('/curso', [CursoController::class, 'index'])->name('curso.index');
 Route::post('/curso/store', [CursoController::class, 'store'])->name('curso.store');
 Route::delete('/curso/destroy/{id}', [CursoController::class, 'destroy'])->name('curso.destroy');
@@ -44,7 +44,7 @@ Route::get('/curso/{turno}/{nivel}', [CursoController::class, 'getCursos'])->nam
 Route::get('/cursos', [CursoController::class, 'listAll'])->name('curso.listAll');
 Route::get('/cursos/nivel/{nivel}', [CursoController::class, 'getCursosNivel'])->name('curso.getCursosNivel');
 
-//-------------- MODULO ESTUDIANTE --------------------//
+// -------------- MODULO ESTUDIANTE --------------------//
 
 Route::get('/estudiante', [EstudianteController::class, 'index'])->name('estudiante.index');
 Route::post('/estudiante/store', [EstudianteController::class, 'store'])->name('estudiante.store');
@@ -61,9 +61,7 @@ Route::get('/api/estudiantes/all', [EstudianteController::class, 'getAllEstudian
 Route::post('/inscripcion/inscribir-multiples', [EstudianteController::class, 'inscribirMultiples'])->name('inscripcion.inscribir-multiples');
 Route::post('/estudiante/cambiar-genero/{id}', [EstudianteController::class, 'cambiarGenero'])->name('estudiante.cambiarGenero');
 
-
-
-//--------------- MODULO MATERIA ----------------------//
+// --------------- MODULO MATERIA ----------------------//
 Route::get('/materia', [MateriaController::class, 'index'])->name('materia.index');
 Route::post('/materia/store', [MateriaController::class, 'store'])->name('materia.store');
 Route::delete('/materia/destroy/{id}', [MateriaController::class, 'destroy'])->name('materia.destroy');
@@ -71,7 +69,7 @@ Route::get('/materia/nivel/{nivel}', [MateriaController::class, 'getMateriasByNi
 Route::get('/materia/asignacion', [MateriaController::class, 'asignacion1'])->name('materia.asignacion');
 Route::get('materia/cargaHoraria', [MateriaController::class, 'cargaHoraria'])->name('materia.cargaHoraria');
 
-//----------------- MODULO PROFESOR ------------------------//
+// ----------------- MODULO PROFESOR ------------------------//
 Route::get('/profesor', [ProfesorController::class, 'index'])->name('profesor.index');
 Route::post('/profesor/store', [ProfesorController::class, 'store'])->name('profesor.store');
 Route::delete('/profesor/destroy/{id}', [ProfesorController::class, 'destroy'])->name('profesor.destroy');
@@ -81,19 +79,18 @@ Route::post('/profesor/cambiar-estado/{id}', [ProfesorController::class, 'cambia
 Route::post('/profesor/{id}/asesor-curso', [ProfesorController::class, 'guardarAsesorCurso'])->name('profesor.asesor-curso.store');
 Route::post('/profesor/import', [ProfesorController::class, 'import'])->name('profesor.import');
 
-
-//-------------------- MODULO ASIGNACION --------------------//
+// -------------------- MODULO ASIGNACION --------------------//
 Route::post('/asignacion/store', [AsignacionController::class, 'store'])->name('asignacion.store');
 Route::delete('/asignacion/destroy/{id}', [AsignacionController::class, 'destroy'])->name('asignacion.destroy');
 Route::get('/asignacion/curso', [AsignacionController::class, 'asignacionxcurso'])->name('asignacion.curso');
 Route::get('/api/asignacion/curso', [AsignacionController::class, 'getAsignacionesCurso'])->name('asignacion.getAsignacionesCurso');
 Route::post('/curso-materia/store', [AsignacionController::class, 'storeCursoMateria'])->name('curso-materia.store');
 Route::delete('/curso-materia/{id}', [AsignacionController::class, 'destroyCursoMateria'])->name('curso-materia.destroy');
-//-------------------- MODULO ASISTENCIA --------------------//
+// -------------------- MODULO ASISTENCIA --------------------//
 Route::post('/asistencia/store', [AsistenciaController::class, 'store'])->name('asistencia.store');
 Route::get('/api/inscritos-curso/{idCurso}', [AsistenciaController::class, 'obtenerInscritosPorCurso'])->name('asistencia.inscritos');
 
-//----------------------- MODULO ADMINISTRACIÓN: ROLES Y PERMISOS -----------------------//
+// ----------------------- MODULO ADMINISTRACIÓN: ROLES Y PERMISOS -----------------------//
 // ROLES - Solo administradores
 Route::get('/admin/roles', [RolController::class, 'index'])->name('roles.index')->middleware('permiso:gestionar_roles');
 Route::get('/admin/roles/create', [RolController::class, 'create'])->name('roles.create')->middleware('permiso:gestionar_roles');
@@ -110,7 +107,7 @@ Route::get('/admin/permisos/{id}/edit', [PermisoController::class, 'edit'])->nam
 Route::put('/admin/permisos/{id}', [PermisoController::class, 'update'])->name('permisos.update')->middleware('permiso:gestionar_roles');
 Route::delete('/admin/permisos/{id}', [PermisoController::class, 'destroy'])->name('permisos.destroy')->middleware('permiso:gestionar_roles');
 
-//----------------------- MODULO CITACIONES -----------------------//
+// ----------------------- MODULO CITACIONES -----------------------//
 Route::get('/citacion', [CitacionController::class, 'index'])->name('citacion.index');
 Route::get('/citacion/import', [CitacionController::class, 'showImportForm'])->name('citacion.import');
 Route::post('/citacion/import', [CitacionController::class, 'import'])->name('citacion.import');
@@ -122,8 +119,8 @@ Route::delete('/citacion/{citacion}', [CitacionController::class, 'destroy'])->n
 Route::get('/citacion/pdf/curso/{idCurso}', [CitacionController::class, 'generarPDFCurso'])->name('citacion.pdf.curso');
 Route::get('/citacion/pdf/general', [CitacionController::class, 'generarPDFGeneral'])->name('citacion.pdf.general');
 Route::get('/citacion/pdf/estudiante/{idEstudiante}', [CitacionController::class, 'generarPDFEstudiante'])->name('citacion.pdf.estudiante');
-
-//----------------------- MODULO CITACIONES V2 -----------------------//
+Route::get('/citacion/panel-control', [CitacionV2Controller::class, 'index2'])->name('citacion.panel-control');
+// ----------------------- MODULO CITACIONES V2 -----------------------//
 Route::get('/citacionv2', [CitacionV2Controller::class, 'index'])->name('citacionv2.index');
 // Cambio: la ruta del modal ahora usa la asignación concreta del profesor para abrir una sesión distinta por materia.
 Route::get('/citacion/asignacion/{idAsignacion}/estudiantes', [CitacionV2Controller::class, 'estudiantesPorAsignacion'])->name('citacion.asignacion.estudiantes');
@@ -133,8 +130,7 @@ Route::post('/citacion/toggle-registro', [CitacionV2Controller::class, 'toggleRe
 Route::post('/citacion/cerrar-sesion', [CitacionV2Controller::class, 'cerrarSesion'])->name('citacion.cerrar-sesion');
 Route::get('/citacion/imprimir-listado/{idAsignacion}', [CitacionV2Controller::class, 'imprimirListado'])->name('citacion.imprimir-listado');
 
-
-//----------------------- MODULO ENTREVISTAS -----------------------//
+// ----------------------- MODULO ENTREVISTAS -----------------------//
 Route::get('/entrevistas', [EntrevistaController::class, 'index'])->name('entrevistas.index');
 Route::get('/entrevistas/create', [EntrevistaController::class, 'create'])->name('entrevistas.create');
 Route::post('/entrevistas', [EntrevistaController::class, 'store'])->name('entrevistas.store');
@@ -143,7 +139,7 @@ Route::get('/entrevistas/{entrevista}/edit', [EntrevistaController::class, 'edit
 Route::put('/entrevistas/{entrevista}', [EntrevistaController::class, 'update'])->name('entrevistas.update');
 Route::delete('/entrevistas/{entrevista}', [EntrevistaController::class, 'destroy'])->name('entrevistas.destroy');
 
-//----------------------- MODULO NOTAS -----------------------//
+// ----------------------- MODULO NOTAS -----------------------//
 Route::get('/notas', [NotaController::class, 'index'])->name('notas.index');
 Route::get('/notas/import', [NotaController::class, 'importForm'])->name('notas.import-form');
 Route::post('/notas/import', [NotaController::class, 'import'])->name('notas.import');
@@ -154,3 +150,6 @@ Route::get('/notas/centralizador/{idCurso}', [NotaController::class, 'showCentra
 Route::post('/notas/delete-by-periodo', [NotaController::class, 'deleteByPeriodo'])->name('notas.delete-by-periodo');
 Route::get('/promedios-finales', [PromedioFinalController::class, 'index'])->name('promedios.finales');
 Route::post('/notas/import-data', [NotaController::class, 'importData'])->name('notas.import-data');
+
+/* ---------------  RUTAS PARA CONSULTAS DE PRUEBA ---------------------- */
+Route::get('/citaciones/cantidad', [CitacionV2Controller::class, 'contarCitaciones']);

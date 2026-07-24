@@ -33,6 +33,11 @@
 
         }
 
+        :root {
+            --small-font-size: 0.875rem;
+            --font-medium: 500;
+        }
+
         .fondo {
             background-image: url('/images/patron5.jpg');
             background-repeat: repeat;
@@ -87,6 +92,7 @@
         }
 
         .nav__dropdown-item {
+
             display: block;
             padding: 0.5rem 1rem;
             color: #374151;
@@ -311,6 +317,31 @@
                                     </div>
                                 </div>
                             </div>
+                        @endif
+                        {{-- debemos de cambiar el icono y sus provilegios --}}
+                        @if (session()->has('usuario_permisos') && in_array('ver_profesores', session('usuario_permisos')))
+                            {{--  <div class="nav__dropdown"> --}}
+                            <a href="{{ route('citacion.panel-control') }}"
+                                class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <div class="flex items-center">
+                                    {{-- <i class='bx bx-chalkboard nav__icon'></i> --}}
+                                    <i class="fa-solid fa-envelopes-bulk nav__icon"></i>
+                                    <span class="nav__name text-xs!">Aula Abierta/ Citaciones</span>
+                                </div>
+                                {{--  <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i> --}}
+                            </a>
+
+                            {{-- <div class="nav__dropdown-collapse mt-1">
+                                    <div class="nav__dropdown-content">
+
+                                        <a href="{{ route('profesor.index') }}" class="nav__dropdown-item">Panel de
+                                            citaciones</a>
+                                        <a href="{{ route('asignacion.curso') }}"
+                                            class="nav__dropdown-item">Historial</a>
+                                        <a href="#" class="nav__dropdown-item">Reportes</a>
+                                    </div>
+                                </div>
+                            </div> --}}
                         @endif
                         {{-- <div class="nav__dropdown">
                             <a href="#"
