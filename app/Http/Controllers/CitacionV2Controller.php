@@ -40,9 +40,70 @@ class CitacionV2Controller extends Controller
 
     public function index2()
     {
-        $citacion = detalleCitacion::all();
+        $citacion = DB::table('detalle_citaciones as dc')
+            ->join('estudiantes as e', 'dc.id_estudiante', '=', 'e.id_estudiante')
+            ->join('citacion_v2_s as c', 'dc.idCitacionV2', '=', 'c.idCitacionV2')
+            ->join('asignaciones as a', 'c.idAsignacion', '=', 'a.idAsignacion')
+            ->join('profesores as p', 'a.id_profesor', '=', 'p.id_profesor')
+            ->join('materias as m', 'a.id_materia', '=', 'm.id_materia')
+            ->join('cursos as cu', 'a.idcurso', '=', 'cu.id')
+            ->select(
+                'dc.idDetalleCitacion',
+                'e.id_estudiante',
+                DB::raw("
+            CONCAT(
+                e.appaterno,' ',
+                e.apmaterno,' ',
+                e.nombres
+            ) AS estudiante
+        "),
+                DB::raw("
+            CONCAT(
+                p.appaterno,' ',
+                p.apmaterno,' ',
+                p.nombres
+            ) AS profesor
+        "),
+                'm.area as materia',
+                'cu.nombre_curso as curso',
+                'c.fecha',
+                'c.hora',
+                'c.estado'
+            )
+            ->orderby('dc.created_at', 'desc')
+            ->orderBy('cu.grado')
+            ->orderBy('cu.paralelo')
+            ->orderBy('profesor')
+            ->orderBy('estudiante')
+            ->get();
 
-        return view('citacion.panelControl', compact('citacion'));
+        $profesores = DB::table('profesores as p')
+            ->join('asignaciones as a', 'p.id_profesor', '=', 'a.id_profesor')
+            ->join('citacion_v2_s as c', 'a.idAsignacion', '=', 'c.idAsignacion')
+            ->select(
+                'p.id_profesor',
+                DB::raw("CONCAT(p.nombres,' ',p.appaterno,' ',p.apmaterno) as profesor")
+            )
+            ->distinct()
+            ->orderBy('profesor')
+            ->get();
+
+        $estudiantes = DB::table('estudiantes as e')
+            ->join('detalle_citaciones as dc', 'e.id_estudiante', '=', 'dc.id_estudiante')
+            ->join('citacion_v2_s as c', 'dc.idCitacionV2', '=', 'c.idCitacionV2')
+            ->select(
+                'e.id_estudiante',
+                'e.nombres',
+                'e.appaterno',
+                'e.apmaterno'
+            )
+            ->distinct()
+            ->orderBy('e.appaterno')
+            ->orderBy('e.apmaterno')
+            ->orderBy('e.nombres')
+            ->get();
+
+        return view('citacion.panelControl', compact('citacion', 'profesores', 'estudiantes'));
     }
 
     /**
@@ -442,9 +503,50 @@ class CitacionV2Controller extends Controller
         $profesores = DB::table('citacion_v2_s')
             ->join('asignaciones', 'asignaciones.idAsignacion', '=', 'citacion_v2_s.idAsignacion')
             ->join('profesores', 'profesores.id_profesor', '=', 'asignaciones.id_profesor')
-            ->where()
             ->get();
+        $citacion = DB::table('detalle_citaciones as dc')
+            ->join('estudiantes as e', 'dc.id_estudiante', '=', 'e.id_estudiante')
+            ->join('citacion_v2_s as c', 'dc.idCitacionV2', '=', 'c.idCitacionV2')
+            ->join('asignaciones as a', 'c.idAsignacion', '=', 'a.idAsignacion')
+            ->join('profesores as p', 'a.id_profesor', '=', 'p.id_profesor')
+            ->join('materias as m', 'a.id_materia', '=', 'm.id_materia')
+            ->join('cursos as cu', 'a.idcurso', '=', 'cu.id')
+            ->select(
 
-        dd($profesores);
+                'dc.idDetalleCitacion',
+
+                'e.id_estudiante',
+
+                DB::raw("
+            CONCAT(
+                e.appaterno,' ',
+                e.apmaterno,' ',
+                e.nombres
+            ) AS estudiante
+        "),
+
+                DB::raw("
+            CONCAT(
+                p.appaterno,' ',
+                p.apmaterno,' ',
+                p.nombres
+            ) AS profesor
+        "),
+
+                'm.abreviatura as materia',
+                'cu.nombre_curso as curso',
+
+                'c.fecha',
+                'c.hora',
+                'c.estado'
+
+            )
+            ->orderby('dc.created_at', 'desc')
+            ->orderBy('cu.grado')
+            ->orderBy('cu.paralelo')
+            ->orderBy('profesor')
+            ->orderBy('estudiante')
+            ->get();
+        dd($citacion);
     }
 }
