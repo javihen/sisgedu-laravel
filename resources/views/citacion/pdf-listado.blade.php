@@ -58,7 +58,9 @@
         <p class="title">Listado Aula Abierta</p>
         <p class="subtitle">Asignación: {{ $asignacion->curso->display_name ?? 'Sin curso' }} · Materia:
             {{ $asignacion->materia->area ?? ($asignacion->materia->area ?? 'Sin materia') }}</p>
-        <p class="subtitle">Sesión: {{ $citacion->estado }} · Fecha: {{ $citacion->fecha }} · Hora: {{ $citacion->hora }}
+        <p class="subtitle">Profesor: {{ $asignacion->profesor->nombres }} {{ $asignacion->profesor->appaterno }}
+            {{ $asignacion->profesor->apmaterno }}</p>
+        <p class="subtitle"> Fecha: {{ $citacion->fecha }} · Hora: {{ $citacion->hora }}
         </p>
     </div>
 
@@ -67,12 +69,12 @@
     @else
         <table>
             <thead>
-                <tr>
-                    <th style="width: 5%;">#</th>
-                    <th style="width: 40%;">Estudiante</th>
-                    <th style="width: 20%;">Firma del estudiante</th>
-                    <th style="width: 20%;">Firma del PPMMFF o apoderado</th>
-                    <th>Observación</th>
+                <tr style="">
+                    <th style="width: 5%; font-size:10px;text-align:center;">#</th>
+                    <th style="width: 40%; font-size:10px;text-align:center;">Estudiante</th>
+                    <th style="width: 20%; font-size:10px;text-align:center;">Firma del estudiante</th>
+                    <th style="width: 20%; font-size:10px;text-align:center;">Firma del PPMMFF o apoderado</th>
+                    <th style="width: 20%; font-size:10px;text-align:center;">Observación</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,7 +86,7 @@
                         </td>
                         <td></td>
                         <td></td>
-                        <td>{{ $detalle->observacion ?: '-' }}</td>
+                        <td>{{ $detalle->observacion ?: ' ' }}</td>
                     </tr>
                 @endforeach
             </tbody>

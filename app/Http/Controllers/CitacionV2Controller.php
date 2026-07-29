@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Asignacion;
 use App\Models\CitacionV2;
+use App\Models\ConfiguracionSistema;
 use App\Models\Curso;
 use App\Models\detalleCitacion;
 use App\Models\Inscripcion;
@@ -19,6 +20,7 @@ class CitacionV2Controller extends Controller
      */
     public function index()
     {
+        $config = ConfiguracionSistema::first();
         // Obtener la gestión activa
         // $gestionActiva = Gestion::where('estado', 'A')->first();
         $id = session('profesor_id'); // Obtener el ID del profesor autenticado
@@ -33,9 +35,10 @@ class CitacionV2Controller extends Controller
             ->orderBy('cursos.paralelo', 'asc')
             ->with(['curso', 'materia', 'citaciones']) // <-- Agregar aquí
             ->get();
+        $asesoria = DB::table('asesores_cursos')->where('id_profesor', $id)->first();
 
         // return view('curso.curso-profesor', compact('asignaciones'));
-        return view('citacion.listas', compact('asignaciones'));
+        return view('citacion.listas', compact('asignaciones', 'asesoria', 'config'));
     }
 
     public function index2()
@@ -282,6 +285,16 @@ class CitacionV2Controller extends Controller
      */
     public function registrar(Request $request)
     {
+        /* Esta configuracion cerrara el operativo de forma automatica */
+        $config = ConfiguracionSistema::first();
+        if (now()->greaterThan($config->fecha_cierre)) {
+            return back()->with(
+                'error',
+                'El sistema ya fue cerrado.'
+            );
+        }
+
+        // Guardar normalmente
         $request->validate([
             'idEstudiante' => ['required', 'string'],
             'idAsignacion' => ['required', 'integer'],
@@ -319,7 +332,7 @@ class CitacionV2Controller extends Controller
                         'fecha' => now()->toDateString(),
                         'hora' => now()->toTimeString(),
                         'estado' => 'ABIERTO',
-                        'motivo' => '',
+                        'motivo' => 'Aula Abierta',
                         'observacion' => '',
                     ]);
                 });
@@ -374,6 +387,16 @@ class CitacionV2Controller extends Controller
      */
     public function toggleRegistro(Request $request)
     {
+        /* Esta configuracion cerrara el operativo de forma automatica */
+        $config = ConfiguracionSistema::first();
+        if (now()->greaterThan($config->fecha_cierre)) {
+            return back()->with(
+                'error',
+                'El sistema ya fue cerrado.'
+            );
+        }
+
+        // Guardar normalmente
         $request->validate([
             'idEstudiante' => ['required', 'string'],
             'idAsignacion' => ['required', 'integer'],
@@ -489,7 +512,26 @@ class CitacionV2Controller extends Controller
             ->with('estudiante')
             ->get();
 
-        $asignacion = Asignacion::findOrFail($idAsignacion);
+        $asignacion = Asignacion::with('profesor')->findOrFail(1);
+        $curso = $asignacion->curso;
+
+        $pdf = Pdf::loadView('citacion.pdf-listado', compact('citacion', 'detalles', 'asignacion', 'curso'));
+
+        return $pdf->download('listado-aula-abierta.pdf');
+    }
+
+    public function imprimirCitaciones()
+    {
+        $citacion = CitacionV2::where('idAsignacion', $idAsignacion)
+            ->where('estado', 'CERRADO')
+            ->latest('idCitacionV2')
+            ->firstOrFail();
+
+        $detalles = \App\Models\detalleCitacion::where('idCitacionV2', $citacion->idCitacionV2)
+            ->with('estudiante')
+            ->get();
+
+        $asignacion = Asignacion::with('profesor')->findOrFail(1);
         $curso = $asignacion->curso;
 
         $pdf = Pdf::loadView('citacion.pdf-listado', compact('citacion', 'detalles', 'asignacion', 'curso'));
@@ -548,5 +590,12 @@ class CitacionV2Controller extends Controller
             ->orderBy('estudiante')
             ->get();
         dd($citacion);
+    }
+
+    public function prueba()
+    {
+        $asesoria = DB::table('asesores_cursos')->where('id_profesor', '1')->first();
+        $asignacion = Asignacion::with('profesor')->findOrFail(1);
+        dd($asignacion->profesor);
     }
 }

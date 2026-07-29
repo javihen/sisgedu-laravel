@@ -18,7 +18,7 @@
     <noscript>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
     </noscript>
-
+    {{-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> --}}
     <script defer src="https://kit.fontawesome.com/21444380c6.js" crossorigin="anonymous"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -447,7 +447,7 @@
                 </div>
             </div>
             <a href="{{ route('logout') }}"
-                class="fixed bottom-0 mb-4 flex w-[190px] items-center rounded-md py-3 pl-2 text-white hover:text-slate-700 hover:bg-white">
+                class="sm:fixed bottom-0 mb-4 flex w-[190px] items-center rounded-md py-3 pl-2 text-white hover:text-slate-700 hover:bg-white">
                 <i class="fa-solid fa-right-from-bracket nav__icon ml-1"></i>
                 <span class="nav__name">Salir</span>
             </a>

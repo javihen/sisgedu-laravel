@@ -153,3 +153,5 @@ Route::post('/notas/import-data', [NotaController::class, 'importData'])->name('
 
 /* ---------------  RUTAS PARA CONSULTAS DE PRUEBA ---------------------- */
 Route::get('/citaciones/cantidad', [CitacionV2Controller::class, 'contarCitaciones']);
+
+Route::get('/citaciones/prueba', [CitacionV2Controller::class, 'prueba']);

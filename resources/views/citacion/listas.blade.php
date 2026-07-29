@@ -38,6 +38,14 @@
                     <button @click="show = false" class="ml-4 font-bold text-red-700 hover:text-red-900">&times;</button>
                 </div>
             </div>
+            {{-- <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sistema Cerrado',
+                    text: "{{ session('error') }}",
+                    confirmButtonText: 'Aceptar'
+                });
+            </script> --}}
         @endif
 
         <div class="mt-4 flex w-full justify-center">
@@ -46,6 +54,17 @@
                     <table class="w-full md:min-w-[560px] text-sm text-left text-body rtl:text-right">
                         <caption class="p-4 text-left text-lg font-medium text-heading sm:p-5 rtl:text-right">
                             Aula Abierta - 2do Trimestre 2026
+                            <div class="text-center">
+
+                                <h4>
+
+                                    El sistema cerrará en
+
+                                </h4>
+
+                                <h1 id="contador"></h1>
+
+                            </div>
                             <p class="mt-1.5 text-[10px] sm:text-sm font-normal text-body">El listado fue asignado desde
                                 sistemas
                                 si daria
@@ -100,6 +119,13 @@
                                                     target="_blank"
                                                     class="rounded border border-red-600 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-600 hover:text-red-100">
                                                     <i class="fa-regular fa-file-pdf"></i> Imprimir
+                                                </a>
+                                            @endif
+                                            @if ($asignacion->curso->id == optional($asesoria)->id)
+                                                <a href="{{ route('citacion.imprimir-listado', ['idAsignacion' => $asignacion->idAsignacion]) }}"
+                                                    target="_blank"
+                                                    class="rounded border border-red-600 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-600 hover:text-red-100">
+                                                    <i class="fa-regular fa-file-pdf"></i> Citaciones
                                                 </a>
                                             @endif
                                         </div>
@@ -355,5 +381,30 @@
                 });
             });
         });
+        /* Esta funcion javascript mostrara un cronometro para el cierre de operativo */
+        const fechaFin = new Date("{{ $config->fecha_cierre }}").getTime();
+        const contador = document.getElementById("contador");
+
+        function actualizarContador() {
+            const ahora = new Date().getTime();
+            let diferencia = fechaFin - ahora;
+            if (diferencia <= 0) {
+                contador.innerHTML = "Sistema Cerrado";
+                clearInterval(intervalo);
+                return;
+            }
+            let dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            let horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            let segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+            contador.innerHTML =
+                dias + " días " +
+                horas + " horas " +
+                minutos + " min " +
+                segundos + " seg";
+        }
+        actualizarContador();
+
+        const intervalo = setInterval(actualizarContador, 1000);
     </script>
 @endsection
