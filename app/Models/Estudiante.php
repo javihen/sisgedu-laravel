@@ -54,4 +54,9 @@ class Estudiante extends Model
     {
         return $this->hasMany(detalleCitacion::class, 'id_estudiante', 'id_estudiante');
     }
+
+    public function proyectoGrado()
+    {
+        return $this->hasOne(ProyectoGrado::class, 'idEstudiante', 'id_estudiante');
+    }
 }

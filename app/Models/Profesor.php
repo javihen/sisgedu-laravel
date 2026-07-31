@@ -47,4 +47,14 @@ class Profesor extends Model
     {
         return $this->hasMany(AsesoresCursos::class, 'id_profesor', 'id_profesor');
     }
+
+    public function proyectosTutor()
+    {
+        return $this->hasMany(ProyectoGrado::class, 'idProfesorTutor', 'id_profesor');
+    }
+
+    public function tribunales()
+    {
+        return $this->hasMany(ProyectoTribunal::class, 'idProfesor', 'id_profesor');
+    }
 }

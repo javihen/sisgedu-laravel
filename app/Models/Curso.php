@@ -81,4 +81,9 @@ class Curso extends Model
     {
         return $this->hasMany(AsesoresCursos::class, 'id', 'id');
     }
+
+    public function proyectosGrado()
+    {
+        return $this->hasMany(ProyectoGrado::class, 'idCurso', 'id');
+    }
 }

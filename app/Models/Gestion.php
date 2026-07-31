@@ -34,4 +34,9 @@ class Gestion extends Model
     {
         return $this->hasMany(AsesoresCursos::class, 'id_gestion', 'id_gestion');
     }
+
+    public function proyectosGrado()
+    {
+        return $this->hasMany(ProyectoGrado::class, 'idGestion', 'id_gestion');
+    }
 }
