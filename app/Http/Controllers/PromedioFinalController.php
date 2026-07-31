@@ -46,8 +46,8 @@ class PromedioFinalController extends Controller
             'cursos.nombre_curso as curso',
             DB::raw('gestiones.anio as gestion'),
             DB::raw('COUNT(notas.id) as cantidad_notas'),
-            DB::raw('ROUND(COALESCE(AVG(notas.calificacion), 0), 2) as promedio_final'),
-            DB::raw("CASE WHEN COALESCE(AVG(notas.calificacion), 0) >= 51 THEN 'APROBADO' ELSE 'REPROBADO' END as estado"),
+            DB::raw('ROUND(COALESCE(AVG(notas.calificacion), 0), 3) as promedio_final'),
+            DB::raw("CASE WHEN COALESCE(AVG(notas.calificacion), 0) >= 51 THEN 'PROMEDIO FAVORABLE' ELSE 'REQUIERE MEJORA' END as estado"),
             'estudiantes.appaterno',
             'estudiantes.apmaterno',
         ])
@@ -58,6 +58,7 @@ class PromedioFinalController extends Controller
                 $join->on('notas.id_estudiante', '=', 'inscripciones.id_estudiante')
                     ->on('notas.id_gestion', '=', 'inscripciones.id_gestion');
             })
+            ->where('estudiantes.estado', 'E')
             ->when($courseId, function ($query, $courseId) {
                 return $query->where('inscripciones.id_curso', $courseId);
             })

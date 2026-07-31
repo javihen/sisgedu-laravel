@@ -164,10 +164,10 @@
                                     {{-- <td class="px-4 py-4 whitespace-nowrap text-right text-slate-900 text-center">
                                         {{ $fila->cantidad_notas }}</td> --}}
                                     <td class="px-4 py-4 whitespace-nowrap text-center font-semibold text-slate-900">
-                                        {{ number_format($fila->promedio_final, 2) }}</td>
+                                        {{ number_format($fila->promedio_final, 3) }}</td>
                                     <td class="px-4 py-4 whitespace-nowrap text-center">
                                         <span
-                                            class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $fila->estado === 'APROBADO' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700' }}">{{ $fila->estado }}</span>
+                                            class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $fila->estado === 'PROMEDIO FAVORABLE' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700' }}">{{ $fila->estado }}</span>
                                     </td>
                                 </tr>
                             @empty
@@ -240,15 +240,154 @@
                 buttons: [{
                         extend: 'excelHtml5',
                         text: 'Exportar Excel',
+                        title: function() {
+                            return 'REPORTE DE PROMEDIOS - ' + $('#selected-course-label').text();
+                        },
                         titleAttr: 'Exportar a Excel',
-                        className: '!border-none !bg-green-600 !text-white !rounded px-3 py-1'
+                        className: '!border-none !bg-green-600 !text-white !rounded px-3 py-1',
+                        filename: 'Promedios_1erTrimestre_' + $('#selected-course-label').text(),
+                        exportOptions: {
+                            columns: ':visible'
+                        }
 
                     },
                     {
                         extend: 'pdfHtml5',
                         text: 'Exportar PDF',
+                        title: function() {
+                            return '' + $('#selected-course-label').text();
+                        },
+                        orientation: 'portrait',
+                        pageSize: 'LETTER',
                         titleAttr: 'Exportar a PDF',
-                        className: '!border-none !bg-rose-600 !text-white !rounded px-3 py-1'
+                        className: '!border-none !bg-rose-600 !text-white !rounded px-3 py-1',
+
+                        customize: function(doc) {
+
+                            let curso = $('#selected-course-label').text();
+                            let gestion = $('#gestion').val() || '2026';
+                            let fecha = new Date().toLocaleDateString();
+
+                            // Márgenes
+                            doc.pageMargins = [30, 90, 30, 35];
+
+                            // Fuente
+                            doc.defaultStyle.fontSize = 9;
+
+                            // Estilo del título
+                            doc.styles.title = {
+                                alignment: 'center',
+                                bold: true,
+                                fontSize: 16
+                            };
+
+                            // Encabezados de la tabla
+                            doc.styles.tableHeader = {
+                                fillColor: '#1E3A8A',
+                                color: 'white',
+                                bold: true,
+                                alignment: 'center',
+                                fontSize: 10
+                            };
+
+                            // Obtener la tabla
+                            let tabla = doc.content[1].table.body;
+
+                            // Agregar columna N°
+                            tabla[0].unshift({
+                                text: 'N°',
+                                style: 'tableHeader'
+                            });
+
+                            // Numeración
+                            for (let i = 1; i < tabla.length; i++) {
+                                tabla[i].unshift({
+                                    text: i.toString(),
+                                    alignment: 'center'
+                                });
+                            }
+
+                            // Ancho de la tabla
+                            //doc.content[1].table.widths = Array(tabla[0].length).fill('*');
+                            doc.content[1].table.widths = [
+                                25, // N°
+                                '*', // Estudiante
+                                50, // Gestion
+                                50, // Promedio Final
+                                100 //Estado
+                            ];
+
+                            // Bordes
+                            doc.content[1].layout = {
+                                hLineWidth: function() {
+                                    return 0.5;
+                                },
+                                vLineWidth: function() {
+                                    return 0.5;
+                                },
+                                hLineColor: function() {
+                                    return '#BDBDBD';
+                                },
+                                vLineColor: function() {
+                                    return '#BDBDBD';
+                                }
+                            };
+
+                            // Encabezado del documento
+                            doc.header = {
+                                margin: [30, 20, 30, 10],
+                                stack: [{
+                                        text: 'Unidad Educativa Cristiano "Vida Nueva"',
+                                        alignment: 'center',
+                                        bold: true,
+                                        fontSize: 16
+                                    },
+
+                                    {
+                                        text: 'Sistema de Gestión Escolar - SISGEDUv2',
+                                        alignment: 'center',
+                                        fontSize: 11,
+                                        margin: [0, 2, 0, 0]
+                                    },
+
+                                    {
+                                        text: 'PROMEDIOS DE 1ER TRIMESTRE',
+                                        alignment: 'center',
+                                        bold: true,
+                                        fontSize: 14,
+                                        margin: [0, 10, 0, 5]
+                                    },
+
+                                    {
+                                        text: 'Curso: ' + curso + '      Gestión: ' +
+                                            gestion,
+                                        alignment: 'center',
+                                        fontSize: 10
+                                    }
+
+                                ]
+                            };
+
+                            // Pie de página
+                            doc.footer = function(currentPage, pageCount) {
+                                return {
+                                    margin: [30, 5],
+                                    columns: [{
+                                            text: 'Fecha: ' + fecha,
+                                            alignment: 'left',
+                                            fontSize: 9
+                                        },
+                                        {
+                                            text: 'Página ' + currentPage + ' de ' +
+                                                pageCount,
+                                            alignment: 'right',
+                                            fontSize: 9
+                                        }
+                                    ]
+                                };
+                            };
+
+                        }
                     },
                     {
                         extend: 'print',

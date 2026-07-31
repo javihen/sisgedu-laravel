@@ -78,22 +78,23 @@
                             </td>
                             <td>
                                 @if ($estudiante->estado === 'E')
-                                    <a href="#"
-                                        class="px-2 py-1 my-2 text-xs text-green-500 border border-green-500 rounded w-fit hover:bg-green-500 hover:text-white hover:cursor-pointer">
+                                    <button type="button" data-id="{{ $estudiante->id_estudiante }}"
+                                        class="estado-toggle px-2 py-1 my-2 text-xs text-green-500 border border-green-500 rounded w-fit hover:bg-green-500 hover:text-white cursor-pointer">
                                         Efectivo
-                                    </a>
+                                    </button>
                                 @elseif ($estudiante->estado === 'R')
-                                    <a href="#"
-                                        class="px-2 border border-red-500 bg-white text-red-500 rounded-sm hover:text-white hover:bg-red-500">
+                                    <button type="button" data-id="{{ $estudiante->id_estudiante }}"
+                                        class="estado-toggle px-2 py-1 my-2 text-xs text-red-500 border border-red-500 rounded w-fit hover:bg-red-500 hover:text-white cursor-pointer">
                                         Retirado
-                                    </a>
+                                    </button>
                                 @elseif ($estudiante->estado === 'A')
-                                    <a href="#"
-                                        class="px-2 border border-slate-500 bg-white text-slate-500 rounded-sm hover:text-white hover:bg-slate-500">
+                                    <button type="button" data-id="{{ $estudiante->id_estudiante }}"
+                                        class="estado-toggle px-2 py-1 my-2 text-xs text-slate-500 border border-slate-500 rounded w-fit hover:bg-slate-500 hover:text-white cursor-pointer">
                                         Abandono
-                                    </a>
+                                    </button>
                                 @else
-                                    <span class="px-2 text-sm text-gray-500">—</span>
+                                    <span class="px-2 text-sm text-gray-500"
+                                        data-id="{{ $estudiante->id_estudiante }}">—</span>
                                 @endif
                             </td>
 
@@ -714,5 +715,73 @@
                         '<tr><td colspan="5" class="px-4 py-8 text-center text-red-600">No se pudo cargar el boletín. Intente de nuevo.</td></tr>';
                 });
         }
+
+        // --- INICIO: Lógica para cambiar estado del estudiante ---
+        document.addEventListener('click', function(e) {
+            // Verificar si el clic fue en un botón de cambio de estado
+            if (e.target.matches('.estado-toggle')) {
+                e.preventDefault();
+                const button = e.target;
+                const studentId = button.dataset.id;
+                cambiarEstadoEstudiante(studentId, button);
+            }
+        });
+
+        function cambiarEstadoEstudiante(studentId, button) {
+            // Construir la URL para la petición
+            const url = `{{ route('estudiante.cambiarEstado', ['id' => ':id']) }}`.replace(':id', studentId);
+
+            // Realizar la petición fetch
+            fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Actualizar el botón en la UI sin recargar la página
+                        actualizarBotonEstado(button, data.estado);
+                    } else {
+                        // Mostrar un error si algo falla
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error de red al intentar cambiar el estado.');
+                });
+        }
+
+        function actualizarBotonEstado(button, nuevoEstado) {
+            // Definir los estilos y textos para cada estado
+            const estados = {
+                'E': {
+                    texto: 'Efectivo',
+                    clase: 'text-green-500 border-green-500 hover:bg-green-500'
+                },
+                'R': {
+                    texto: 'Retirado',
+                    clase: 'text-red-500 border-red-500 hover:bg-red-500'
+                },
+                'A': {
+                    texto: 'Abandono',
+                    clase: 'text-slate-500 border-slate-500 hover:bg-slate-500'
+                }
+            };
+
+            const config = estados[nuevoEstado];
+
+            if (config) {
+                // Actualizar el texto del botón
+                button.textContent = config.texto;
+                // Resetear y aplicar las nuevas clases de estilo
+                button.className =
+                    `estado-toggle px-2 py-1 my-2 text-xs border rounded w-fit hover:text-white cursor-pointer ${config.clase}`;
+            }
+        }
+        // --- FIN: Lógica para cambiar estado del estudiante ---
     </script>
 @endsection

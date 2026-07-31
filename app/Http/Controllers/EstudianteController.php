@@ -8,7 +8,6 @@ use App\Models\Inscripcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\URL;
 
 class EstudianteController extends Controller
 {
@@ -185,11 +184,18 @@ class EstudianteController extends Controller
      */
     public function show(string $id)
     {
-        $estudiante = Estudiante::find($id);
+        $estudiante = Estudiante::with(['inscripciones' => function ($query) {
+            $query->where('id_gestion', session('gestion_activa'));
+        }])->find($id);
+
         if (!$estudiante) {
             return response()->json(['error' => 'Estudiante no encontrado'], 404);
         }
-        return response()->json($estudiante);
+
+        $data = $estudiante->toArray();
+        $data['id_curso'] = optional($estudiante->inscripciones->first())->id_curso;
+
+        return response()->json($data);
     }
 
     /**
@@ -449,6 +455,40 @@ class EstudianteController extends Controller
                 'success' => false,
                 'message' => 'Error al actualizar el género: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Cambiar el estado del estudiante en ciclo (E -> R -> A).
+     */
+    public function cambiarEstado($id)
+    {
+        try {
+            $estudiante = Estudiante::findOrFail($id);
+
+            // Ciclo de estados: E -> R -> A -> E
+            switch ($estudiante->estado) {
+                case 'E':
+                    $estudiante->estado = 'R';
+                    break;
+                case 'R':
+                    $estudiante->estado = 'A';
+                    break;
+                case 'A':
+                default:
+                    $estudiante->estado = 'E';
+                    break;
+            }
+
+            $estudiante->save();
+
+            return response()->json([
+                'success' => true,
+                'estado' => $estudiante->estado,
+                'message' => 'Estado actualizado correctamente.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al actualizar el estado: ' . $e->getMessage()], 500);
         }
     }
 

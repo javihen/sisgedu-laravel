@@ -100,7 +100,7 @@
                                     data-apmaterno="{{ $estudiante->apmaterno }}" data-genero="{{ $estudiante->genero }}"
                                     data-fecha="{{ $estudiante->fecha_nacimiento }}"
                                     data-observacion="{{ $estudiante->observacion }}"
-                                    data-id_curso="{{ $estudiante->id_curso ?? 'SIN CURSO' }}">
+                                    data-id_curso="{{ optional($estudiante->inscripciones->first())->id_curso }}">
                                     <i class='bx bx-edit-alt'></i> Editar
                                 </a>
                             </td>
@@ -322,12 +322,12 @@
             const fileInput = document.getElementById("archivo");
             const previewContainer = document.getElementById("previewContainer");
             const previewTable = document.getElementById("previewTable");
-            const modal = document.getElementById("modalSubir");
+            const modalImportar = document.getElementById("modalSubir");
             const closeModal = document.getElementById("closeModalSubir");
             const selectCurso = document.getElementById("selectCursoImport");
 
             function abrirModalSubir() {
-                modal.classList.remove("hidden");
+                modalImportar.classList.remove("hidden");
             }
             /* ---------LEER EXCEL O CSV ---------------------------- */
             function procesarArchivo(file) {
@@ -468,8 +468,9 @@
 
             function llenaSelectCursos() {
                 const idCursoSelect = document.getElementById('id_curso');
-                if (!idCursoSelect) return;
-                fetch('/cursos')
+                if (!idCursoSelect) return Promise.resolve();
+
+                return fetch('/cursos')
                     .then(res => res.json())
                     .then(list => {
                         idCursoSelect.innerHTML = '<option value="">- seleccione un curso -</option>' + list.map(
@@ -503,9 +504,11 @@
 
                 // Delegación: escuchar todos los botones "edit-btn"
                 document.querySelectorAll('.edit-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
+                    btn.addEventListener('click', async function(e) {
                         e.preventDefault();
                         const id = this.dataset.id;
+                        const cursoId = this.dataset.id_curso ?? '';
+
                         // llenar campos desde data-attributes
                         document.getElementById('codigo').value = this.dataset.codigo ?? '';
                         document.getElementById('estado').value = this.dataset.estado ?? '';
@@ -515,14 +518,19 @@
                         document.getElementById('appaterno').value = this.dataset.appaterno ?? '';
                         document.getElementById('apmaterno').value = this.dataset.apmaterno ?? '';
                         document.getElementById('genero').value = this.dataset.genero ?? '';
-                        document.getElementById('fecha_nacimiento').value = this.dataset.fecha ?? '';
-                        document.getElementById('observacion').value = this.dataset.observacion ?? '';
-                        document.getElementById('id_curso').value = this.dataset.id_curso ?? '';
+                        document.getElementById('fecha_nacimiento').value = this.dataset.fecha ??
+                        '';
+                        document.getElementById('observacion').value = this.dataset.observacion ??
+                            '';
+
                         // cambiar action a la ruta update (URL RESTful)
-                        studentForm.action =
-                            `/estudiante/${id}`; // o usa la ruta generada en data-url si prefieres
+                        studentForm.action = `/estudiante/${id}`;
                         formMethod.value = 'PUT';
-                        submitBtn.textContent = 'Actualizar';
+                        submitBtn.textContent = 'Actualizarlo';
+                        document.getElementById('modalTitle').textContent = 'EDITAR ESTUDIANTE';
+
+                        await llenaSelectCursos();
+                        document.getElementById('id_curso').value = cursoId;
 
                         // abrir modal
                         modal.classList.remove('hidden');

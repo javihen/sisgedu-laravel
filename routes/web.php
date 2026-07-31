@@ -3,6 +3,7 @@
 use App\Http\Controllers\AsignacionController;
 use App\Http\Controllers\AsistenciaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BoletinController;
 use App\Http\Controllers\CitacionController;
 use App\Http\Controllers\CitacionV2Controller;
 use App\Http\Controllers\CursoController;
@@ -52,7 +53,7 @@ Route::post('/estudiante/import', [EstudianteController::class, 'import'])->name
 Route::delete('/estudiante/destroy/{id}', [EstudianteController::class, 'destroy'])->name('estudiante.destroy');
 Route::put('/estudiante/{id}', [EstudianteController::class, 'update'])->name('estudiante.update');
 Route::get('/estudiante-curso/{id}', [EstudianteController::class, 'estudiantexcurso'])->name('estudiante.curso');
-Route::get('/boletin/{idEstudiante}/json', [\App\Http\Controllers\BoletinController::class, 'obtenerBoletin'])->name('boletin.obtener');
+Route::get('/boletin/{idEstudiante}/json', [BoletinController::class, 'obtenerBoletin'])->name('boletin.obtener');
 
 Route::get('/estudiante-asistencia/{id}', [EstudianteController::class, 'estudiantexasistencia'])->name('estudiante.asistencia');
 
@@ -60,6 +61,7 @@ Route::get('/estudiante-curso/{id}/reporte', [EstudianteController::class, 'repo
 Route::get('/api/estudiantes/all', [EstudianteController::class, 'getAllEstudiantes'])->name('estudiante.api.all');
 Route::post('/inscripcion/inscribir-multiples', [EstudianteController::class, 'inscribirMultiples'])->name('inscripcion.inscribir-multiples');
 Route::post('/estudiante/cambiar-genero/{id}', [EstudianteController::class, 'cambiarGenero'])->name('estudiante.cambiarGenero');
+Route::post('/estudiante/{id}/cambiar-estado', [EstudianteController::class, 'cambiarEstado'])->name('estudiante.cambiarEstado');
 
 // --------------- MODULO MATERIA ----------------------//
 Route::get('/materia', [MateriaController::class, 'index'])->name('materia.index');

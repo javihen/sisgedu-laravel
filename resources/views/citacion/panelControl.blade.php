@@ -4,7 +4,7 @@
     <div class="w-full px-4 pb-8 pt-4 sm:px-6 lg:px-8" style="font-family: 'Poppins', sans-serif;">
         <div class="space-y-4">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                <div
+                <div id="btn-citaciones"
                     class="rounded-md border border-slate-200 bg-white p-5 shadow-sm hover:border-rose-200 hover:bg-rose-200 cursor-pointer">
                     <div class="flex items-start gap-3">
                         <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-700">
@@ -80,11 +80,11 @@
                             <h2 class="text-xl font-semibold text-slate-900">Citaciones Recientes</h2>
                             <p class="mt-1 text-sm text-slate-500">Últimas citaciones registradas en el sistema.</p>
                         </div>
-                        <button
+                        {{-- <button
                             class="inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700">
                             Ver todas las citaciones
                             <i class="bx bx-right-arrow-alt ml-2"></i>
-                        </button>
+                        </button> --}}
                     </div>
 
                     <div class="mt-6 overflow-hidden rounded-[1.75rem] border border-slate-200">
@@ -277,4 +277,57 @@
             </div>
         </div>
     </div>
+
+    <div id="modalCitaciones"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/70 p-4 mt-20 sm:mt-0">
+        <div class="w-full max-w-3xl rounded-xl bg-white shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                <div>
+                    <h3 id="tituloModalCitaciones" class="text-lg font-semibold text-slate-800">Listado de citaciones
+                    </h3>
+                    <p id="subtituloModalCitaciones" class="text-sm text-slate-500">Cargando información...</p>
+                </div>
+                <button type="button" id="cerrarModalCitaciones"
+                    class="cursor-pointer rounded-full border border-slate-300 px-3 py-1 text-slate-600 hover:bg-slate-100">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="contenidoModalCitaciones" class="max-h-[70vh] overflow-y-auto p-6">
+                <p class="text-sm text-slate-500">Seleccione el nombre de un estudiante para ver mas detalles.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        //const abrirModalCitaciones = document.getElementById('btn-citaciones');
+        const modalCitaciones = document.getElementById('modalCitaciones');
+        const modalCerrarCitaciones = document.getElementById('cerrarModalCitaciones');
+
+        const abrirModalCitaciones = () => {
+            modalCitaciones.classList.remove('hidden');
+            modalCitaciones.classList.add('flex');
+            let contenido = '';
+            const citacion = @json($citacion);
+            citacion.forEach(cita => {
+                contenido += `
+                    <tr>
+                        <td>${cita.estudiante}</td>
+                    </tr>
+                `;
+            });
+            contenidoModalCitaciones.innerHTML = contenido;
+        }
+
+        document.getElementById('btn-citaciones').addEventListener('click', function(e) {
+            e.preventDefault();
+            abrirModalCitaciones();
+        })
+
+        modalCerrarCitaciones.addEventListener('click', function(e) {
+            e.preventDefault();
+            modalCitaciones.classList.add('hidden');
+            modalCitaciones.classList.remove('flex');
+        })
+    </script>
 @endsection
