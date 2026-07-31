@@ -296,7 +296,7 @@
                                 </div>
                             </div>
                         @endif
-                        @if (session()->has('usuario_permisos') && in_array('ver_reportes', session('usuario_permisos')))
+                        {{-- @if (session()->has('usuario_permisos') && in_array('ver_reportes', session('usuario_permisos')))
                             <div class="nav__dropdown">
                                 <a href="#"
                                     class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
@@ -306,7 +306,6 @@
                                     </div>
                                     <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i>
                                 </a>
-
                                 <div class="nav__dropdown-collapse mt-1">
                                     <div class="nav__dropdown-content">
                                         <a href="#" class="nav__dropdown-item">R. Estudiantes</a>
@@ -317,7 +316,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
                         {{-- debemos de cambiar el icono y sus provilegios --}}
                         @if (session()->has('usuario_permisos') && in_array('ver_profesores', session('usuario_permisos')))
                             {{--  <div class="nav__dropdown"> --}}
