@@ -594,8 +594,87 @@ class CitacionV2Controller extends Controller
 
     public function prueba()
     {
-        $asesoria = DB::table('asesores_cursos')->where('id_profesor', '1')->first();
+        /* $asesoria = DB::table('asesores_cursos')->where('id_profesor', '1')->first();
         $asignacion = Asignacion::with('profesor')->findOrFail(1);
-        dd($asignacion->profesor);
+        dd($asignacion->profesor); */
+        $profesores = DB::table('profesores as p')
+            ->join('asignaciones as a', 'p.id_profesor', '=', 'a.id_profesor')
+            ->join('citacion_v2_s as c', 'a.idAsignacion', '=', 'c.idAsignacion')
+            ->select(
+                'p.id_profesor',
+                DB::raw("CONCAT(p.nombres,' ',p.appaterno,' ',p.apmaterno) as profesor")
+            )
+            ->distinct()
+            ->orderBy('profesor')
+            ->get();
+        dd($profesores);
+    }
+
+    public function listadoProfesores(Request $request)
+    {
+        if ($request->wantsJson() && $request->filled('asignacion_id')) {
+            $asignacionId = (int) $request->query('asignacion_id');
+
+            $curso = DB::table('asignaciones as a')
+                ->join('cursos as cu', 'a.idcurso', '=', 'cu.id')
+                ->where('a.idAsignacion', $asignacionId)
+                ->select('cu.nombre_curso', 'cu.grado', 'cu.paralelo')
+                ->first();
+
+            $estudiantes = DB::table('detalle_citaciones as dc')
+                ->join('citacion_v2_s as c', 'dc.idCitacionV2', '=', 'c.idCitacionV2')
+                ->join('estudiantes as e', 'dc.id_estudiante', '=', 'e.id_estudiante')
+                ->where('c.idAsignacion', $asignacionId)
+                ->groupBy('e.id_estudiante', 'e.appaterno', 'e.apmaterno', 'e.nombres')
+                ->select(
+                    'e.id_estudiante',
+                    DB::raw("CONCAT(e.appaterno,' ',e.apmaterno,' ',e.nombres) as estudiante"),
+                    DB::raw('MIN(dc.estado) as estado')
+                )
+                ->orderBy('e.appaterno')
+                ->orderBy('e.apmaterno')
+                ->orderBy('e.nombres')
+                ->get();
+
+            return response()->json([
+                'curso' => $curso,
+                'estudiantes' => $estudiantes,
+            ]);
+        }
+
+        $asignaciones = DB::table('profesores as p')
+            ->join('asignaciones as a', 'p.id_profesor', '=', 'a.id_profesor')
+            ->join('citacion_v2_s as c', 'a.idAsignacion', '=', 'c.idAsignacion')
+            ->join('cursos as cu', 'a.idcurso', '=', 'cu.id')
+            ->select(
+                'p.id_profesor',
+                DB::raw("CONCAT(p.nombres,' ',p.appaterno,' ',p.apmaterno) as profesor"),
+                'a.idAsignacion',
+                'cu.nombre_curso',
+                'cu.grado',
+                'cu.paralelo'
+            )
+            ->distinct()
+            ->orderBy('profesor')
+            ->orderBy('cu.grado')
+            ->orderBy('cu.paralelo')
+            ->get();
+
+        $profesores = $asignaciones->groupBy('id_profesor')->map(function ($rows) {
+            $first = $rows->first();
+
+            return (object) [
+                'id_profesor' => $first->id_profesor,
+                'profesor' => $first->profesor,
+                'cursos' => $rows->map(function ($row) {
+                    return (object) [
+                        'idAsignacion' => $row->idAsignacion,
+                        'nombre' => trim("{$row->grado} {$row->nombre_curso} {$row->paralelo}"),
+                    ];
+                })->unique('idAsignacion')->values(),
+            ];
+        })->values();
+
+        return view('citacion.profesores', compact('profesores'));
     }
 }

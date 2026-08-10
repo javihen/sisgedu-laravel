@@ -131,6 +131,7 @@ Route::post('/citacion/registrar', [CitacionV2Controller::class, 'registrar'])->
 Route::post('/citacion/toggle-registro', [CitacionV2Controller::class, 'toggleRegistro'])->name('citacion.toggle-registro');
 Route::post('/citacion/cerrar-sesion', [CitacionV2Controller::class, 'cerrarSesion'])->name('citacion.cerrar-sesion');
 Route::get('/citacion/imprimir-listado/{idAsignacion}', [CitacionV2Controller::class, 'imprimirListado'])->name('citacion.imprimir-listado');
+Route::get('/citacion/profesores', [CitacionV2Controller::class, 'listadoProfesores'])->name('citacion.profesores');
 
 // ----------------------- MODULO ENTREVISTAS -----------------------//
 Route::get('/entrevistas', [EntrevistaController::class, 'index'])->name('entrevistas.index');

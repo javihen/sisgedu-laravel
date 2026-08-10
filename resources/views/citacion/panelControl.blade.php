@@ -18,7 +18,7 @@
                     </div>
                     <p class="mt-4 text-sm text-slate-500">Resumen total del periodo.</p>
                 </div>
-                <div
+                <a href="{{ route('citacion.profesores') }}"
                     class="rounded border border-slate-200 bg-white p-5 shadow-sm hover:border-violet-200 hover:bg-violet-200 cursor-pointer">
                     <div class="flex items-start gap-3">
                         <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
@@ -30,7 +30,7 @@
                         </div>
                     </div>
                     <p class="mt-4 text-sm text-slate-500">Docentes con citaciones registradas.</p>
-                </div>
+                </a>
                 <div
                     class="rounded border border-slate-200 bg-white p-5 shadow-sm hover:border-ramber200 hover:bg-amber-200 cursor-pointer">
                     <div class="flex items-start gap-3">
@@ -285,7 +285,8 @@
                 <div>
                     <h3 id="tituloModalCitaciones" class="text-lg font-semibold text-slate-800">Listado de citaciones
                     </h3>
-                    <p id="subtituloModalCitaciones" class="text-sm text-slate-500">Cargando información...</p>
+                    <p id="subtituloModalCitaciones" class="text-sm text-slate-500">El listado corresponde a registros del
+                        aula Abierta.</p>
                 </div>
                 <button type="button" id="cerrarModalCitaciones"
                     class="cursor-pointer rounded-full border border-slate-300 px-3 py-1 text-slate-600 hover:bg-slate-100">
@@ -307,16 +308,30 @@
         const abrirModalCitaciones = () => {
             modalCitaciones.classList.remove('hidden');
             modalCitaciones.classList.add('flex');
-            let contenido = '';
+            let contenido =
+                '<table class="w-full text-sm text-slate-700"><thead class="bg-slate-50 text-left text-xs uppercase text-slate-500"><tr><th class="px-4 py-4">Registrado</th><th class="px-4 py-4">Estudiantes</th><th class="px-4 py-4">Acciones</th></tr></thead><tbody class="divide-y divide-slate-100 bg-white">';
             const citacion = @json($citacion);
             citacion.forEach(cita => {
                 contenido += `
                     <tr>
-                        <td>${cita.estudiante}</td>
+                        <td class="px-4 py-4 text-sm text-slate-800">${ cita.fecha }<br></td>
+                        <td class="px-4 py-4 text-sm text-slate-800">${cita.estudiante}</td>
+                        <td class="px-4 py-4">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">
+                                    <i class="bx bx-edit"></i>
+                                </button>
+                                <button
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">
+                                    <i class="bx bx-printer"></i>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 `;
             });
-            contenidoModalCitaciones.innerHTML = contenido;
+            contenidoModalCitaciones.innerHTML = contenido += '</tbody></table>';
         }
 
         document.getElementById('btn-citaciones').addEventListener('click', function(e) {
