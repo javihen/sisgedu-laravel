@@ -22,7 +22,7 @@ class PromedioFinalController extends Controller
         $resultados = $this->PromedioFinal($courseId);
 
         $totalEstudiantes = $resultados->count();
-        $promedioGeneral = $totalEstudiantes ? round($resultados->avg('promedio_final'), 2) : 0;
+        $promedioGeneral = $totalEstudiantes ? round($resultados->avg('promedio_final'), 4) : 0;
         $totalAprobados = $resultados->where('estado', 'APROBADO')->count();
         $totalReprobados = $resultados->where('estado', 'REPROBADO')->count();
 
@@ -46,7 +46,7 @@ class PromedioFinalController extends Controller
             'cursos.nombre_curso as curso',
             DB::raw('gestiones.anio as gestion'),
             DB::raw('COUNT(notas.id) as cantidad_notas'),
-            DB::raw('ROUND(COALESCE(AVG(notas.calificacion), 0), 3) as promedio_final'),
+            DB::raw('ROUND(COALESCE(AVG(notas.calificacion), 0), 4) as promedio_final'),
             DB::raw("CASE WHEN COALESCE(AVG(notas.calificacion), 0) >= 51 THEN 'PROMEDIO FAVORABLE' ELSE 'REQUIERE MEJORA' END as estado"),
             'estudiantes.appaterno',
             'estudiantes.apmaterno',

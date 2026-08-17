@@ -164,7 +164,7 @@
                                     {{-- <td class="px-4 py-4 whitespace-nowrap text-right text-slate-900 text-center">
                                         {{ $fila->cantidad_notas }}</td> --}}
                                     <td class="px-4 py-4 whitespace-nowrap text-center font-semibold text-slate-900">
-                                        {{ number_format($fila->promedio_final, 3) }}</td>
+                                        {{ number_format($fila->promedio_final, 5) }}</td>
                                     <td class="px-4 py-4 whitespace-nowrap text-center">
                                         <span
                                             class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $fila->estado === 'PROMEDIO FAVORABLE' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700' }}">{{ $fila->estado }}</span>

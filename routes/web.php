@@ -15,6 +15,7 @@ use App\Http\Controllers\NotaController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\PromedioFinalController;
+use App\Http\Controllers\ProyectoGradoController;
 use App\Http\Controllers\RolController;
 use Illuminate\Support\Facades\Route;
 
@@ -157,3 +158,18 @@ Route::post('/notas/import-data', [NotaController::class, 'importData'])->name('
 Route::get('/citaciones/cantidad', [CitacionV2Controller::class, 'contarCitaciones']);
 
 Route::get('/citaciones/prueba', [CitacionV2Controller::class, 'prueba']);
+
+/* --------------- RUTAS PARA PROYECTOS DE GRADO ---------------- */
+Route::prefix('proyecto-grado')
+    ->name('proyectoGrado.')
+    ->group(function () {
+        Route::get('/', [ProyectoGradoController::class, 'index'])->name('index');
+        Route::get('/create', [ProyectoGradoController::class, 'create'])->name('create');
+        Route::post('/', [ProyectoGradoController::class, 'store'])->name('store');
+        Route::get('/pruebas', [ProyectoGradoController::class, 'pruebas'])->name('pruebas');
+        Route::get('/curso/{idCurso}', [ProyectoGradoController::class, 'searchXCurso'])->name('searchXCurso');
+        Route::get('/{idProyecto}/edit', [ProyectoGradoController::class, 'edit'])->name('edit');
+        Route::get('/{idProyecto}', [ProyectoGradoController::class, 'show'])->name('show');
+        Route::put('/{idProyecto}', [ProyectoGradoController::class, 'update'])->name('update');
+        Route::delete('/{idProyecto}', [ProyectoGradoController::class, 'destroy'])->name('destroy');
+    });
