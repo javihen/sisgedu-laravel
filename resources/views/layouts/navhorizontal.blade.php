@@ -342,6 +342,30 @@
                                 </div>
                             </div> --}}
                         @endif
+                        @if (session()->has('usuario_permisos') && in_array('ver_proyectos', session('usuario_permisos')))
+                            {{--  <div class="nav__dropdown"> --}}
+                            <a href="{{ route('proyectoGrado.index') }}"
+                                class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <div class="flex items-center">
+                                    {{-- <i class='bx bx-chalkboard nav__icon'></i> --}}
+                                    <i class="fa-solid fa-user-graduate nav__icon"></i>
+                                    <span class="nav__name text-xs!">Defensa de grado</span>
+                                </div>
+                                {{--  <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i> --}}
+                            </a>
+
+                            {{-- <div class="nav__dropdown-collapse mt-1">
+                                    <div class="nav__dropdown-content">
+
+                                        <a href="{{ route('profesor.index') }}" class="nav__dropdown-item">Panel de
+                                            citaciones</a>
+                                        <a href="{{ route('asignacion.curso') }}"
+                                            class="nav__dropdown-item">Historial</a>
+                                        <a href="#" class="nav__dropdown-item">Reportes</a>
+                                    </div>
+                                </div>
+                            </div> --}}
+                        @endif
                         {{-- <div class="nav__dropdown">
                             <a href="#"
                                 class="flex items-center py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">

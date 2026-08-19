@@ -20,15 +20,13 @@ class ProyectoGradoController extends Controller
         /* $estudiantes = Estudiante::with([
             'proyectos',
         ])->get(); */
-
-        $proyectos = ProyectoGrado::with([
-            'estudiante',
-            'tutor',
-            'curso',
-            'gestion',
-        ])
-            ->orderBy('idProyecto', 'desc')
-            ->paginate(20);
+        $id = 'C26';
+        $proyectos = Estudiante::with('proyectoGrado.tutor')
+            ->where('estado', 'E')
+            ->whereHas('inscripciones', function ($query) use ($id) {
+                $query->where('id_curso', 'LIKE', $id.'%');
+            })->orderBy('nombres', 'asc')
+            ->get();
 
         return view(
             'proyectoGrado.index',
@@ -39,7 +37,8 @@ class ProyectoGradoController extends Controller
     public function searchXCurso(string $id)
     {
         // Se listara a los proyectos de grado por curso y con sus estudiantes y tutor
-        $proyectos = Estudiante::with('proyectoGrado')
+        $proyectos = Estudiante::with('proyectoGrado.tutor')
+            ->where('estado', 'E')
             ->whereHas('inscripciones', function ($query) use ($id) {
                 $query->where('id_curso', $id);
             })->orderBy('nombres', 'asc')
@@ -78,11 +77,16 @@ class ProyectoGradoController extends Controller
     {
         // Se enviaran los datos a ser registrado en la tabla
         $request->validate([
-            'idEstudiante' => 'required',
-            'idProfesorTutor' => 'required',
-            'idCurso' => 'required',
-            'idGestion' => 'required',
+            'idEstudiante' => 'required|string',
+            'idProfesorTutor' => 'required|integer|exists:profesores,id_profesor',
+            'idCurso' => 'required|string|exists:cursos,id',
+            'idGestion' => 'required|integer|exists:gestiones,id_gestion',
             'titulo' => 'required|max:300',
+            'lineaInvestigacion' => 'nullable|string|max:150',
+            'descripcion' => 'nullable|string',
+            'fechaInicio' => 'nullable|date',
+            'fechaDefensa' => 'nullable|date',
+            'observacion' => 'nullable|string',
         ]);
 
         ProyectoGrado::create([
@@ -94,6 +98,9 @@ class ProyectoGradoController extends Controller
             'lineaInvestigacion' => $request->lineaInvestigacion,
             'descripcion' => $request->descripcion,
             'estado' => 'REGISTRADO',
+            'fechaInicio' => $request->fechaInicio,
+            'fechaDefensa' => $request->fechaDefensa,
+            'observacion' => $request->observacion,
         ]);
 
         return redirect()
@@ -185,7 +192,7 @@ class ProyectoGradoController extends Controller
 
     public function pruebas()
     {
-        $id = 'C26A';
+        $id = 'C26B';
 
         $estudiantes = Estudiante::with('proyectoGrado')
             ->whereHas('inscripciones', function ($query) use ($id) {
@@ -215,8 +222,17 @@ class ProyectoGradoController extends Controller
                 'proyectos_grado.nombre_proyecto'
             )
             ->get(); */
+        $proyectos = Estudiante::with('proyectoGrado.tutor')
+            ->whereHas('inscripciones', function ($query) use ($id) {
+                $query->where('id_curso', $id);
+            })->orderBy('nombres', 'asc')
+            ->get();
+        dd($proyectos);
 
-        dd($estudiantes);
+        dd([
+            'idProyecto' => $estudiante->proyectoGrado->idProyecto,
+            'idProfesorTutor' => $estudiante->proyectoGrado->idProfesorTutor,
+        ]);
 
     }
 }

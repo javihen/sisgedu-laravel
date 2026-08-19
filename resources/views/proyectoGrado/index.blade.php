@@ -1,6 +1,12 @@
 @extends('layouts.navhorizontal')
 
 @section('content')
+    @php
+        $cursoActual =
+            request()->route('idCurso') ?? (optional($proyectos->first()?->inscripciones?->first())->id_curso ?? null);
+        $profesores = \App\Models\Profesor::orderBy('nombres')->get();
+    @endphp
+
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
@@ -9,13 +15,13 @@
         <div class=" ml-3 w-full mt-2 h-12 px-4 bg-slate-700 text-white rounded-md flex justify-between items-center ">
             <p class="text-white text-sm ">Listado de Proyecto de grado 2026</p>
             <div class="flex flex-row">
-                <a href="#" id="openModal"
+                {{-- <a href="#" id="openModal"
                     class=" mx-2 text-center flex items-center justify-center
                 text-white bg-blue-600  border border-transparent shadow-xs
                 font-medium leading-5 rounded text-xs px-3 py-1.5 my-2 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
                     <i class='bx bx-plus mr-2'></i>Nuevo Proyecto
-                </a>
-                <a href="#" id="#"
+                </a> --}}
+                {{-- <a href="#" id="#"
                     class=" mx-2 text-center flex items-center justify-center
                 text-white bg-blue-600  border border-transparent shadow-xs
                 font-medium leading-5 rounded text-xs px-3 py-1.5 my-2 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
@@ -26,7 +32,7 @@
                 text-white bg-blue-600  border border-transparent shadow-xs
                 font-medium leading-5 rounded text-xs px-3 py-1.5 my-2 hover:text-blue-600 hover:bg-white hover:border-blue-600 transition">
                     Buscar
-                </a>
+                </a> --}}
             </div>
         </div>
         <div class="">
@@ -81,36 +87,64 @@
                     </thead>
                     <tbody>
                         @forelse ($proyectos as $proyecto)
-                            <tr class="text-xs text-center hover:bg-gray-100">
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $loop->iteration }}</td>
+                            <tr class="text-xs text-center hover:bg-gray-200 border-b border-gray-300">
+                                <td class="px-4 py-4 border-b border-gray-300">{{ $loop->iteration }}</td>
                                 <td class="px-4 py-2 border-b border-gray-300">{{ $proyecto->ci ?? '-' }}</td>
                                 <td class="px-4 py-2 border-b border-gray-300 text-left">{{ $proyecto->nombres ?? '-' }}
                                 </td>
-                                <td class="px-4 py-2 border-b border-gray-300">{{ $proyecto->estado }}
+                                <td class="px-4 py-2 border-b border-gray-300">
+                                    @if ($proyecto->estado == 'E')
+                                        <p
+                                            class="relative inline-flex items-center px-2 py-1 text-xs border text-green-700 border-green-600 rounded-lg transition-colors">
+                                            Efectivo<span
+                                                class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full">
+                                            </span></p>
+                                    @else
+                                    @endif
+
                                 </td>
                                 <td class="px-4 py-2 border-b border-gray-300">
                                     @if ($proyecto->proyectoGrado)
-                                        - Proyecto: {{ $proyecto->proyectoGrado->nombre_proyecto }}
+                                        Proyecto: {{ $proyecto->proyectoGrado->titulo }}
                                     @else
-                                        - Sin proyecto de grado
+                                        Sin proyecto de grado
                                     @endif
                                 </td>
 
 
 
-                                </td>
-                                <td class="px-4 py-2 border-b border-gray-300 flex items-center justify-center gap-2">
-                                    <a href="#"
-                                        class="text-xs px-2 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-600 hover:text-white transition">Ver
-                                        Tutor</a>
-                                    {{-- @if ($proyecto->tutor)
+                                {{-- <td class="px-4 py-2 border-b border-gray-300 flex items-center justify-center gap-2">
+
+                                    @if ($proyecto->tutor)
 
                                     @endif
                                     <a href="{{ route('proyectoGrado.show', $proyecto->idProyecto) }}"
                                         class="text-xs px-2 py-1 border border-slate-600 text-slate-600 rounded hover:bg-slate-600 hover:text-white transition">Ver
-                                        Proyecto</a> --}}
+                                        Proyecto</a>
+                                </td> --}}
+                                <td>
+                                    @if ($proyecto->proyectoGrado?->tutor == null)
+                                        <p
+                                            class="relative inline-flex items-center px-2 py-1 text-xs border text-red-700 border-red-600 rounded-lg transition-colors">
+                                            Sin tutor</p>
+                                    @else
+                                        <p
+                                            class="relative inline-flex items-center px-2 py-1 text-xs border text-mauve-700 border-mauve-600 rounded-lg transition-colors">
+                                            {{ $proyecto->proyectoGrado?->tutor?->nombres . ' ' . $proyecto->proyectoGrado?->tutor?->appaterno }}
+                                        </p>
+                                    @endif
                                 </td>
-                                <td></td>
+                                <td>
+                                    <button type="button" data-project-modal-open
+                                        data-id-estudiante="{{ $proyecto->id_estudiante }}"
+                                        data-estudiante="{{ trim(($proyecto->nombres ?? '') . ' ' . ($proyecto->appaterno ?? '') . ' ' . ($proyecto->apmaterno ?? '')) }}"
+                                        data-id-curso="{{ optional($proyecto->inscripciones?->first())->id_curso ?? $cursoActual }}"
+                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+                                        <i class="fa-solid fa-box-archive"></i>
+                                        Registrar
+                                    </button>
+                                </td>
+
                             </tr>
                         @empty
                             <tr>
@@ -123,139 +157,161 @@
             </div>
         </div>
     </div>
-    <div id="modal"
-        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex border-2 border-slate-600 items-center justify-center z-50">
-        <!-- Contenedor del modal -->
-        <div id="modalContent"
-            class="bg-white rounded-md shadow-lg w-[622px] p-4 transform transition-all opacity-0 scale-95 ">
+    <div id="projectModal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+        <div class="absolute inset-0"></div>
+        <div id="projectModalContent"
+            class="relative w-full max-w-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+                <div
+                    class="flex items-center justify-between bg-gradient-to-r from-sky-600 to-blue-700 px-6 py-4 text-white">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.2em] text-sky-100">Proyecto de grado</p>
+                        <h2 class="text-xl font-semibold">Registrar proyecto</h2>
+                    </div>
+                    <button type="button" data-modal-close aria-label="Cerrar modal"
+                        class="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg hover:bg-white/20 transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
 
-            <!-- Título -->
-            <h2 class="text-md font-semibold mt-4 mb-6 text-left" id="modalTitle">Registrar proyecto de grado</h2>
-            <hr class="border border-slate-200 mb-4">
-            <!-- Formulario -->
-            <form class="space-y-4" id="formularioProfesor" method="post" action="#">
-                @csrf
-                <input type="hidden" name="_method" id="formMethod" value="POST">
-                <input type="hidden" name="id_gestion" value="{{ session('gestion_activa') }}">
-                {{-- <div class="flex flex-row gap-1 mt-[-25px]">
-                    <div class="basis-1/2 ">
-                        <label for="rude"
-                            class="text-xs relative top-3 left-3 bg-white px-2 border border-slate-700 rounded-md">RDA
-                        </label>
-                        <input type="text" name="rda" id="rda"
-                            class="w-full border border-slate-700 rounded-md p-2 uppercase focus:border-slate-700 focus:outline-none focus:bg-slate-100">
+                <form method="POST" action="{{ route('proyectoGrado.store') }}" class="space-y-5 p-6">
+                    @csrf
+                    <input type="hidden" name="idEstudiante" id="idEstudiante">
+                    <input type="hidden" name="idCurso" id="idCurso" value="{{ $cursoActual }}">
+                    <input type="hidden" name="idGestion" value="{{ session('gestion_activa') }}">
+
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                        <label
+                            class="block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mb-1">Estudiante</label>
+                        <input type="text" id="studentName" disabled
+                            class="w-full border-0 bg-transparent p-0 text-sm text-slate-700 focus:outline-none">
                     </div>
-                    <div class="basis-1/2">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">CI </label>
-                        <input type="text" name="ci" id="ci"
-                            class="w-full border border-slate-700 rounded-md p-2 uppercase">
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label for="titulo" class="block text-sm font-medium text-slate-700 mb-2">Título del
+                                proyecto</label>
+                            <input type="text" name="titulo" id="titulo" required maxlength="300"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                                placeholder="Ej: Sistema de gestión educativa">
+                        </div>
+
+                        <div>
+                            <label for="idProfesorTutor" class="block text-sm font-medium text-slate-700 mb-2">Tutor</label>
+                            <select name="idProfesorTutor" id="idProfesorTutor" required
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-100">
+                                <option value="">Seleccione un tutor</option>
+                                @foreach ($profesores as $profesor)
+                                    <option value="{{ $profesor->id_profesor }}">
+                                        {{ trim(($profesor->nombres ?? '') . ' ' . ($profesor->appaterno ?? '') . ' ' . ($profesor->apmaterno ?? '')) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="lineaInvestigacion" class="block text-sm font-medium text-slate-700 mb-2">Línea de
+                                investigación</label>
+                            <input type="text" name="lineaInvestigacion" id="lineaInvestigacion" maxlength="150"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                                placeholder="Ej: Tecnología educativa">
+                        </div>
+
+                        <div>
+                            <label for="fechaInicio" class="block text-sm font-medium text-slate-700 mb-2">Fecha de
+                                inicio</label>
+                            <input type="date" name="fechaInicio" id="fechaInicio"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-100">
+                        </div>
+
+                        <div>
+                            <label for="fechaDefensa" class="block text-sm font-medium text-slate-700 mb-2">Fecha de
+                                defensa</label>
+                            <input type="date" name="fechaDefensa" id="fechaDefensa"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-100">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="descripcion"
+                                class="block text-sm font-medium text-slate-700 mb-2">Descripción</label>
+                            <textarea name="descripcion" id="descripcion" rows="4"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                                placeholder="Describa brevemente el objetivo del proyecto..."></textarea>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label for="observacion"
+                                class="block text-sm font-medium text-slate-700 mb-2">Observación</label>
+                            <textarea name="observacion" id="observacion" rows="3"
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-800 shadow-sm focus:border-sky-500 focus:outline-none focus:ring-4 focus:ring-sky-100"
+                                placeholder="Detalles relevantes o comentarios del asesor..."></textarea>
+                        </div>
                     </div>
-                </div> --}}
-                {{-- <div class="flex flex-row mt-[-25px] gap-1">
-                    <div class="basis-1/2 ">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Apellido paterno
-                        </label>
-                        <input type="text" name="appaterno" id="appaterno"
-                            class="w-full border border-slate-700 rounded-md p-2 uppercase">
+
+                    <div class="flex justify-end gap-3 border-t border-slate-200 pt-5">
+                        <button type="button" data-modal-close
+                            class="px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-sm font-medium text-slate-700 hover:bg-slate-100 transition">
+                            <i class="fa-regular fa-circle-xmark mr-2"></i>Cancelar
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-700 text-sm font-medium text-white shadow-lg shadow-sky-200 hover:shadow-xl hover:scale-[1.01] transition-all">
+                            <i class="fa-regular fa-floppy-disk mr-2"></i>Guardar
+                        </button>
                     </div>
-                    <div class="basis-1/2">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Apellido materno
-                        </label>
-                        <input type="text" name="apmaterno" id="apmaterno"
-                            class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                    </div>
-                </div> --}}
-                <div class="mt-[-25px]">
-                    <label for="rude"
-                        class="text-xs relative top-3 left-3 bg-white px-2 border border-slate-700 rounded-md ">Titulo
-                        del
-                        proyecto de grado</label>
-                    <input type="text" name="nombres" id="nombres"
-                        class="w-full border border-slate-700 rounded-md p-2 focus:border-slate-700 focus:outline-none focus:bg-slate-100">
-                </div>
-                <div class="flex flex-row mt-[-25px] gap-1">
-                    <div class="basis-1/2 flex flex-col mt-2 ">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Genero
-                        </label>
-                        <select name="genero" id="genero" class="border border-slate-600 bg-white p-2 rounded-md">
-                            <option value="">seleccione</option>
-                            <option value="M">MASCULINO</option>
-                            <option value="F">FEMENINO</option>
-                        </select>
-                    </div>
-                    <div class="basis-1/2 flex flex-col mt-2 ">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Genero
-                        </label>
-                        <select name="genero" id="genero" class="border border-slate-600 bg-white p-2 rounded-md">
-                            <option value="">seleccione</option>
-                            <option value="M">MASCULINO</option>
-                            <option value="F">FEMENINO</option>
-                        </select>
-                    </div>
-                </div>
-                {{-- <div class="flex flex-row gap-1 mt-[-25px]">
-                    <div class="basis-1/2 ">
-                        <label for="codigo" class="text-xs relative top-3 left-3 bg-white px-2">Grado de estudio
-                        </label>
-                        <input type="text" name="nivelFormacion" id="nivelFormacion"
-                            class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                    </div>
-                    <div class="basis-1/2 flex flex-col mt-2 ">
-                        <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2 w-fit">Fuente de
-                            financiamiento
-                        </label>
-                        <select name="fuenteFinan" id="fuenteFinan"
-                            class="border border-slate-600 bg-white p-2 rounded-md">
-                            <option value="PPFF">PADRES DE FAMILIA</option>
-                            <option value="TGN">TESORO GENERAL DE LA NACION</option>
-                            <option value="RP">RECURSOS PROPIOS</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mt-[-25px]">
-                    <label for="rude" class="text-xs relative top-3 left-3 bg-white px-2">Observaciones </label>
-                    <textarea name="observacion" id="observacion" class="w-full border border-slate-700 rounded-md p-2 uppercase">
-                        </textarea>
-                </div> --}}
-                <hr class="border-slate-200 border">
-                <!-- Botones -->
-                <div class="flex justify-end space-x-2  ">
-                    <button type="button" id="closeModal"
-                        class="px-4 py-2 border border-gray-300 rounded-md w-1/2 hover:bg-gray-400 hover:text-white hover:cursor-pointer transition"><i
-                            class="fa-regular fa-circle-xmark"></i>
-                        Cancelar</button>
-                    <button type="submit" id="submitBtn"
-                        class="px-4 py-2 bg-blue-600 text-white w-1/2 rounded-lg hover:bg-blue-700 transition hover:cursor-pointer"><i
-                            class="fa-regular fa-floppy-disk"></i> Guardar</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-    {{-- Script para los eventos --}}
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const modal = document.getElementById('modal');
-            const openBtn = document.getElementById('openModal');
-            const closeBtn = document.getElementById('closeModal');
-            const formularioProfesor = document.getElementById('formularioProfesor')
-            const formMethod = document.getElementById('formMethod');
-            const submitBtn = document.getElementById('submitBtn');
-            openBtn.addEventListener('click', () => {
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('projectModal');
+            const modalContent = document.getElementById('projectModalContent');
+            const studentName = document.getElementById('studentName');
+            const idEstudiante = document.getElementById('idEstudiante');
+            const idCurso = document.getElementById('idCurso');
+
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                modalContent.classList.remove('scale-100');
+            };
+
+            const openModal = (button) => {
+                const estudiante = button.dataset.estudiante || 'Estudiante';
+                const estudianteId = button.dataset.idEstudiante || '';
+                const cursoId = button.dataset.idCurso || idCurso.value || '';
+
+                studentName.value = estudiante;
+                idEstudiante.value = estudianteId;
+                idCurso.value = cursoId;
 
                 modal.classList.remove('hidden');
+                requestAnimationFrame(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                });
+            };
 
-                setTimeout(() => {
-                    document.getElementById('modalContent').classList.remove('scale-95',
-                        'opacity-0');
-                }, 10);
+            document.querySelectorAll('[data-project-modal-open]').forEach((button) => {
+                button.addEventListener('click', () => openModal(button));
             });
 
-            closeBtn.addEventListener('click', () => {
-                document.getElementById('modalContent').classList.add('scale-95',
-                    'opacity-0');
-                setTimeout(() => {
-                    document.getElementById('modal').classList.add('hidden');
-                }, 200);
+            document.querySelectorAll('[data-modal-close]').forEach((button) => {
+                button.addEventListener('click', closeModal);
+            });
+
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
             });
         });
     </script>
