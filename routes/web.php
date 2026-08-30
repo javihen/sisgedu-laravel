@@ -158,3 +158,5 @@ Route::post('/notas/import-data', [NotaController::class, 'importData'])->name('
 Route::get('/citaciones/cantidad', [CitacionV2Controller::class, 'contarCitaciones']);
 
 Route::get('/citaciones/prueba', [CitacionV2Controller::class, 'prueba']);
+
+Route::get('/riesgoacademico', [NotaController::class, 'riesgoAcademico'])->name('notas.riesgo-academico');

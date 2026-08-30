@@ -541,4 +541,27 @@ class NotaController extends Controller
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save($rutaDestino);
     }
+
+    function riesgoAcademico(Request $request)
+    {
+        /* $selectedGestion = $request->get('id_gestion', session('gestion_activa'));
+        $selectedPeriodo = $request->get('periodo');
+        $selectedNivel = $request->get('nivel');
+
+        $gestiones = Gestion::all();
+        $periodos = [1 => '1er Bimestre', 2 => '2do Bimestre', 3 => '3er Bimestre', 4 => '4to Bimestre'];
+        $niveles = [
+            0 => 'Inicial en Familia Comunitaria',
+            1 => 'Primaria Comunitaria Vocacional',
+            2 => 'Secundaria Comunitaria Productiva',
+        ];
+
+        // Aquí puedes agregar la lógica para obtener los datos de riesgo académico según los filtros seleccionados
+
+        return view('notas.riesgo_academico', compact(
+            'gestiones', 'periodos', 'niveles',
+            'selectedGestion', 'selectedPeriodo', 'selectedNivel'
+        )); */
+        return view('notas.riesgo_academico');
+    }
 }

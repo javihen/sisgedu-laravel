@@ -51,4 +51,51 @@ class CitacionEstudiantesModalTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('No hay estudiantes');
     }
+
+    public function test_toggle_registro_works_when_system_config_is_missing(): void
+    {
+        Schema::dropIfExists('detalle_citaciones');
+        Schema::dropIfExists('citacion_v2_s');
+
+        Schema::create('citacion_v2_s', function (Blueprint $table) {
+            $table->bigIncrements('idCitacionV2');
+            $table->unsignedBigInteger('idAsignacion');
+            $table->date('fecha');
+            $table->time('hora');
+            $table->string('estado')->default('ABIERTO');
+            $table->string('motivo')->nullable();
+            $table->string('observacion')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('detalle_citaciones', function (Blueprint $table) {
+            $table->bigIncrements('idDetalleCitacion');
+            $table->string('estado');
+            $table->string('observacion');
+            $table->string('id_estudiante');
+            $table->unsignedBigInteger('idCitacionV2');
+            $table->timestamps();
+        });
+
+        DB::table('citacion_v2_s')->insert([
+            'idAsignacion' => 10,
+            'fecha' => '2026-08-17',
+            'hora' => '09:00:00',
+            'estado' => 'ABIERTO',
+            'motivo' => 'Aula Abierta',
+            'observacion' => '',
+        ]);
+
+        $response = $this->postJson('/citacion/toggle-registro', [
+            'idEstudiante' => 'E-001',
+            'idAsignacion' => 10,
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('success', true);
+        $this->assertDatabaseHas('detalle_citaciones', [
+            'id_estudiante' => 'E-001',
+            'idCitacionV2' => 1,
+        ]);
+    }
 }

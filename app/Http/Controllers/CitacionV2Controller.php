@@ -12,15 +12,29 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class CitacionV2Controller extends Controller
 {
+    private function getSistemaConfig(): ?ConfiguracionSistema
+    {
+        if (! Schema::hasTable('configuracion_sistema')) {
+            return null;
+        }
+
+        return ConfiguracionSistema::first();
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $config = ConfiguracionSistema::first();
+        $config = $this->getSistemaConfig() ?? new ConfiguracionSistema([
+            'fecha_inicio' => now(),
+            'fecha_cierre' => now()->addDays(30),
+            'estado' => 'ABIERTO',
+        ]);
         // Obtener la gestión activa
         // $gestionActiva = Gestion::where('estado', 'A')->first();
         $id = session('profesor_id'); // Obtener el ID del profesor autenticado
@@ -286,8 +300,8 @@ class CitacionV2Controller extends Controller
     public function registrar(Request $request)
     {
         /* Esta configuracion cerrara el operativo de forma automatica */
-        $config = ConfiguracionSistema::first();
-        if (now()->greaterThan($config->fecha_cierre)) {
+        $config = $this->getSistemaConfig();
+        if ($config && now()->greaterThan($config->fecha_cierre)) {
             return back()->with(
                 'error',
                 'El sistema ya fue cerrado.'
@@ -388,12 +402,12 @@ class CitacionV2Controller extends Controller
     public function toggleRegistro(Request $request)
     {
         /* Esta configuracion cerrara el operativo de forma automatica */
-        $config = ConfiguracionSistema::first();
-        if (now()->greaterThan($config->fecha_cierre)) {
-            return back()->with(
-                'error',
-                'El sistema ya fue cerrado.'
-            );
+        $config = $this->getSistemaConfig();
+        if ($config && now()->greaterThan($config->fecha_cierre)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El sistema ya fue cerrado.',
+            ], 403);
         }
 
         // Guardar normalmente
