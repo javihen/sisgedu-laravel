@@ -399,14 +399,43 @@
                 Gestión {{ $gestionActual }}</div>
         </div>
 
-        <div class="rounded border border-slate-200 bg-white mb-4 flex flex-row justify-start gap-4 p-4">
-            <div class="w-fit border-r border-slate-200 pr-4">
-                curso
-                5to Secundaria A
+        <div class="flex flex-row">
+            <div class="basis-3/4">
+                <div class="  h-fit rounded border border-slate-200 bg-white mb-4 flex flex-row justify-start gap-4 p-4">
+                    <div class="w-fit px-5 border-r border-slate-200 flex flex-col justify-center items-center">
+                        <P>Curso</P>
+                        <p class="font-bold">5to Secundaria A </p>
+                    </div>
+                    <div class="w-fit px-5 border-r border-slate-200  flex flex-col justify-center items-center">
+                        <p>Estudiante</p>
+                        <p class="font-bold">38</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded border border-slate-200 p-4">
+                    <table class="w-full">
+                        <thead class="bg-[#0052D7] text-white text-xs">
+                            <tr>
+                                <th>Materia</th>
+                                <th>1er Trim.</th>
+                                <th>2do Trim.</th>
+                                <th>3er Trim.</th>
+                                <th>Necesita</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div>
-                Estudiante
-                38
+            <div class="basis-1/4">
+                <div class="rounded border border-slate-200 bg-white mb-4 flex flex-row justify-start gap-4 p-4">
+                    <div class="w-full flex flex-crow gap-1 justify-center mt-4 h-48">
+                        <i data-lucide="school"></i>
+                        <p> Unidad Educativa Cristiano "Vida Nueva"</p>
+                    </div>
+                </div>
             </div>
         </div>
 
