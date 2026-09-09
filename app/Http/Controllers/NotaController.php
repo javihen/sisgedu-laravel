@@ -542,26 +542,114 @@ class NotaController extends Controller
         $writer->save($rutaDestino);
     }
 
-    function riesgoAcademico(Request $request)
+    public function riesgoAcademico(Request $request)
     {
-        /* $selectedGestion = $request->get('id_gestion', session('gestion_activa'));
-        $selectedPeriodo = $request->get('periodo');
+        $selectedGestion = $request->get('id_gestion', session('gestion_activa'));
+        $selectedCurso = $request->get('id_curso');
         $selectedNivel = $request->get('nivel');
 
         $gestiones = Gestion::all();
-        $periodos = [1 => '1er Bimestre', 2 => '2do Bimestre', 3 => '3er Bimestre', 4 => '4to Bimestre'];
         $niveles = [
             0 => 'Inicial en Familia Comunitaria',
             1 => 'Primaria Comunitaria Vocacional',
             2 => 'Secundaria Comunitaria Productiva',
         ];
 
-        // Aquí puedes agregar la lógica para obtener los datos de riesgo académico según los filtros seleccionados
+        $cursos = Curso::query()
+            ->when($selectedNivel !== null && $selectedNivel !== '', function ($query) use ($selectedNivel) {
+                $query->where('nivel', $selectedNivel);
+            })
+            ->orderBy('nivel')
+            ->orderBy('grado')
+            ->orderBy('paralelo')
+            ->get();
+
+        $cursoSeleccionado = $selectedCurso ? $cursos->firstWhere('id', (string) $selectedCurso) : null;
+        if ($selectedCurso && !$cursoSeleccionado) {
+            $selectedCurso = null;
+        }
+
+        $notas = Nota::with(['estudiante', 'asignacion.materia', 'asignacion.curso'])
+            ->where('id_gestion', $selectedGestion)
+            ->whereIn('periodo', [1, 2, 3])
+            ->when($selectedCurso, function ($query) use ($selectedCurso) {
+                $query->whereHas('asignacion', function ($query) use ($selectedCurso) {
+                    $query->where('idcurso', $selectedCurso);
+                });
+            })
+            ->when($selectedNivel !== null && $selectedNivel !== '', function ($query) use ($selectedNivel) {
+                $query->whereHas('asignacion.curso', function ($query) use ($selectedNivel) {
+                    $query->where('nivel', $selectedNivel);
+                });
+            })
+            ->whereHas('estudiante.inscripciones', function ($query) use ($selectedGestion, $selectedCurso) {
+                $query->where('id_gestion', $selectedGestion)
+                    ->when($selectedCurso, function ($query) use ($selectedCurso) {
+                        $query->where('id_curso', $selectedCurso);
+                    });
+            })
+            ->whereHas('estudiante', function ($query) {
+                $query->where('estado', 'E');
+            })
+            ->orderBy('id')
+            ->get();
+
+        $estudiantes = $notas
+            ->groupBy('id_estudiante')
+            ->map(function ($notasEstudiante) {
+                $primeraNota = $notasEstudiante->first();
+                $estudiante = $primeraNota->estudiante;
+
+                $materias = $notasEstudiante
+                    ->groupBy(function ($nota) {
+                        return $nota->asignacion?->id_materia;
+                    })
+                    ->map(function ($notasMateria) {
+                        $porPeriodo = $notasMateria->keyBy('periodo');
+                        $asignacion = $notasMateria->first()->asignacion;
+
+                        if (!$porPeriodo->has(1) || !$porPeriodo->has(2)) {
+                            return null;
+                        }
+
+                        $t1 = (float) $porPeriodo->get(1)->calificacion;
+                        $t2 = (float) $porPeriodo->get(2)->calificacion;
+                        $necesita = max(0, 51 * 3 - $t1 - $t2);
+
+                        if ($necesita <= 51) {
+                            return null;
+                        }
+
+                        return [
+                            'materia' => $asignacion?->materia?->area ?? 'Materia sin nombre',
+                            't1' => $t1,
+                            't2' => $t2,
+                            't3' => $porPeriodo->get(3)?->calificacion,
+                        ];
+                    })
+                    ->filter()
+                    ->values()
+                    ->all();
+
+                if (empty($materias)) {
+                    return null;
+                }
+
+                $curso = $primeraNota->asignacion?->curso;
+
+                return [
+                    'nombre' => trim(($estudiante->appaterno ?? '') . ' ' . ($estudiante->apmaterno ?? '') . ' ' . ($estudiante->nombres ?? '')),
+                    'curso' => $curso?->grado ? $curso->grado . 'o' : '',
+                    'paralelo' => $curso?->paralelo ?? '',
+                    'materias' => $materias,
+                ];
+            })
+            ->filter()
+            ->values();
 
         return view('notas.riesgo_academico', compact(
-            'gestiones', 'periodos', 'niveles',
-            'selectedGestion', 'selectedPeriodo', 'selectedNivel'
-        )); */
-        return view('notas.riesgo_academico');
+            'gestiones', 'niveles', 'cursos', 'estudiantes', 'selectedGestion',
+            'selectedCurso', 'selectedNivel', 'cursoSeleccionado'
+        ));
     }
 }

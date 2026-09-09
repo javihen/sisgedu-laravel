@@ -388,293 +388,6 @@
     </style>
 
     <div class="riesgo-page*">
-        {{-- <div
-            class=" rounded border border-slate-200 bg-white mb-1 flex flex-col justify-between gap-4 p-4 sm:flex-row sm:items-center">
-            <div class="riesgo-title">
-                <h1 class="m-0 text-base font-semibold text-black sm:text-lg">Riesgo Académico</h1>
-                <p class="m-0 mt-1 text-[11px] text-slate-500">Estudiantes con materias en riesgo de reprobación en la
-                    gestión actual</p>
-            </div>
-            <div class="flex items-center gap-2 text-xs font-semibold text-blue-700"><i class="fa-solid fa-calendar-days"></i>
-                Gestión {{ $gestionActual }}</div>
-        </div> --}}
-
-        {{-- <div class="flex flex-row">
-            <div class="basis-3/4">
-                <section class="flex-1 w-full bg-white rounded-lg shadow-sm border border-slate-200/70 p-5"
-                    data-purpose="student-risk-card">
-                    <!-- Title & Context -->
-                    <div class="mb-4">
-                        <h2 class="text-base font-bold text-slate-900 leading-tight">Riesgo Académico</h2>
-                        <p class="text-xs text-slate-500 mt-0.5">Estudiantes con materias en riesgo de reprobación en la
-                            gestión actual</p>
-                    </div>
-                    <!-- Divider Line -->
-                    <div class="border-t border-slate-100 my-4"></div>
-                    <!-- Filter & Statistics Meta Row -->
-                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4 text-sm">
-                        <div class="flex items-center divide-x divide-slate-300">
-                            <!-- Curso Info -->
-                            <div class="pr-6">
-                                <span class="text-xs text-slate-400 block font-normal leading-none mb-1">Curso</span>
-                                <span class="font-bold text-slate-900 text-sm">5to Secundaria A</span>
-                            </div>
-                            <!-- Estudiantes Count -->
-                            <div class="pl-6">
-                                <span class="text-xs text-slate-400 block font-normal leading-none mb-1">Estudiantes</span>
-                                <span class="font-bold text-slate-900 text-sm">38</span>
-                            </div>
-                        </div>
-                        <!-- Report Export / Print Action Icons -->
-                        <div class="flex items-center space-x-2">
-                            <!-- Export Document Button -->
-                            <button aria-label="Exportar boletín"
-                                class="p-2 border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 rounded transition-colors shadow-2xs"
-                                type="button">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                        stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
-                            </button>
-                            <!-- Print Button -->
-                            <button aria-label="Imprimir registro"
-                                class="p-2 border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 rounded transition-colors shadow-2xs"
-                                type="button">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                                    viewBox="0 0 24 24">
-                                    <path
-                                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                                        stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <!-- BEGIN: AcademicRiskTable -->
-                    <div class="overflow-x-auto rounded border border-blue-600/20">
-                        <div class="min-w-[650px]">
-                            <!-- Blue Table Header -->
-                            <div class="bg-[#005edb] text-white text-xs font-semibold px-4 py-2.5 flex items-center">
-                                <div class="w-12">No</div>
-                                <div class="w-48 sm:w-56">Estudiante</div>
-                                <div class="flex-1">Materia</div>
-                                <div class="w-10 text-center">1er</div>
-                                <div class="w-10 text-center">2do</div>
-                                <div class="w-12 text-center">3er</div>
-                                <div class="w-44 text-right pr-2"></div>
-                            </div>
-                            <!-- Student Row Body -->
-                            <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
-                                <div class="flex items-start">
-                                    <!-- Student ID Index -->
-                                    <div class="w-12 text-xs text-slate-500 font-medium pt-1">
-                                        #01
-                                    </div>
-                                    <!-- Student Full Name -->
-                                    <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">
-                                        Quisberth Marca Domingo Fernando
-                                    </div>
-                                    <!-- Subjects & Grades Rows -->
-                                    <div class="flex-1 space-y-2.5">
-                                        <!-- Subject 1 -->
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Comunicacion
-                                                    y lenguajes</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Mario Fernando Mercado Mamani</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">45</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-12 text-center">
-                                                <span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">75</span>
-                                            </div>
-                                        </div>
-                                        <!-- Subject 2 -->
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Educación
-                                                    Musical</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Luisa Espinoza Fernandez</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">45</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-12 text-center">
-                                                <span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">75</span>
-                                            </div>
-                                        </div>
-                                        <!-- Subject 3 -->
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Artes
-                                                    Plásticas y Visuales</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Victor Hugo Sanchez Lopez</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">45</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-12 text-center">
-                                                <span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">75</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Right Action: Boletín de calificaciones Button -->
-                                    <div class="w-44 flex justify-end pl-2 pt-1">
-                                        <button
-                                            class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
-                                            type="button">
-                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
-                                                stroke-width="2" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                            </svg>
-                                            <span class="font-medium text-[11px]">Boletín de calificaciones</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
-                                <div class="flex items-start">
-                                    <div class="w-12 text-xs text-slate-500 font-medium pt-1">#02</div>
-                                    <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">Mamani Flores
-                                        Laura Beatriz</div>
-                                    <div class="flex-1 space-y-2.5">
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Matemática
-                                                </p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Carlos Mendoza</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">40</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">48</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">70</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Física -
-                                                    Química</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Andrea Rocha</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">38</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">42</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">68</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="w-44 flex justify-end pl-2 pt-1"><button
-                                            class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
-                                            type="button"><svg class="w-4 h-4 flex-shrink-0" fill="none"
-                                                stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                            </svg><span class="font-medium text-[11px]">Boletín de
-                                                calificaciones</span></button></div>
-                                </div>
-                            </div>
-                            <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
-                                <div class="flex items-start">
-                                    <div class="w-12 text-xs text-slate-500 font-medium pt-1">#03</div>
-                                    <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">Choque
-                                        Gutiérrez Rodrigo Alejandro</div>
-                                    <div class="flex-1 space-y-2.5">
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Biología -
-                                                    Geografía</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Wilson Condori</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">42</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">72</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Ciencias
-                                                    Sociales</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Marlene Vargas</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">46</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">50</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">65</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="w-44 flex justify-end pl-2 pt-1"><button
-                                            class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
-                                            type="button"><svg class="w-4 h-4 flex-shrink-0" fill="none"
-                                                stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                            </svg><span class="font-medium text-[11px]">Boletín de
-                                                calificaciones</span></button></div>
-                                </div>
-                            </div>
-                            <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
-                                <div class="flex items-start">
-                                    <div class="w-12 text-xs text-slate-500 font-medium pt-1">#04</div>
-                                    <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">Alvarez
-                                        Torrez Valeria Nicole</div>
-                                    <div class="flex-1 space-y-2.5">
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Filosofía y
-                                                    Psicología</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Rene Quispe</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">40</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">70</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="w-44 flex justify-end pl-2 pt-1"><button
-                                            class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
-                                            type="button"><svg class="w-4 h-4 flex-shrink-0" fill="none"
-                                                stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                            </svg><span class="font-medium text-[11px]">Boletín de
-                                                calificaciones</span></button></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- END: AcademicRiskTable -->
-                    <!-- Empty spacer or bottom helper area matching clean desktop view -->
-                    <div class="h-44"></div>
-                </section>
-            </div>
-            <div class="basis-1/4">
-                <div class="rounded border border-slate-200 bg-white mb-4 flex flex-row justify-start gap-4 p-4">
-                    <div class="w-full flex flex-crow gap-1 justify-center mt-4 h-48">
-                        <i data-lucide="school"></i>
-                        <p> Unidad Educativa Cristiano "Vida Nueva"</p>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
-
         <main class="flex-1 p-6 overflow-y-auto">
             <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-6 items-start">
                 <!-- BEGIN: LeftPrimaryColumn -->
@@ -694,12 +407,13 @@
                             <!-- Curso Info -->
                             <div class="pr-6">
                                 <span class="text-xs text-slate-400 block font-normal leading-none mb-1">Curso</span>
-                                <span class="font-bold text-slate-900 text-sm">5to Secundaria A</span>
+                                <span
+                                    class="font-bold text-slate-900 text-sm">{{ $cursoSeleccionado?->display_name ?? 'Todos los cursos' }}</span>
                             </div>
                             <!-- Estudiantes Count -->
                             <div class="pl-6">
                                 <span class="text-xs text-slate-400 block font-normal leading-none mb-1">Estudiantes</span>
-                                <span class="font-bold text-slate-900 text-sm">38</span>
+                                <span class="font-bold text-slate-900 text-sm">{{ $cantidadEstudiantes }}</span>
                             </div>
                         </div>
                         <!-- Report Export / Print Action Icons -->
@@ -741,200 +455,43 @@
                                 <div class="w-12 text-center">3er</div>
                                 <div class="w-44 text-right pr-2"></div>
                             </div>
-                            <!-- Student Row Body -->
-                            <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
-                                <div class="flex items-start">
-                                    <!-- Student ID Index -->
-                                    <div class="w-12 text-xs text-slate-500 font-medium pt-1">
-                                        #01
-                                    </div>
-                                    <!-- Student Full Name -->
-                                    <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">
-                                        Quisberth Marca Domingo Fernando
-                                    </div>
-                                    <!-- Subjects & Grades Rows -->
-                                    <div class="flex-1 space-y-2.5">
-                                        <!-- Subject 1 -->
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Comunicacion
-                                                    y lenguajes</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Mario Fernando Mercado Mamani</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">45</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-12 text-center">
-                                                <span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">75</span>
-                                            </div>
+                            @forelse ($estudiantesAgrupados as $nombreEstudiante => $materiasEstudiante)
+                                <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
+                                    <div class="flex items-start">
+                                        <div class="w-12 text-xs text-slate-500 font-medium pt-1">
+                                            #{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+                                        <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">
+                                            {{ $nombreEstudiante }}</div>
+                                        <div class="flex-1 space-y-2.5">
+                                            @foreach ($materiasEstudiante as $detalle)
+                                                <div class="flex items-center text-xs">
+                                                    <div class="flex-1">
+                                                        <p class="font-medium text-slate-800 text-xs leading-tight">
+                                                            {{ $detalle['materia'] }}</p>
+                                                    </div>
+                                                    <div class="w-10 text-center text-xs text-slate-700">
+                                                        {{ $detalle['t1'] }}</div>
+                                                    <div class="w-10 text-center text-xs text-slate-700">
+                                                        {{ $detalle['t2'] }}</div>
+                                                    <div class="w-12 text-center"><span
+                                                            class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">{{ $detalle['t3'] ?? '--' }}</span>
+                                                    </div>
+                                                </div>
+                                            @endforeach
                                         </div>
-                                        <!-- Subject 2 -->
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Educación
-                                                    Musical</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Luisa Espinoza Fernandez</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">45</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-12 text-center">
-                                                <span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">75</span>
-                                            </div>
+                                        <div class="w-44 flex justify-end pl-2 pt-1">
+                                            <button
+                                                class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
+                                                type="button" data-modal="student-modal-{{ $loop->iteration }}">
+                                                <span class="font-medium text-[11px]">Boletín de calificaciones</span>
+                                            </button>
                                         </div>
-                                        <!-- Subject 3 -->
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Artes
-                                                    Plásticas y Visuales</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Victor Hugo Sanchez Lopez</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">45</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-12 text-center">
-                                                <span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">75</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Right Action: Boletín de calificaciones Button -->
-                                    <div class="w-44 flex justify-end pl-2 pt-1">
-                                        <button
-                                            class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
-                                            type="button">
-                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
-                                                stroke-width="2" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                            </svg>
-                                            <span class="font-medium text-[11px]">Boletín de calificaciones</span>
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
-                                <div class="flex items-start">
-                                    <div class="w-12 text-xs text-slate-500 font-medium pt-1">#02</div>
-                                    <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">Mamani Flores
-                                        Laura Beatriz</div>
-                                    <div class="flex-1 space-y-2.5">
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Matemática
-                                                </p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Carlos Mendoza</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">40</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">48</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">70</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Física -
-                                                    Química</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Andrea Rocha</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">38</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">42</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">68</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="w-44 flex justify-end pl-2 pt-1"><button
-                                            class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
-                                            type="button"><svg class="w-4 h-4 flex-shrink-0" fill="none"
-                                                stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                            </svg><span class="font-medium text-[11px]">Boletín de
-                                                calificaciones</span></button></div>
-                                </div>
-                            </div>
-                            <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
-                                <div class="flex items-start">
-                                    <div class="w-12 text-xs text-slate-500 font-medium pt-1">#03</div>
-                                    <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">Choque
-                                        Gutiérrez Rodrigo Alejandro</div>
-                                    <div class="flex-1 space-y-2.5">
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Biología -
-                                                    Geografía</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Wilson Condori</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">42</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">72</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Ciencias
-                                                    Sociales</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Marlene Vargas</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">46</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">50</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">65</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="w-44 flex justify-end pl-2 pt-1"><button
-                                            class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
-                                            type="button"><svg class="w-4 h-4 flex-shrink-0" fill="none"
-                                                stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                            </svg><span class="font-medium text-[11px]">Boletín de
-                                                calificaciones</span></button></div>
-                                </div>
-                            </div>
-                            <div class="px-4 py-4 hover:bg-slate-50/70 transition-colors border-b border-slate-200">
-                                <div class="flex items-start">
-                                    <div class="w-12 text-xs text-slate-500 font-medium pt-1">#04</div>
-                                    <div class="w-48 sm:w-56 text-xs font-medium text-slate-800 pt-1 pr-2">Alvarez
-                                        Torrez Valeria Nicole</div>
-                                    <div class="flex-1 space-y-2.5">
-                                        <div class="flex items-center text-xs">
-                                            <div class="flex-1">
-                                                <p class="font-medium text-slate-800 text-xs leading-tight">Filosofía y
-                                                    Psicología</p>
-                                                <p class="text-[10px] text-slate-400 font-normal leading-tight">Prof.
-                                                    Rene Quispe</p>
-                                            </div>
-                                            <div class="w-10 text-center text-xs text-slate-700">35</div>
-                                            <div class="w-10 text-center text-xs text-slate-700">40</div>
-                                            <div class="w-12 text-center"><span
-                                                    class="inline-block bg-[#e2e8f0] text-slate-800 font-semibold px-2 py-0.5 rounded text-[11px]">70</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="w-44 flex justify-end pl-2 pt-1"><button
-                                            class="bg-[#00875a] hover:bg-[#00754e] text-white text-xs px-3 py-1.5 rounded flex items-center space-x-1.5 shadow-sm transition-colors whitespace-nowrap"
-                                            type="button"><svg class="w-4 h-4 flex-shrink-0" fill="none"
-                                                stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                <path
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                                                    stroke-linecap="round" stroke-linejoin="round"></path>
-                                            </svg><span class="font-medium text-[11px]">Boletín de
-                                                calificaciones</span></button></div>
-                                </div>
-                            </div>
+                            @empty
+                                <div class="px-4 py-8 text-center text-xs text-slate-500">No hay estudiantes con riesgo
+                                    académico para los filtros seleccionados.</div>
+                            @endforelse
                         </div>
                     </div>
                     <!-- END: AcademicRiskTable -->
@@ -958,20 +515,25 @@
                         </h3>
                     </div>
                     <!-- Grades and Sections Selection Grid -->
-                    <div class="space-y-2 text-xs">
+                    <form action="{{ route('notas.riesgo-academico') }}" method="GET" id="curso-riesgo-form">
+                        <input type="hidden" name="id_gestion" value="{{ $selectedGestion }}">
+                        <input type="hidden" name="nivel" value="{{ $selectedNivel }}">
+                        <input type="hidden" name="id_curso" id="curso-riesgo-id">
+                    </form>
+                    <div class="space-y-2 text-xs" id="curso-riesgo-selector">
                         <!-- Primero -->
                         <div class="flex items-center justify-between">
                             <span class="text-slate-700 font-normal w-16">Primero</span>
                             <div class="flex space-x-1.5">
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">A</button>
+                                    type="button" id="C21A">A</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">B</button>
+                                    type="button" id="C21B">B</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">C</button>
+                                    type="button" id="C21C">C</button>
                             </div>
                         </div>
                         <!-- Segundo -->
@@ -980,13 +542,14 @@
                             <div class="flex space-x-1.5">
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">A</button>
+                                    type="button" id="C22A">A</button>
                                 <!-- Active button fill (#34495E) matching screenshot -->
-                                <button class="w-8 h-7 text-xs bg-[#2c3e50] text-white font-semibold rounded shadow-2xs"
-                                    type="button">B</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">C</button>
+                                    type="button" id="C22B">B</button>
+                                <button
+                                    class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
+                                    type="button" id="C22C">C</button>
                             </div>
                         </div>
                         <!-- Tercero -->
@@ -995,13 +558,13 @@
                             <div class="flex space-x-1.5">
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">A</button>
+                                    type="button" id="C23A">A</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">B</button>
+                                    type="button" id="C23B">B</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">C</button>
+                                    type="button" id="C23C">C</button>
                             </div>
                         </div>
                         <!-- Cuarto -->
@@ -1010,13 +573,13 @@
                             <div class="flex space-x-1.5">
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">A</button>
+                                    type="button" id="C24A">A</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">B</button>
+                                    type="button" id="C24B">B</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">C</button>
+                                    type="button" id="C24C">C</button>
                             </div>
                         </div>
                         <!-- Quinto -->
@@ -1025,13 +588,13 @@
                             <div class="flex space-x-1.5">
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">A</button>
+                                    type="button" id="C25A">A</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">B</button>
+                                    type="button" id="C25B">B</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">C</button>
+                                    type="button" id="C25C">C</button>
                             </div>
                         </div>
                         <!-- Sexto -->
@@ -1040,13 +603,13 @@
                             <div class="flex space-x-1.5">
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">A</button>
+                                    type="button" id="C26A">A</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">B</button>
+                                    type="button" id="C26B">B</button>
                                 <button
                                     class="w-8 h-7 text-xs border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
-                                    type="button">C</button>
+                                    type="button" id="C26C">C</button>
                             </div>
                         </div>
                     </div>
@@ -1055,136 +618,6 @@
             </div>
         </main>
 
-        {{-- <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div class="riesgo-card riesgo-kpi red">
-                <div class="label">ESTUDIANTES EN RIESGO</div>
-                <div class="value mt-3">{{ $cantidadEstudiantes }}</div>
-            </div>
-            <div class="riesgo-card riesgo-kpi amber">
-                <div class="label">MATERIAS EN RIESGO</div>
-                <div class="value mt-3">{{ $cantidadMaterias }}</div>
-            </div>
-            <div class="riesgo-card riesgo-kpi green">
-                <div class="label">ESTUDIANTES RECUPERABLES</div>
-                <div class="value mt-3">{{ $cantidadRecuperables }}</div>
-            </div>
-            <div class="riesgo-card riesgo-kpi blue">
-                <div class="label">REQUIEREN CALIFICACIÓN &ge; 51</div>
-                <div class="value mt-3">{{ $cantidadAlcanzables }}</div>
-            </div>
-        </div> --}}
-
-        {{--  <form class="riesgo-card riesgo-filter mb-4 grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5" method="GET"
-            action="{{ request()->url() }}">
-            <div><label for="curso">Curso</label><select id="curso" name="curso">
-                    <option value="">Todos los cursos</option>
-                    <option @selected(request('curso', $curso ?? '') == '5to Secundaria')>5to Secundaria</option>
-                    <option @selected(request('curso', $curso ?? '') == '6to Secundaria')>6to Secundaria</option>
-                </select></div>
-            <div><label for="paralelo">Paralelo</label><select id="paralelo" name="paralelo">
-                    <option value="">Todos</option>
-                    <option @selected(request('paralelo', $paralelo ?? '') == 'A')>A</option>
-                    <option @selected(request('paralelo', $paralelo ?? '') == 'B')>B</option>
-                    <option @selected(request('paralelo', $paralelo ?? '') == 'C')>C</option>
-                </select></div>
-            <div><label for="materia">Materia</label><select id="materia" name="materia">
-                    <option value="">Todas las materias</option>
-                    @foreach ($filas->pluck('materia')->unique() as $nombreMateria)
-                        <option @selected(request('materia') == $nombreMateria)>{{ $nombreMateria }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div><label for="estado">Estado de riesgo</label><select id="estado" name="estado">
-                    <option value="">Todos los estados</option>
-                    <option value="critical" @selected(request('estado') == 'critical')>Riesgo crítico</option>
-                    <option value="attention" @selected(request('estado') == 'attention')>En riesgo</option>
-                    <option value="recoverable" @selected(request('estado') == 'recoverable')>Recuperable</option>
-                </select></div>
-            <div><label for="buscar">Buscar estudiante</label><input id="buscar" name="buscar"
-                    value="{{ request('buscar') }}" placeholder="Nombre del estudiante..."></div>
-            <div class="flex items-end gap-2 sm:col-span-2 lg:col-span-5"><button class="report-button" type="submit"><i
-                        class="fa-solid fa-filter mr-1"></i> Aplicar filtros</button><a class="detail-button"
-                    href="{{ request()->url() }}">Limpiar</a></div>
-        </form> --}}
-
-        {{-- <div class="riesgo-card overflow-hidden">
-            <div
-                class="flex flex-col gap-1 border-b border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="m-0 text-sm font-semibold text-slate-700">Estudiantes con materias en riesgo</h2>
-                    <h1 class="font-bold text-slate-800">5to Secundaria A</h1>
-                </div><button type="button" class="report-button"><i
-                        class="fa-solid fa-file-arrow-down mr-1"></i></button>
-            </div>
-            @if ($filas->isEmpty())
-                <div class="p-4">
-                    <div class="riesgo-empty"><i class="fa-solid fa-circle-check mr-1"></i> No existen estudiantes en
-                        riesgo
-                        académico</div>
-                </div>
-            @else
-                <div class="table-scroll">
-                    <table class="riesgo-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Estudiante</th>
-                                <th>Curso</th>
-                                <th>Materia</th>
-                                <th>1er Trim.</th>
-                                <th>2do Trim.</th>
-                                <th>3er Trim.</th>
-                                <th>Necesita</th>
-                                <th>Estado</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($estudiantesAgrupados as $nombreEstudiante => $materiasEstudiante)
-                                @foreach ($materiasEstudiante as $indice => $fila)
-                                    <tr>
-                                        <td class="student-index">{{ sprintf('%02d', $loop->parent->iteration) }}</td>
-                                        <td>
-                                            @if ($indice === 0)
-                                                <span class="student-name">{{ $nombreEstudiante }}</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if ($indice === 0)
-                                                {{ $fila['curso'] }}
-                                            @endif
-                                        </td>
-                                        <td class="font-medium text-slate-600">{{ $fila['materia'] }}</td>
-                                        <td><span class="grade">{{ $fila['t1'] }}</span></td>
-                                        <td><span class="grade">{{ $fila['t2'] }}</span></td>
-                                        <td><span
-                                                class="grade {{ $fila['t3'] === null ? 'missing' : '' }}">{{ $fila['t3'] ?? '--' }}</span>
-                                        </td>
-                                        <td><strong
-                                                class="{{ $fila['necesita'] > 100 ? 'text-red-600' : 'text-slate-700' }}">{{ $fila['necesita'] > 100 ? 'No alcanza' : $fila['necesita'] }}</strong>
-                                            @if ($fila['necesita'] > 100)
-                                                <small class="block text-[9px] text-slate-400">Máx.
-                                                    {{ number_format($fila['promedio_maximo'], 2) }}</small>
-                                            @endif
-                                        </td>
-                                        <td><span
-                                                class="risk-badge {{ $fila['estado']['class'] }}"><i>{{ $fila['estado']['icon'] }}</i>{{ $fila['estado']['label'] }}</span>
-                                        </td>
-                                        <td>
-                                            @if ($indice === 0)
-                                                <button type="button" class="detail-button"
-                                                    data-modal="student-modal-{{ $loop->parent->iteration }}">Ver
-                                                    detalle</button>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div> --}}
     </div>
 
     @if (!$estudiantesAgrupados->isEmpty())
@@ -1237,6 +670,16 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const cursoRiesgoForm = document.getElementById('curso-riesgo-form');
+            const cursoRiesgoId = document.getElementById('curso-riesgo-id');
+
+            document.querySelectorAll('#curso-riesgo-selector button[id]').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    cursoRiesgoId.value = button.id;
+                    cursoRiesgoForm.submit();
+                });
+            });
+
             document.querySelectorAll('[data-modal]').forEach(function(button) {
                 button.addEventListener('click', function() {
                     document.getElementById(button.dataset.modal).classList.add('open');
