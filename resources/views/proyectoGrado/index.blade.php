@@ -201,7 +201,7 @@
                         <span class="material-symbols-outlined text-[18px] text-on-surface-variant">file_download</span>
                         <span>Exportar Cuadro XLS</span>
                     </button> --}}
-                    <button
+                    <button id="abrir-modal-registro-proyecto" type="button"
                         class="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/90 text-on-secondary rounded shadow-sm transition-all font-label-lg text-label-lg active:scale-95">
                         <span class="material-symbols-outlined text-[18px]">add_circle</span>
                         <span>Nuevo Registro de Proyecto</span>
@@ -442,10 +442,12 @@
                             <select
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 focus:outline-none focus:bg-surface-container"
                                 id="filter-modalidad">
-                                <option value="todos">Todas las Modalidades (46)</option>
-                                <option value="socio">Proyecto Socio-Comunitario Productivo (24)</option>
-                                <option value="emprendimiento">Proyecto de Emprendimiento (14)</option>
-                                <option value="tesis">Tesis / Monografía de Excelencia (8)</option>
+                                <option value="todos">Todas las Modalidades (81)</option>
+                                <option value="socio">Proyecto de emprendimiento Productivo (24)</option>
+                                <option value="emprendimiento">Proyecto de Innovacion (14)</option>
+                                <option value="tesis">Practica Laboral Comunitaria (8)</option>
+                                <option value="tesis">Proyecto de Servicio Social Comunitario (8)</option>
+                                <option value="tesis">Proyecto de Presentacion Artistica (8)</option>
                             </select>
                             <span
                                 class="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
@@ -460,8 +462,8 @@
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 focus:outline-none focus:bg-surface-container"
                                 id="filter-turno">
                                 <option value="todos">Todos los Turnos</option>
-                                <option value="manana">Mañana (Sistemas &amp; Mecánica)</option>
-                                <option value="tarde">Tarde (Agropecuaria &amp; Gastronomía)</option>
+                                <option value="manana">Mañana (Sistemas Informaticos)</option>
+                                <option value="tarde">Tarde (Sistemas Informaticos)</option>
                             </select>
                             <span
                                 class="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
@@ -476,10 +478,10 @@
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 focus:outline-none focus:bg-surface-container"
                                 id="filter-asesor">
                                 <option value="todos">Todos los Docentes Tutores</option>
-                                <option value="mamani">Ing. Carlos Mamani Choque</option>
-                                <option value="gutierrez">Lic. Martha Gutiérrez Rios</option>
-                                <option value="valdez">Ing. Fernando Valdez Tapia</option>
-                                <option value="quispe">Lic. Elena Morales Quisbert</option>
+                                <option value="mamani">Lic. Javier Henry Quispe Pinto</option>
+                                <option value="gutierrez">Lic. Jose Luis Quisbert Quisbert</option>
+                                <option value="valdez">Lic. Roger Cori</option>
+                                <option value="quispe">Lic. Judith Flores Solar</option>
                             </select>
                             <span
                                 class="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
@@ -1109,7 +1111,7 @@
     </main>
     {{-- Modal de registro de evaluacion --}}
 @endsection
-<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/60 backdrop-blur-sm overflow-y-auto"
+<div class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/60 backdrop-blur-sm overflow-y-auto"
     id="modal-registro-proyecto">
     <div
         class="bg-surface-container-lowest w-full max-w-4xl rounded-xl shadow-2xl border border-outline-variant/30 flex flex-col overflow-hidden my-auto max-h-[92vh]">
@@ -1126,7 +1128,7 @@
                     Nuevo Proyecto de Grado</h2>
                 <p class="font-body-sm text-on-surface-variant mt-0.5">Convocatoria Bachillerato Técnico Humanístico
                     (BTH) · Gestión 2026 · Validación Institucional</p>
-            </div><button aria-label="Cerrar"
+            </div><button id="cerrar-modal-registro-proyecto" aria-label="Cerrar" type="button"
                 class="p-1.5 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container-high transition-colors"><span
                     class="material-symbols-outlined text-[24px]">close</span></button>
         </div>
@@ -1177,23 +1179,24 @@
                                     type="radio" />
                                 <div class="flex flex-col"><span
                                         class="font-label-lg text-body-sm font-semibold text-primary leading-tight">Proyecto
-                                        Socio-Comunitario</span><span class="text-[11px] text-outline mt-0.5">Impacto
-                                        comunitario directo</span>
+                                        de Emprendimiento Productivo - PEP</span><span
+                                        class="text-[11px] text-outline mt-0.5"></span>
                                 </div>
                             </label><label
                                 class="flex items-start gap-2 p-2.5 rounded border border-outline-variant/30 bg-surface-container-low cursor-pointer hover:bg-surface-container"><input
                                     class="mt-1 text-primary focus:ring-primary" name="modalidad" type="radio" />
                                 <div class="flex flex-col"><span
-                                        class="font-label-lg text-body-sm font-semibold text-on-surface leading-tight">Emprendimiento
-                                        Productivo</span><span class="text-[11px] text-outline mt-0.5">Viabilidad
-                                        económica</span></div>
+                                        class="font-label-lg text-body-sm font-semibold text-on-surface leading-tight">Proyecto
+                                        de Innovacion - PI</span><span class="text-[11px] text-outline mt-0.5"></span>
+                                </div>
                             </label><label
                                 class="flex items-start gap-2 p-2.5 rounded border border-outline-variant/30 bg-surface-container-low cursor-pointer hover:bg-surface-container"><input
                                     class="mt-1 text-primary focus:ring-primary" name="modalidad" type="radio" />
                                 <div class="flex flex-col"><span
-                                        class="font-label-lg text-body-sm font-semibold text-on-surface leading-tight">Tesis
-                                        / Excelencia</span><span class="text-[11px] text-outline mt-0.5">Promedio
-                                        sobresaliente</span></div>
+                                        class="font-label-lg text-body-sm font-semibold text-on-surface leading-tight">Practica
+                                        Laboral Comunitaria - PLC</span><span
+                                        class="text-[11px] text-outline mt-0.5"></span>
+                                </div>
                             </label></div>
                     </div>
                 </div>
@@ -1261,10 +1264,10 @@
                             Tutor / Revisor</label>
                         <div class="relative"><select
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 border border-outline-variant/30 focus:outline-none focus:border-primary">
-                                <option selected="" value="san">Prof. Víctor Hugo Sánchez (Tribunal Evaluador)
+                                <option selected="" value="san">Lic. Judith Flores Solar (Docente T.T.Gral.)
                                 </option>
-                                <option value="sol">Dra. Beatriz Soliz (Comisión Técnica)</option>
-                                <option value="ram">Ing. Walter Blanco (Metodología)</option>
+                                <option value="sol">Lic. Roger Cori (Docente Informatico)</option>
+                                <option value="ram">Lic. Jose Luis Quisbert Quisbert (Docente Informatico)</option>
                                 <option value="qui">Lic. Javier Henry Quispe Pinto (Coordinador)</option>
                             </select><span
                                 class="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
@@ -1329,6 +1332,7 @@
                     class="material-symbols-outlined text-[18px] text-primary">info</span><span>Todos los campos
                     marcados con (*) son obligatorios para el RUDE.</span></div>
             <div class="flex items-center gap-2 w-full sm:w-auto justify-end"><button
+                    id="cancelar-modal-registro-proyecto"
                     class="px-4 py-2 rounded border border-outline-variant text-on-surface hover:bg-surface-container font-label-lg text-label-lg transition-colors"
                     type="button">Cancelar</button>{{-- <button
                     class="flex items-center gap-1.5 px-4 py-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-lg text-label-lg transition-colors"
@@ -1341,3 +1345,38 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('modal-registro-proyecto');
+        const abrirModal = document.getElementById('abrir-modal-registro-proyecto');
+        const cerrarModal = document.getElementById('cerrar-modal-registro-proyecto');
+        const cancelarModal = document.getElementById('cancelar-modal-registro-proyecto');
+
+        const ocultarModal = () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        const mostrarModal = () => {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        abrirModal.addEventListener('click', mostrarModal);
+        cerrarModal.addEventListener('click', ocultarModal);
+        cancelarModal.addEventListener('click', ocultarModal);
+
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                ocultarModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                ocultarModal();
+            }
+        });
+    });
+</script>
