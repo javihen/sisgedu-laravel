@@ -59,4 +59,13 @@ class Estudiante extends Model
     {
         return $this->hasOne(ProyectoGrado::class, 'idEstudiante', 'id_estudiante');
     }
+
+    public function proyectoEstudiantes()
+    {
+        return $this->hasMany(
+            ProyectoEstudiante::class,
+            'id_estudiante',
+            'id_estudiante'
+        );
+    }
 }

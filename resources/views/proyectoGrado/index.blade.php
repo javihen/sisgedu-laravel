@@ -1113,8 +1113,15 @@
 @endsection
 <div class="fixed inset-0 z-50 hidden items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/60 backdrop-blur-sm overflow-y-auto"
     id="modal-registro-proyecto">
-    <div
+    <form method="POST" action="{{ route('proyectoGrado.store') }}"
         class="bg-surface-container-lowest w-full max-w-4xl rounded-xl shadow-2xl border border-outline-variant/30 flex flex-col overflow-hidden my-auto max-h-[92vh]">
+        @csrf
+        <input type="hidden" name="idCurso" value="">
+        <input type="hidden" name="idGestion" value="{{ session('gestion_activa') }}">
+        <input type="hidden" name="lineaInvestigacion" value="">
+        <input type="hidden" name="fechaInicio" value="">
+        <input type="hidden" name="fechaDefensa" value="">
+        <input type="hidden" name="observacion" value="">
         <div
             class="px-6 py-4 bg-surface-container-low border-b border-outline-variant/20 flex items-start justify-between">
             <div class="flex flex-col">
@@ -1163,7 +1170,7 @@
                     </div>
                     <div class="md:col-span-3"><label
                             class="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Título
-                            Oficial del Proyecto <span class="text-error">*</span></label><input
+                            Oficial del Proyecto <span class="text-error">*</span></label><input name="titulo"
                             class="w-full bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 border border-outline-variant/30 focus:outline-none focus:border-primary"
                             placeholder="Ej: Implementación de Sistema Hidropónico Automatizado con Control Térmico y Monitoreo Remoto IoT"
                             type="text" value="" />
@@ -1213,15 +1220,16 @@
                     <div><label
                             class="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Postulante
                             1 (Titular) <span class="text-error">*</span></label>
-                        <div class="relative"><select
+                        <div class="relative"><select name="idEstudiante"
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 border border-outline-variant/30 focus:outline-none focus:border-primary">
-                                <option disabled="" value="">Seleccionar estudiante...</option>
-                                <option selected="" value="54891024">54891024 - APAZA TICONA Marco Antonio (6to
-                                    Sec.
-                                    'A')</option>
-                                <option value="63920194">63920194 - CONDORI MAMANI Rodrigo (6to Sec. 'B')</option>
-                                <option value="78201943">78201943 - MAMANI COARITE Elena (6to Sec. 'A')</option>
-                                <option value="89102485">89102485 - QUISPE HUANCA Alex (6to Sec. 'C')</option>
+                                <option disabled selected value="">Seleccionar estudiante...
+                                </option>
+                                @foreach ($estudiantesDisponibles as $estudiante)
+                                    <option value="{{ $estudiante->id_estudiante }}">{{ $estudiante->id_estudiante }} -
+                                        {{ $estudiante->nombres }}
+                                        (6to Sec. '{{ $estudiante->paralelo }}')
+                                    </option>
+                                @endforeach
                             </select><span
                                 class="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
                         </div>
@@ -1231,13 +1239,16 @@
                                 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Postulante
                                 2 (Pareja / Opcional)</label><span
                                 class="text-[11px] text-secondary font-medium">Habilitado</span></div>
-                        <div class="relative"><select
+                        <div class="relative"><select name="idEstudiantes[]"
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 border border-outline-variant/30 focus:outline-none focus:border-primary">
                                 <option value="none">-- Sin segundo postulante (Individual) --</option>
-                                <option selected="" value="78201943">78201943 - MAMANI COARITE Elena (6to Sec. 'A')
-                                </option>
-                                <option value="63920194">63920194 - CONDORI MAMANI Rodrigo (6to Sec. 'B')</option>
-                                <option value="89102485">89102485 - QUISPE HUANCA Alex (6to Sec. 'C')</option>
+                                @foreach ($estudiantesDisponibles as $estudiante)
+                                    <option selected="" value="{{ $estudiante->id_estudiante }}">
+                                        {{ $estudiante->id_estudiante }} -
+                                        {{ $estudiante->nombres }}
+                                        (6to Sec. '{{ $estudiante->paralelo }}')
+                                    </option>
+                                @endforeach
                             </select><span
                                 class="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
                         </div>
@@ -1247,14 +1258,17 @@
                                 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Postulante
                                 3 (Pareja / Opcional)</label><span
                                 class="text-[11px] text-secondary font-medium">Habilitado</span></div>
-                        <div class="relative"><select
+                        <div class="relative"><select name="idEstudiantes[]"
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 border border-outline-variant/30 focus:outline-none focus:border-primary">
                                 <option selected="" value="none">-- Sin tercer postulante (Individual) --
                                 </option>
-                                <option value="78201943">78201943 - MAMANI COARITE Elena (6to Sec. 'A')
-                                </option>
-                                <option value="63920194">63920194 - CONDORI MAMANI Rodrigo (6to Sec. 'B')</option>
-                                <option value="89102485">89102485 - QUISPE HUANCA Alex (6to Sec. 'C')</option>
+                                @foreach ($estudiantesDisponibles as $estudiante)
+                                    <option value="{{ $estudiante->id_estudiante }}">{{ $estudiante->id_estudiante }}
+                                        -
+                                        {{ $estudiante->nombres }}
+                                        (6to Sec. '{{ $estudiante->paralelo }}')
+                                    </option>
+                                @endforeach
                             </select><span
                                 class="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
                         </div>
@@ -1262,13 +1276,13 @@
                     <div><label
                             class="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Docente
                             Tutor / Revisor</label>
-                        <div class="relative"><select
+                        <div class="relative"><select name="idProfesorTutor"
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 border border-outline-variant/30 focus:outline-none focus:border-primary">
-                                <option selected="" value="san">Lic. Judith Flores Solar (Docente T.T.Gral.)
+                                <option selected="" value="21">Lic. Judith Flores Solar (Docente T.T.Gral.)
                                 </option>
-                                <option value="sol">Lic. Roger Cori (Docente Informatico)</option>
-                                <option value="ram">Lic. Jose Luis Quisbert Quisbert (Docente Informatico)</option>
-                                <option value="qui">Lic. Javier Henry Quispe Pinto (Coordinador)</option>
+                                <option value="67">Lic. Roger Cori (Docente Informatico)</option>
+                                <option value="66">Lic. Jose Luis Quisbert Quisbert (Docente Informatico)</option>
+                                <option value="1">Lic. Javier Henry Quispe Pinto (Coordinador)</option>
                             </select><span
                                 class="material-symbols-outlined absolute right-2.5 top-2.5 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
                         </div>
@@ -1289,7 +1303,7 @@
                                 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Resumen
                                 / Justificación Comunitaria <span class="text-error">*</span></label><span
                                 class="font-data-mono text-[11px] text-outline">142 / 300 caracteres</span></div>
-                        <textarea
+                        <textarea name="descripcion"
                             class="w-full bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 border border-outline-variant/30 focus:outline-none focus:border-primary resize-none"
                             placeholder="Sintetice el objetivo y el impacto para la unidad educativa o entorno sociocomunitario..."
                             rows="2">{{-- El proyecto busca optimizar el uso de agua potable en áreas de cultivo urbano escolar mediante actuadores automatizados con sensores de humedad y temperatura controlados por microcontrolador ESP32. --}}</textarea>
@@ -1339,11 +1353,11 @@
                     type="button"><span class="material-symbols-outlined text-[18px]">save</span><span>Guardar
                         Borrador</span></button> --}}<button
                     class="flex items-center gap-2 px-5 py-2 rounded bg-secondary hover:bg-secondary/90 text-on-secondary font-label-lg text-label-lg shadow-sm transition-all active:scale-95"
-                    type="button"><span
+                    type="submit"><span
                         class="material-symbols-outlined text-[18px]">check_circle</span><span>Registrar Proyecto y
                         Crear Expediente</span></button></div>
         </div>
-    </div>
+    </form>
 </div>
 
 <script>
