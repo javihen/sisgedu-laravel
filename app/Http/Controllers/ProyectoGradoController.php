@@ -13,66 +13,67 @@ use Illuminate\Support\Facades\DB;
 
 class ProyectoGradoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // DESDE AQUI COMENZAREMOS CON LA PAGINA DE INICIO
-        /* $estudiantes = Estudiante::with([
-            'proyectos',
-        ])->get(); */
-        $id = 'C26';
-        $proyectos = Estudiante::with('proyectoGrado.tutor')
-            ->where('estado', 'E')
-            ->whereHas('inscripciones', function ($query) use ($id) {
-                $query->where('id_curso', 'LIKE', $id.'%');
-            })->orderBy('nombres', 'asc')
+        $proyectos = ProyectoGrado::with([
+            'estudiante',
+            'tutor',
+            'curso',
+            'gestion',
+            'tribunales.profesor',
+            'defensa',
+            'proyectoEstudiantes.estudiante',
+        ])->orderBy('titulo', 'asc')
             ->get();
 
-            /** Listar a los estudiantes que no esten registrados en proyectos */
-
-         $gestionActual = session('gestion_activa');
-
+        $gestionActual = session('gestion_activa');
         $estudiantesDisponibles = DB::table('inscripciones as i')
-        ->join('estudiantes as e', 'e.id_estudiante', '=', 'i.id_estudiante')
-        ->where('e.estado', 'E')
-        ->join('cursos as c', 'c.id', '=', 'i.id_curso')
-        ->where('c.grado', 6)
-        ->where('c.nivel', 2)
-        ->where('i.id_gestion', $gestionActual)
-        ->whereNotExists(function ($query) {
-            $query->select(DB::raw(1))
-                ->from('proyectos_grado as p')
-                ->whereColumn('p.idEstudiante', 'i.id_estudiante');
-        })
-        ->orderby('e.nombres', 'asc')
-        ->get();
+            ->join('estudiantes as e', 'e.id_estudiante', '=', 'i.id_estudiante')
+            ->where('e.estado', 'E')
+            ->join('cursos as c', 'c.id', '=', 'i.id_curso')
+            ->where('c.grado', 6)
+            ->where('c.nivel', 2)
+            ->where('i.id_gestion', $gestionActual)
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('proyecto_estudiantes as pe')
+                    ->whereColumn('pe.id_estudiante', 'i.id_estudiante');
+            })
+            ->orderBy('e.nombres', 'asc')
+            ->get();
 
         return view(
             'proyectoGrado.index',
             compact('proyectos', 'estudiantesDisponibles')
         );
-
-
-
-
-
     }
 
     public function searchXCurso(string $id)
     {
-        // Se listara a los proyectos de grado por curso y con sus estudiantes y tutor
-        $proyectos = Estudiante::with('proyectoGrado.tutor')
-            ->where('estado', 'E')
+        $proyectos = ProyectoGrado::with([
+            'estudiante',
+            'tutor',
+            'curso',
+            'gestion',
+            'tribunales.profesor',
+            'defensa',
+            'proyectoEstudiantes.estudiante',
+        ])->where('idCurso', $id)
+            ->orderBy('titulo', 'asc')
+            ->get();
+
+        $estudiantesDisponibles = Estudiante::where('estado', 'E')
+            ->whereDoesntHave('proyectoGrado')
+            ->whereDoesntHave('proyectoEstudiantes')
             ->whereHas('inscripciones', function ($query) use ($id) {
                 $query->where('id_curso', $id);
-            })->orderBy('nombres', 'asc')
+            })
+            ->orderBy('nombres', 'asc')
             ->get();
 
         return view(
             'proyectoGrado.index',
-            compact('proyectos')
+            compact('proyectos', 'estudiantesDisponibles')
         );
     }
 
@@ -150,7 +151,7 @@ class ProyectoGradoController extends Controller
             'idCurso' => 'required|string|exists:cursos,id',
             'idGestion' => 'required|integer|exists:gestiones,id_gestion',
             'titulo' => 'required|max:300',
-            'lineaInvestigacion' => 'nullable|string|max:150',
+            'modalidad' => 'nullable|string|max:150',
             'descripcion' => 'nullable|string',
             'fechaInicio' => 'nullable|date',
             'fechaDefensa' => 'nullable|date',
@@ -164,7 +165,7 @@ class ProyectoGradoController extends Controller
                 'idCurso' => $request->idCurso,
                 'idGestion' => $request->idGestion,
                 'titulo' => $request->titulo,
-                'lineaInvestigacion' => $request->lineaInvestigacion,
+                'lineaInvestigacion' => $request->modalidad,
                 'descripcion' => $request->descripcion,
                 'estado' => 'REGISTRADO',
                 'fechaInicio' => $request->fechaInicio,
@@ -316,15 +317,7 @@ class ProyectoGradoController extends Controller
             'idProfesorTutor' => $estudiante->proyectoGrado->idProfesorTutor,
         ]);*/
 
-        /** Listar a todos los estudiantes que este inscritos en el grado 6to de la presente gestion que no esten registrados en la proyectos de grado */
-
-
-        /**  */
-
-
-
-
-
+        return $this->index();
 
     }
 }

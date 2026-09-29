@@ -512,7 +512,7 @@
                                 <h2 class="font-headline-sm text-headline-sm text-on-surface">Listado Central de
                                     Proyectos de Grado</h2>
                                 <span
-                                    class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-data-mono text-body-sm font-semibold">6
+                                    class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-data-mono text-body-sm font-semibold">{{ $proyectos->count() }}
                                     Mostrados</span>
                             </div>
                             <div class="flex items-center gap-2 text-label-md text-on-surface-variant">
@@ -539,44 +539,168 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-surface-container-low text-body-sm">
-                                    <tr class="hover:bg-surface-container-low/40 transition-colors group">
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-01</span>
-                                                <span
-                                                    class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Sistema
-                                                    Automatizado de Riego por Goteo con Sensor IoT</span>
-                                                <span class="font-label-md text-outline mt-1">Especialidad:
-                                                    Agroecología</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col gap-1.5">
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center font-data-mono-bold text-[10px] text-primary">
-                                                        RC</div>
+                                    @forelse ($proyectos as $proyecto)
+                                        @php
+                                            $participantes = collect([$proyecto->estudiante])
+                                                ->merge($proyecto->proyectoEstudiantes->pluck('estudiante'))
+                                                ->filter()
+                                                ->unique('id_estudiante');
+                                        @endphp
+                                        <tr class="hover:bg-surface-container-low/40 transition-colors group">
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
                                                     <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Rodrigo
-                                                        Condori</span>
-                                                </div>
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center font-data-mono-bold text-[10px] text-secondary">
-                                                        AT</div>
+                                                        class="font-data-mono-bold text-data-mono-bold text-primary">PG-2026-{{ $proyecto->idProyecto }}</span>
                                                     <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Ana
-                                                        Ticona Flores</span>
+                                                        class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">{{ $proyecto->titulo }}</span>
+                                                    <span class="font-label-md text-outline mt-1">
+                                                        {{ $proyecto->curso?->display_name ?? $proyecto->idCurso }}
+                                                        · Gestión {{ $proyecto->gestion?->anio ?? $proyecto->idGestion }}
+                                                        · <br> Esp. Sistemas Informaticos
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <span
-                                                class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Socio-Comunitario</span>
-                                            <div class="font-body-sm text-outline mt-1">Tutor: Ing. C. Mamani</div>
-                                        </td>
-                                        {{-- <td class="py-3.5 px-4 align-top">
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col gap-1.5">
+                                                    @forelse ($participantes as $estudiante)
+                                                        <div class="flex flex-row items-center gap-2">
+                                                            <div
+                                                                class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center font-data-mono-bold text-[10px] text-secondary">
+                                                                *</div>
+                                                            <span class="font-body-md text-on-surface font-medium">
+                                                                {{ trim($estudiante->nombres . ' ' . $estudiante->appaterno . ' ' . $estudiante->apmaterno) }}
+                                                            </span>
+                                                            {{-- <span
+                                                                class="font-data-mono text-outline">{{ $estudiante->id_estudiante }}</span> --}}
+                                                        </div>
+                                                    @empty
+                                                        <span class="text-outline">Sin estudiante asociado</span>
+                                                    @endforelse
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <span
+                                                    class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">
+
+                                                    @if ($proyecto->lineaInvestigacion == 'PI')
+                                                        Proyecto de Innovacion
+                                                    @elseif ($proyecto->lineaInvestigacion == 'PS')
+                                                        Proyecto de Servicio Social Comunitario
+                                                    @elseif ($proyecto->lineaInvestigacion == 'PC')
+                                                        Proyecto de Presentacion Artistica
+                                                    @elseif ($proyecto->lineaInvestigacion == 'SC')
+                                                        Practica Laboral Comunitaria
+                                                    @elseif ($proyecto->lineaInvestigacion == 'SC')
+                                                        Proyecto de emprendimiento Productivo
+                                                    @else
+                                                        Sin modalidad asignada
+                                                    @endif
+
+                                                </span>
+                                                <div class="font-body-sm text-outline mt-1">
+                                                    Tutor:
+                                                    @if ($proyecto->tutor)
+                                                        Lic.
+                                                        {{ trim($proyecto->tutor->nombres . ' ' . $proyecto->tutor->appaterno . ' ' . $proyecto->tutor->apmaterno) }}
+                                                    @else
+                                                        Sin tutor asignado
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col gap-1">
+                                                    @forelse ($proyecto->tribunales as $tribunal)
+                                                        <span class="font-body-md text-on-surface font-medium">
+                                                            {{ $tribunal->profesor ? trim($tribunal->profesor->nombres . ' ' . $tribunal->profesor->appaterno . ' ' . $tribunal->profesor->apmaterno) : 'Profesor no disponible' }}
+                                                        </span>
+                                                        <span
+                                                            class="font-label-md text-outline">{{ $tribunal->cargo }}</span>
+                                                    @empty
+                                                        <span class="text-outline">Sin tribunal asignado</span>
+                                                        <div class="flex flex-col">
+                                                            <span
+                                                                class="font-label-md text-primary flex items-center gap-0.5 mt-0.5">
+                                                                <span
+                                                                    class="material-symbols-outlined text-[14px]">hourglass_top</span>
+                                                                En lectura metodológica
+                                                            </span>
+                                                        </div>
+                                                    @endforelse
+                                                    @if ($proyecto->defensa)
+                                                        <span class="font-label-md text-secondary mt-1">
+                                                            Defensa:
+                                                            {{ $proyecto->defensa->fecha?->format('d/m/Y') ?? 'Sin fecha' }}
+                                                            {{ $proyecto->defensa->hora ? ' · ' . $proyecto->defensa->hora : '' }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-middle text-center">
+                                                {{-- <a href="{{ route('proyectoGrado.show', $proyecto->idProyecto) }}"
+                                                    class="inline-flex p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
+                                                    title="Ver expediente completo">
+                                                    <span class="material-symbols-outlined text-[18px]">folder_open</span>
+                                                </a> --}}
+                                                <button
+                                                    class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
+                                                    title="Ver Expediente Completo">
+                                                    <span class="material-symbols-outlined text-[18px]">folder_open</span>
+                                                </button>
+                                                <button
+                                                    class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
+                                                    title="Registrar Observación">
+                                                    <span class="material-symbols-outlined text-[18px]">edit_note</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="py-8 px-4 text-center text-on-surface-variant">
+                                                No hay proyectos de grado registrados.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                                @if (true)
+                                    <tbody class="divide-y divide-surface-container-low text-body-sm">
+                                        <tr class="hover:bg-surface-container-low/40 transition-colors group">
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span
+                                                        class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-01</span>
+                                                    <span
+                                                        class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Sistema
+                                                        Automatizado de Riego por Goteo con Sensor IoT</span>
+                                                    <span class="font-label-md text-outline mt-1">Especialidad:
+                                                        Agroecología</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col gap-1.5">
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center font-data-mono-bold text-[10px] text-primary">
+                                                            RC</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Rodrigo
+                                                            Condori</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center font-data-mono-bold text-[10px] text-secondary">
+                                                            AT</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Ana
+                                                            Ticona Flores</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <span
+                                                    class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Socio-Comunitario</span>
+                                                <div class="font-body-sm text-outline mt-1">Tutor: Ing. C. Mamani</div>
+                                            </td>
+                                            {{-- <td class="py-3.5 px-4 align-top">
                                             <div class="flex flex-col gap-1 w-24">
                                                 <div class="flex justify-between items-center">
                                                     <span
@@ -592,352 +716,367 @@
                                                 <span class="text-[11px] text-outline">Empastado Aprob.</span>
                                             </div>
                                         </td> --}}
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span class="font-body-md text-on-surface font-medium">Lic. Ramiro
-                                                    Zeballos</span>
-                                                <span
-                                                    class="font-label-md text-secondary flex items-center gap-0.5 mt-0.5">
-                                                    <span class="material-symbols-outlined text-[14px]">done_all</span>
-                                                    Dictamen Favorable
-                                                </span>
-                                            </div>
-                                        </td>
-                                        {{-- <td class="py-3.5 px-4 align-top">
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span class="font-body-md text-on-surface font-medium">Lic. Ramiro
+                                                        Zeballos</span>
+                                                    <span
+                                                        class="font-label-md text-secondary flex items-center gap-0.5 mt-0.5">
+                                                        <span class="material-symbols-outlined text-[14px]">done_all</span>
+                                                        Dictamen Favorable
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            {{-- <td class="py-3.5 px-4 align-top">
                                             <div class="flex flex-col">
                                                 <span class="font-data-mono text-on-surface font-semibold">14 Nov,
                                                     10:00</span>
                                                 <span class="font-label-md text-outline">Auditorio Magna</span>
                                             </div>
                                         </td> --}}
-                                        <td class="py-3.5 px-4 align-middle text-center">
-                                            <div class="flex items-center justify-center gap-1">
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
-                                                    title="Ver Expediente Completo">
-                                                    <span class="material-symbols-outlined text-[18px]">folder_open</span>
-                                                </button>
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
-                                                    title="Registrar Observación">
-                                                    <span class="material-symbols-outlined text-[18px]">edit_note</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-surface-container-low/40 transition-colors group">
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-04</span>
-                                                <span
-                                                    class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Plataforma
-                                                    Web de Facturación y Control de Stock para PYMEs</span>
-                                                <span class="font-label-md text-outline mt-1">Especialidad: Sistemas
-                                                    Informáticos</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col gap-1.5">
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center font-data-mono-bold text-[10px] text-primary">
-                                                        GM</div>
-                                                    <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Gabriel
-                                                        Mendoza</span>
+                                            <td class="py-3.5 px-4 align-middle text-center">
+                                                <div class="flex items-center justify-center gap-1">
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
+                                                        title="Ver Expediente Completo">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">folder_open</span>
+                                                    </button>
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
+                                                        title="Registrar Observación">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">edit_note</span>
+                                                    </button>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <span
-                                                class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Emprendimiento</span>
-                                            <div class="font-body-sm text-outline mt-1">Tutor: Ing. F. Valdez</div>
-                                        </td>
-
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span class="font-body-md text-on-surface font-medium">Lic. Martha
-                                                    Gutiérrez</span>
-                                                <span class="font-label-md text-tertiary flex items-center gap-0.5 mt-0.5">
-                                                    <span class="material-symbols-outlined text-[14px]">pending</span>
-                                                    Corrección solicitada
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        <td class="py-3.5 px-4 align-middle text-center">
-                                            <div class="flex items-center justify-center gap-1">
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
-                                                    title="Ver Expediente Completo">
-                                                    <span class="material-symbols-outlined text-[18px]">folder_open</span>
-                                                </button>
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
-                                                    title="Registrar Observación">
-                                                    <span class="material-symbols-outlined text-[18px]">edit_note</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-surface-container-low/40 transition-colors group">
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-data-mono-bold text-data-mono-bold text-error">PRY-2024-09</span>
-                                                <span
-                                                    class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Prototipo
-                                                    de Secadora Solar Asistida para Frutos del Valle</span>
-                                                <span class="font-label-md text-outline mt-1">Especialidad: Mecánica
-                                                    Industrial</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col gap-1.5">
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center font-data-mono-bold text-[10px] text-on-error-container">
-                                                        JL</div>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-surface-container-low/40 transition-colors group">
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
                                                     <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Javier
-                                                        Limachi</span>
+                                                        class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-04</span>
+                                                    <span
+                                                        class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Plataforma
+                                                        Web de Facturación y Control de Stock para PYMEs</span>
+                                                    <span class="font-label-md text-outline mt-1">Especialidad: Sistemas
+                                                        Informáticos</span>
                                                 </div>
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center font-data-mono-bold text-[10px] text-on-error-container">
-                                                        DC</div>
-                                                    <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">David
-                                                        Choque P.</span>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col gap-1.5">
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center font-data-mono-bold text-[10px] text-primary">
+                                                            GM</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Gabriel
+                                                            Mendoza</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <span
-                                                class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Socio-Comunitario</span>
-                                            <div class="font-body-sm text-outline mt-1">Tutor: Ing. E. Ramos</div>
-                                        </td>
-
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span class="font-body-md text-on-surface font-medium">Ing. Walter
-                                                    Blanco</span>
-                                                <span class="font-label-md text-error flex items-center gap-0.5 mt-0.5">
-                                                    <span class="material-symbols-outlined text-[14px]">report</span>
-                                                    Sin Visto Bueno Cap. 3
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        <td class="py-3.5 px-4 align-middle text-center">
-                                            <div class="flex items-center justify-center gap-1">
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
-                                                    title="Ver Expediente Completo">
-                                                    <span class="material-symbols-outlined text-[18px]">folder_open</span>
-                                                </button>
-                                                <button class="p-1.5 hover:bg-surface-container rounded text-error"
-                                                    title="Registrar Notificación">
-                                                    <span
-                                                        class="material-symbols-outlined text-[18px]">notification_important</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-surface-container-low/40 transition-colors group">
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
                                                 <span
-                                                    class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-12</span>
-                                                <span
-                                                    class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Elaboración
-                                                    de Harina Funcional de Quinua y Tarwi Enriquecida</span>
-                                                <span class="font-label-md text-outline mt-1">Especialidad:
-                                                    Transformación de Alimentos</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col gap-1.5">
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center font-data-mono-bold text-[10px] text-on-surface">
-                                                        SA</div>
+                                                    class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Emprendimiento</span>
+                                                <div class="font-body-sm text-outline mt-1">Tutor: Ing. F. Valdez</div>
+                                            </td>
+
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span class="font-body-md text-on-surface font-medium">Lic. Martha
+                                                        Gutiérrez</span>
                                                     <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Silvia
-                                                        Arce Luna</span>
+                                                        class="font-label-md text-tertiary flex items-center gap-0.5 mt-0.5">
+                                                        <span class="material-symbols-outlined text-[14px]">pending</span>
+                                                        Corrección solicitada
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <span
-                                                class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Tesis
-                                                / Excelencia</span>
-                                            <div class="font-body-sm text-outline mt-1">Tutor: Lic. E. Morales</div>
-                                        </td>
+                                            </td>
 
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span class="font-body-md text-on-surface font-medium">Dra. Beatriz
-                                                    Soliz</span>
-                                                <span
-                                                    class="font-label-md text-secondary flex items-center gap-0.5 mt-0.5">
-                                                    <span class="material-symbols-outlined text-[14px]">check_circle</span>
-                                                    Informe Favorable 100/100
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        <td class="py-3.5 px-4 align-middle text-center">
-                                            <div class="flex items-center justify-center gap-1">
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
-                                                    title="Ver Expediente Completo">
-                                                    <span class="material-symbols-outlined text-[18px]">folder_open</span>
-                                                </button>
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
-                                                    title="Registrar Observación">
-                                                    <span class="material-symbols-outlined text-[18px]">edit_note</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-surface-container-low/40 transition-colors group">
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-18</span>
-                                                <span
-                                                    class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Unidad
-                                                    Móvil de Soldadura Especializada para Maquinaria Agrícola</span>
-                                                <span class="font-label-md text-outline mt-1">Especialidad:
-                                                    Metalmecánica</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col gap-1.5">
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center font-data-mono-bold text-[10px] text-primary">
-                                                        MQ</div>
+                                            <td class="py-3.5 px-4 align-middle text-center">
+                                                <div class="flex items-center justify-center gap-1">
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
+                                                        title="Ver Expediente Completo">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">folder_open</span>
+                                                    </button>
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
+                                                        title="Registrar Observación">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">edit_note</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-surface-container-low/40 transition-colors group">
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
                                                     <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Mauricio
+                                                        class="font-data-mono-bold text-data-mono-bold text-error">PRY-2024-09</span>
+                                                    <span
+                                                        class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Prototipo
+                                                        de Secadora Solar Asistida para Frutos del Valle</span>
+                                                    <span class="font-label-md text-outline mt-1">Especialidad: Mecánica
+                                                        Industrial</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col gap-1.5">
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center font-data-mono-bold text-[10px] text-on-error-container">
+                                                            JL</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Javier
+                                                            Limachi</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-error-container flex items-center justify-center font-data-mono-bold text-[10px] text-on-error-container">
+                                                            DC</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">David
+                                                            Choque P.</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <span
+                                                    class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Socio-Comunitario</span>
+                                                <div class="font-body-sm text-outline mt-1">Tutor: Ing. E. Ramos</div>
+                                            </td>
+
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span class="font-body-md text-on-surface font-medium">Ing. Walter
+                                                        Blanco</span>
+                                                    <span
+                                                        class="font-label-md text-error flex items-center gap-0.5 mt-0.5">
+                                                        <span class="material-symbols-outlined text-[14px]">report</span>
+                                                        Sin Visto Bueno Cap. 3
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td class="py-3.5 px-4 align-middle text-center">
+                                                <div class="flex items-center justify-center gap-1">
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
+                                                        title="Ver Expediente Completo">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">folder_open</span>
+                                                    </button>
+                                                    <button class="p-1.5 hover:bg-surface-container rounded text-error"
+                                                        title="Registrar Notificación">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">notification_important</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-surface-container-low/40 transition-colors group">
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span
+                                                        class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-12</span>
+                                                    <span
+                                                        class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Elaboración
+                                                        de Harina Funcional de Quinua y Tarwi Enriquecida</span>
+                                                    <span class="font-label-md text-outline mt-1">Especialidad:
+                                                        Transformación de Alimentos</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col gap-1.5">
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center font-data-mono-bold text-[10px] text-on-surface">
+                                                            SA</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Silvia
+                                                            Arce Luna</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <span
+                                                    class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Tesis
+                                                    / Excelencia</span>
+                                                <div class="font-body-sm text-outline mt-1">Tutor: Lic. E. Morales</div>
+                                            </td>
+
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span class="font-body-md text-on-surface font-medium">Dra. Beatriz
+                                                        Soliz</span>
+                                                    <span
+                                                        class="font-label-md text-secondary flex items-center gap-0.5 mt-0.5">
+                                                        <span
+                                                            class="material-symbols-outlined text-[14px]">check_circle</span>
+                                                        Informe Favorable 100/100
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td class="py-3.5 px-4 align-middle text-center">
+                                                <div class="flex items-center justify-center gap-1">
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
+                                                        title="Ver Expediente Completo">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">folder_open</span>
+                                                    </button>
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
+                                                        title="Registrar Observación">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">edit_note</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-surface-container-low/40 transition-colors group">
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span
+                                                        class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-18</span>
+                                                    <span
+                                                        class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Unidad
+                                                        Móvil de Soldadura Especializada para Maquinaria Agrícola</span>
+                                                    <span class="font-label-md text-outline mt-1">Especialidad:
+                                                        Metalmecánica</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col gap-1.5">
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center font-data-mono-bold text-[10px] text-primary">
+                                                            MQ</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Mauricio
+                                                            Quispe</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center font-data-mono-bold text-[10px] text-on-surface">
+                                                            OV</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Omar
+                                                            Villca</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <span
+                                                    class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Emprendimiento</span>
+                                                <div class="font-body-sm text-outline mt-1">Tutor: Prof. H. Tapia</div>
+                                            </td>
+
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span class="font-body-md text-on-surface font-medium">Ing. Gonzalo
+                                                        Paredes</span>
+                                                    <span
+                                                        class="font-label-md text-primary flex items-center gap-0.5 mt-0.5">
+                                                        <span
+                                                            class="material-symbols-outlined text-[14px]">hourglass_top</span>
+                                                        En lectura metodológica
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td class="py-3.5 px-4 align-middle text-center">
+                                                <div class="flex items-center justify-center gap-1">
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
+                                                        title="Ver Expediente Completo">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">folder_open</span>
+                                                    </button>
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
+                                                        title="Registrar Observación">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">edit_note</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-surface-container-low/40 transition-colors group">
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span
+                                                        class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-22</span>
+                                                    <span
+                                                        class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Sistema
+                                                        de Registro y Certificación BTH en Red Local Segura</span>
+                                                    <span class="font-label-md text-outline mt-1">Especialidad: Sistemas
+                                                        Informáticos</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col gap-1.5">
+                                                    <div class="flex items-center gap-2">
+                                                        <div
+                                                            class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center font-data-mono-bold text-[10px] text-primary">
+                                                            KL</div>
+                                                        <span
+                                                            class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Karen
+                                                            Lopez</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-3.5 px-4 align-top">
+                                                <span
+                                                    class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Socio-Comunitario</span>
+                                                <div class="font-body-sm text-outline mt-1">Tutor: Ing. F. Valdez</div>
+                                            </td>
+
+                                            <td class="py-3.5 px-4 align-top">
+                                                <div class="flex flex-col">
+                                                    <span class="font-body-md text-on-surface font-medium">Lic. J. H.
                                                         Quispe</span>
-                                                </div>
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center font-data-mono-bold text-[10px] text-on-surface">
-                                                        OV</div>
                                                     <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Omar
-                                                        Villca</span>
+                                                        class="font-label-md text-secondary flex items-center gap-0.5 mt-0.5">
+                                                        <span class="material-symbols-outlined text-[14px]">verified</span>
+                                                        Habilitada Defensa
+                                                    </span>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <span
-                                                class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Emprendimiento</span>
-                                            <div class="font-body-sm text-outline mt-1">Tutor: Prof. H. Tapia</div>
-                                        </td>
-
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span class="font-body-md text-on-surface font-medium">Ing. Gonzalo
-                                                    Paredes</span>
-                                                <span class="font-label-md text-primary flex items-center gap-0.5 mt-0.5">
-                                                    <span
-                                                        class="material-symbols-outlined text-[14px]">hourglass_top</span>
-                                                    En lectura metodológica
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        <td class="py-3.5 px-4 align-middle text-center">
-                                            <div class="flex items-center justify-center gap-1">
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
-                                                    title="Ver Expediente Completo">
-                                                    <span class="material-symbols-outlined text-[18px]">folder_open</span>
-                                                </button>
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
-                                                    title="Registrar Observación">
-                                                    <span class="material-symbols-outlined text-[18px]">edit_note</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-surface-container-low/40 transition-colors group">
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span
-                                                    class="font-data-mono-bold text-data-mono-bold text-primary">PRY-2024-22</span>
-                                                <span
-                                                    class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Sistema
-                                                    de Registro y Certificación BTH en Red Local Segura</span>
-                                                <span class="font-label-md text-outline mt-1">Especialidad: Sistemas
-                                                    Informáticos</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col gap-1.5">
-                                                <div class="flex items-center gap-2">
-                                                    <div
-                                                        class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center font-data-mono-bold text-[10px] text-primary">
-                                                        KL</div>
-                                                    <span
-                                                        class="font-body-md text-on-surface font-medium truncate max-w-[130px]">Karen
-                                                        Lopez</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3.5 px-4 align-top">
-                                            <span
-                                                class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Socio-Comunitario</span>
-                                            <div class="font-body-sm text-outline mt-1">Tutor: Ing. F. Valdez</div>
-                                        </td>
-
-                                        <td class="py-3.5 px-4 align-top">
-                                            <div class="flex flex-col">
-                                                <span class="font-body-md text-on-surface font-medium">Lic. J. H.
-                                                    Quispe</span>
-                                                <span
-                                                    class="font-label-md text-secondary flex items-center gap-0.5 mt-0.5">
-                                                    <span class="material-symbols-outlined text-[14px]">verified</span>
-                                                    Habilitada Defensa
-                                                </span>
-                                            </div>
-                                        </td>
-                                        {{-- <td class="py-3.5 px-4 align-top">
+                                            </td>
+                                            {{-- <td class="py-3.5 px-4 align-top">
                                             <div class="flex flex-col">
                                                 <span class="font-data-mono text-on-surface font-semibold">14 Nov,
                                                     11:30</span>
                                                 <span class="font-label-md text-outline">Auditorio BTH</span>
                                             </div>
                                         </td> --}}
-                                        <td class="py-3.5 px-4 align-middle text-center">
-                                            <div class="flex items-center justify-center gap-1">
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
-                                                    title="Ver Expediente Completo">
-                                                    <span class="material-symbols-outlined text-[18px]">folder_open</span>
-                                                </button>
-                                                <button
-                                                    class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
-                                                    title="Registrar Observación">
-                                                    <span class="material-symbols-outlined text-[18px]">edit_note</span>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
+                                            <td class="py-3.5 px-4 align-middle text-center">
+                                                <div class="flex items-center justify-center gap-1">
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
+                                                        title="Ver Expediente Completo">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">folder_open</span>
+                                                    </button>
+                                                    <button
+                                                        class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
+                                                        title="Registrar Observación">
+                                                        <span
+                                                            class="material-symbols-outlined text-[18px]">edit_note</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                @endif
                             </table>
                         </div>
                         <div
                             class="px-inset-card py-3 bg-surface-container-low/40 flex flex-col sm:flex-row items-center justify-between gap-2">
-                            <span class="font-body-sm text-outline">Mostrando registros 1 al 6 de un total de 46
-                                postulaciones registradas</span>
+                            <span class="font-body-sm text-outline">{{ $proyectos->count() }} proyectos registrados</span>
                             <div class="flex items-center gap-1">
                                 <button
                                     class="px-2.5 py-1 rounded bg-surface-container text-on-surface-variant text-body-sm font-data-mono opacity-50 cursor-not-allowed">«
@@ -1180,31 +1319,37 @@
                     <div class="md:col-span-3"><label
                             class="block font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-1">Modalidad
                             de Titulación BTH <span class="text-error">*</span></label>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3"><label
-                                class="flex items-start gap-2 p-2.5 rounded border border-primary/40 bg-primary/5 cursor-pointer"><input
-                                    checked="" class="mt-1 text-primary focus:ring-primary" name="modalidad"
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label
+                                class="flex items-start gap-2 p-2.5 rounded border border-outline-variant/30 bg-surface-container-low cursor-pointer hover:bg-surface-container"><input
+                                    class="mt-1 text-primary focus:ring-primary" value="PEP" name="modalidad"
                                     type="radio" />
                                 <div class="flex flex-col"><span
-                                        class="font-label-lg text-body-sm font-semibold text-primary leading-tight">Proyecto
+                                        class="font-label-lg text-body-sm font-semibold text-on-surface leading-tight">Proyecto
                                         de Emprendimiento Productivo - PEP</span><span
                                         class="text-[11px] text-outline mt-0.5"></span>
                                 </div>
-                            </label><label
-                                class="flex items-start gap-2 p-2.5 rounded border border-outline-variant/30 bg-surface-container-low cursor-pointer hover:bg-surface-container"><input
-                                    class="mt-1 text-primary focus:ring-primary" name="modalidad" type="radio" />
+                            </label>
+                            <label
+                                class="flex items-start gap-2 p-2.5 rounded border border-primary/40 bg-primary/5 cursor-pointer"><input
+                                    class="mt-1 text-primary focus:ring-primary" value="PI" name="modalidad"
+                                    checked="" type="radio" />
                                 <div class="flex flex-col"><span
-                                        class="font-label-lg text-body-sm font-semibold text-on-surface leading-tight">Proyecto
+                                        class="font-label-lg text-body-sm font-semibold text-primary leading-tight">Proyecto
                                         de Innovacion - PI</span><span class="text-[11px] text-outline mt-0.5"></span>
                                 </div>
-                            </label><label
+                            </label>
+                            <label
                                 class="flex items-start gap-2 p-2.5 rounded border border-outline-variant/30 bg-surface-container-low cursor-pointer hover:bg-surface-container"><input
-                                    class="mt-1 text-primary focus:ring-primary" name="modalidad" type="radio" />
+                                    class="mt-1 text-primary focus:ring-primary" value="PLC" name="modalidad"
+                                    type="radio" />
                                 <div class="flex flex-col"><span
                                         class="font-label-lg text-body-sm font-semibold text-on-surface leading-tight">Practica
                                         Laboral Comunitaria - PLC</span><span
                                         class="text-[11px] text-outline mt-0.5"></span>
                                 </div>
-                            </label></div>
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1225,7 +1370,8 @@
                                 <option disabled selected value="">Seleccionar estudiante...
                                 </option>
                                 @foreach ($estudiantesDisponibles as $estudiante)
-                                    <option value="{{ $estudiante->id_estudiante }}">{{ $estudiante->id_estudiante }} -
+                                    <option value="{{ $estudiante->id_estudiante }}">{{ $estudiante->id_estudiante }}
+                                        -
                                         {{ $estudiante->nombres }}
                                         (6to Sec. '{{ $estudiante->paralelo }}')
                                     </option>
@@ -1241,7 +1387,8 @@
                                 class="text-[11px] text-secondary font-medium">Habilitado</span></div>
                         <div class="relative"><select name="idEstudiantes[]"
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 border border-outline-variant/30 focus:outline-none focus:border-primary">
-                                <option value="none">-- Sin segundo postulante (Individual) --</option>
+                                <option selected="" value="none">-- Sin segundo postulante (Individual) --
+                                </option>
                                 @foreach ($estudiantesDisponibles as $estudiante)
                                     <option selected="" value="{{ $estudiante->id_estudiante }}">
                                         {{ $estudiante->id_estudiante }} -
@@ -1263,8 +1410,8 @@
                                 <option selected="" value="none">-- Sin tercer postulante (Individual) --
                                 </option>
                                 @foreach ($estudiantesDisponibles as $estudiante)
-                                    <option value="{{ $estudiante->id_estudiante }}">{{ $estudiante->id_estudiante }}
-                                        -
+                                    <option value="{{ $estudiante->id_estudiante }}">
+                                        {{ $estudiante->id_estudiante }} -
                                         {{ $estudiante->nombres }}
                                         (6to Sec. '{{ $estudiante->paralelo }}')
                                     </option>
