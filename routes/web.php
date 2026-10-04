@@ -172,4 +172,5 @@ Route::prefix('proyecto-grado')
         Route::get('/{idProyecto}', [ProyectoGradoController::class, 'show'])->name('show');
         Route::put('/{idProyecto}', [ProyectoGradoController::class, 'update'])->name('update');
         Route::delete('/{idProyecto}', [ProyectoGradoController::class, 'destroy'])->name('destroy');
+        Route::get('/{idProyecto}/seguimiento', [ProyectoGradoController::class, 'seguimiento'])->name('seguimiento');
     });

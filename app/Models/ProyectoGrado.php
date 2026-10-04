@@ -70,6 +70,13 @@ class ProyectoGrado extends Model
         return $this->hasOne(ProyectoDefensa::class, 'idProyecto', 'idProyecto');
     }
 
+    public function seguimientos()
+    {
+        return $this->hasMany(ProyectoSeguimiento::class, 'idProyecto', 'idProyecto')
+            ->orderBy('fecha')
+            ->orderBy('idSeguimiento');
+    }
+
     public function profesorTutor()
     {
         return $this->belongsTo(Profesor::class, 'idProfesorTutor', 'id_Profesor');

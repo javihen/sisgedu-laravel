@@ -57,4 +57,8 @@ class Profesor extends Model
     {
         return $this->hasMany(ProyectoTribunal::class, 'idProfesor', 'id_profesor');
     }
+    public function nombreCapitalizado($nombre)
+    {
+        return ucwords(strtolower(trim($nombre)));
+    }
 }

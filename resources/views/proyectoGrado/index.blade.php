@@ -497,11 +497,12 @@
                                                     title="Ver expediente completo">
                                                     <span class="material-symbols-outlined text-[18px]">folder_open</span>
                                                 </a> --}}
-                                                <button
+                                                <a href="{{ route('proyectoGrado.seguimiento', $proyecto->idProyecto) }}"
                                                     class="p-1.5 hover:bg-surface-container rounded text-primary hover:text-primary-container"
-                                                    title="Ver Expediente Completo">
+                                                    title="Ver seguimiento del proyecto"
+                                                    aria-label="Ver seguimiento del proyecto {{ $proyecto->idProyecto }}">
                                                     <span class="material-symbols-outlined text-[18px]">folder_open</span>
-                                                </button>
+                                                </a>
                                                 <button
                                                     class="p-1.5 hover:bg-surface-container rounded text-on-surface-variant hover:text-error"
                                                     title="Registrar Observación">

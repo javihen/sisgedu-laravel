@@ -48,6 +48,25 @@ class ProyectoGradoController extends Controller
         );
     }
 
+    public function seguimiento(string $idProyecto)
+    {
+        $proyecto = ProyectoGrado::with([
+            'estudiante',
+            'proyectoEstudiantes.estudiante',
+            'tutor',
+            'curso',
+            'gestion',
+            'tribunales.profesor',
+            'defensa',
+            'seguimientos',
+        ])->findOrFail($idProyecto);
+
+        return view(
+            'proyectoGrado.seguimiento',
+            compact('proyecto')
+        );
+    }
+
     public function searchXCurso(string $id)
     {
         $proyectos = ProyectoGrado::with([
@@ -316,8 +335,18 @@ class ProyectoGradoController extends Controller
             'idProyecto' => $estudiante->proyectoGrado->idProyecto,
             'idProfesorTutor' => $estudiante->proyectoGrado->idProfesorTutor,
         ]);*/
+        $idProyecto = '5';
+        $proyecto = ProyectoGrado::with([
+            'estudiante',
+            'proyectoEstudiantes.estudiante',
+            'tutor',
+            'curso',
+            'gestion',
+            'tribunales.profesor',
+            'defensa',
+            'seguimientos',
+        ])->findOrFail($idProyecto);
 
-        return $this->index();
-
+        dd($proyecto);
     }
 }

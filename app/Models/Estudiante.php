@@ -68,4 +68,21 @@ class Estudiante extends Model
             'id_estudiante'
         );
     }
+    public function nombreCapitalizado($nombre)
+    {
+        return ucwords(strtolower(trim($nombre)));
+    }
+    function obtenerIniciales($nombre)
+    {
+        $palabras = explode(' ', trim($nombre));
+        $iniciales = '';
+
+        foreach ($palabras as $palabra) {
+            if ($palabra != '') {
+                $iniciales .= strtoupper(substr($palabra, 0, 1));
+            }
+        }
+
+        return $iniciales;
+    }
 }
