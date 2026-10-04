@@ -343,6 +343,8 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 text-right"><button type="button"
+                                    onclick="document.getElementById('tutorModalContainer').style.display='flex'"
+                                    aria-controls="tutorModalContainer" aria-haspopup="dialog"
                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-lowest text-primary hover:bg-primary hover:text-on-primary transition-colors text-label-md font-label-md font-medium shadow-sm cursor-pointer border border-outline-variant/50 mr-1"><span
                                         class="material-symbols-outlined text-[16px]">event_available</span><span
                                         class="">Registrar Asistencia y Entregas</span></button>
@@ -950,7 +952,8 @@
     </main>
 @endsection
 <div class="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 overflow-y-auto bg-inverse-surface/60 backdrop-blur-sm transition-opacity duration-200"
-    id="tutorModalContainer">
+    id="tutorModalContainer" style="display: none;" role="dialog" aria-modal="true"
+    aria-labelledby="tutorModalTitle">
     <!-- MODAL CARD WINDOW -->
     <div
         class="relative w-full max-w-6xl my-auto bg-surface-container-lowest text-on-surface rounded-xl shadow-2xl flex flex-col max-h-[942px] overflow-hidden transform transition-all animate-[fadeIn_0.15s_ease-out]">
@@ -960,10 +963,10 @@
             <div class="flex flex-col gap-1.5 pr-6">
                 <div class="flex flex-wrap items-center gap-2">
                     <span
-                        class="font-data-mono-bold text-data-mono-bold text-primary bg-primary-fixed/80 px-2 py-0.5 rounded text-xs tracking-tight">EXP-PRY-2024-008</span>
+                        class="font-data-mono-bold text-data-mono-bold text-primary bg-primary-fixed/80 px-2 py-0.5 rounded text-xs tracking-tight">EXP-PG-2026-{{ $proyecto->idProyecto }}</span>
                     <span
                         class="font-data-mono text-data-mono text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded text-xs uppercase tracking-wide">GESTIÓN
-                        2024</span>
+                        2026</span>
                     <span class="text-outline-variant text-xs">•</span>
                     <div
                         class="flex items-center gap-1 text-on-secondary-container bg-secondary-container/60 px-2 py-0.5 rounded font-label-md text-label-md">
@@ -971,8 +974,9 @@
                         <span>Módulo de Seguimiento Docente BTH · U.E. Vida Nueva</span>
                     </div>
                 </div>
-                <h2 class="font-headline-md text-headline-md text-on-surface tracking-tight mt-0.5">
-                    Control de Tutorías: Registro de Asistencia y Entregas Periódicas
+                <h2 id="tutorModalTitle"
+                    class="font-headline-md text-headline-md text-on-surface tracking-tight mt-0.5">
+                    Control de Tutorías: Registro de Asistencia
                 </h2>
             </div>
             <button aria-label="Cerrar ventana"
@@ -989,9 +993,7 @@
                     <div class="flex flex-col">
                         <span class="font-label-md text-label-md uppercase tracking-wider text-outline">Proyecto
                             de Grado Modalidad BTH</span>
-                        <span class="font-headline-sm text-headline-sm text-primary">Diseño e
-                            Implementación de un Sistema Automatizado de Riego por Goteo con Sensores
-                            IoT</span>
+                        <span class="font-headline-sm text-headline-sm text-primary">{{ $proyecto->titulo }}</span>
                     </div>
                     <div
                         class="flex items-center gap-2.5 bg-surface-container-low px-3 py-1.5 rounded-lg self-start md:self-auto">
@@ -1000,12 +1002,12 @@
                             <span class="font-label-md text-label-md text-outline">Tutor Metodológico
                                 &amp; Asignado</span>
                             <span class="font-label-lg text-label-lg font-semibold text-on-surface">Prof.
-                                Mario Mercado Mamani</span>
+                                {{ $proyecto->tutor->nombreCapitalizado($proyecto->tutor->nombres . ' ' . $proyecto->tutor->appaterno . ' ' . $proyecto->tutor->apmaterno) }}</span>
                         </div>
                     </div>
                 </div>
                 <!-- Metricas KPI Cards -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-sm pt-1">
+                {{-- <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-sm pt-1">
                     <div class="bg-surface-container-low/70 p-3 rounded-lg flex items-center gap-3">
                         <div
                             class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shrink-0">
@@ -1057,7 +1059,7 @@
                                 / Licencias</span>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <!-- 3. FORMULARIO ACTIVO: NUEVA SESIÓN DE TUTORÍA -->
             <div class="bg-surface-container-lowest p-inset-card rounded-xl shadow-md relative overflow-hidden">
