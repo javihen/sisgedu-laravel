@@ -55,4 +55,9 @@ class ProyectoGradoAsistencias extends Model
             'id_estudiante'
         );
     }
+
+    public function estudiante()
+    {
+        return $this->belongsTo(Estudiante::class, 'id_estudiante', 'id_estudiante');
+    }
 }

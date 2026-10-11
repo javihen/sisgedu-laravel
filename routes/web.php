@@ -15,7 +15,9 @@ use App\Http\Controllers\NotaController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\ProfesorController;
 use App\Http\Controllers\PromedioFinalController;
+use App\Http\Controllers\ProyectoGradoAsistenciasController;
 use App\Http\Controllers\ProyectoGradoController;
+use App\Http\Controllers\ProyectoGradoSesionController;
 use App\Http\Controllers\RolController;
 use Illuminate\Support\Facades\Route;
 
@@ -173,4 +175,14 @@ Route::prefix('proyecto-grado')
         Route::put('/{idProyecto}', [ProyectoGradoController::class, 'update'])->name('update');
         Route::delete('/{idProyecto}', [ProyectoGradoController::class, 'destroy'])->name('destroy');
         Route::get('/{idProyecto}/seguimiento', [ProyectoGradoController::class, 'seguimiento'])->name('seguimiento');
+        Route::get('/{idProyecto}/sesiones', [ProyectoGradoSesionController::class, 'index'])->name('sesiones.index');
+        Route::post('/{idProyecto}/sesiones', [ProyectoGradoSesionController::class, 'store'])->name('sesiones.store');
+        Route::get('/{idProyecto}/sesiones/{idSesion}', [ProyectoGradoSesionController::class, 'show'])->name('sesiones.show');
+        Route::put('/{idProyecto}/sesiones/{idSesion}', [ProyectoGradoSesionController::class, 'update'])->name('sesiones.update');
+        Route::delete('/{idProyecto}/sesiones/{idSesion}', [ProyectoGradoSesionController::class, 'destroy'])->name('sesiones.destroy');
+        Route::get('/sesiones/{idSesion}/asistencias', [ProyectoGradoAsistenciasController::class, 'index'])->name('asistencias.index');
+        Route::post('/sesiones/{idSesion}/asistencias', [ProyectoGradoAsistenciasController::class, 'store'])->name('asistencias.store');
+        Route::get('/sesiones/{idSesion}/asistencias/{idAsistencia}', [ProyectoGradoAsistenciasController::class, 'show'])->name('asistencias.show');
+        Route::put('/sesiones/{idSesion}/asistencias/{idAsistencia}', [ProyectoGradoAsistenciasController::class, 'update'])->name('asistencias.update');
+        Route::delete('/sesiones/{idSesion}/asistencias/{idAsistencia}', [ProyectoGradoAsistenciasController::class, 'destroy'])->name('asistencias.destroy');
     });

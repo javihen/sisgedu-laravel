@@ -223,9 +223,8 @@
                         <div class="flex items-center gap-2">
                             <h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Expediente
                                 Oficial de Titulación BTH</h1>
-                            <span
-                                class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-md text-label-md font-medium">BTH
-                                Vigente</span>
+                            class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-md text-label-md font-medium">BTH
+                            Vigente</span>
                         </div>
                         <p class="font-body-sm text-body-sm text-on-surface-variant">Convocatoria Técnico Medio y
                             Bachillerato Técnico Humanístico Gestión 2026</p>
@@ -372,7 +371,9 @@
                             <div class="relative h-32 md:h-auto rounded overflow-hidden bg-surface-container shadow-inner">
                                 <img class="w-full h-full object-cover"
                                     data-alt="Close up photograph of a student-built automated drip irrigation system in an educational school greenhouse, soil moisture sensor probes wired to a compact microcontroller enclosure, fresh vegetable sprouts bathed in gentle morning sunlight, clear sharp institutional documentary style"
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfQXmOc1p8tV1SeYb4u-jyVx6HANa0xlzD2924FKP3Vndw8G60TrcO5WW8MkQiv1FnLWkhTeD-zHrrNxFW3jDvFOwTvPJ8L4F1H_lyukiFpaJOd3KJdyvVCwE2oIrdedpHinh4GfxfTBgf7eU-kfxwyu1GVxp99g0d8i2lmYr-lBQkaFnMGr9TTeqR-F2GXlTT5wQzznQkupRg6W_q--7f4KpGO1lQJeTicftv0xcZQz0P0BC99bJN">
+                                    src="{{ asset('images/fondoVN.png') }}">
+                                {{-- src="{{ asset('images/proyectos/PG-2026-' . $proyecto->idProyecto . '.jpg') }} --}}
+
                                 <div
                                     class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-inverse-surface/80 to-transparent p-2">
                                     <span
@@ -390,10 +391,10 @@
                                 <h3 class="font-headline-sm text-headline-sm text-on-surface">Ruta Cronológica y
                                     Fases de Acreditación</h3>
                             </div>
-                            <button type="button"
+                            {{-- <button type="button"
                                 class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary text-on-primary hover:bg-primary-container text-label-md font-label-md transition-colors shadow-sm cursor-pointer mr-2"><span
                                     class="material-symbols-outlined text-[16px]">add</span><span class="">Adicionar
-                                    Hito</span></button>{{-- <span
+                                    Hito</span></button> --}}{{-- <span
                                 class="font-label-md text-label-md text-on-surface-variant bg-surface-container-low px-2 py-1 rounded font-medium">Reglamento
                                 RAC-2024</span> --}}
                         </div>
@@ -422,15 +423,15 @@
                                         </p>
                                     </div>
                                     <div class="flex sm:flex-col items-baseline sm:items-end gap-2 sm:gap-0 shrink-0">
-                                        <span class="font-data-mono-bold text-data-mono-bold text-secondary text-[14px]">85
-                                            / 100 pts</span>
-                                        <span class="font-data-mono text-data-mono text-outline">15 de Marzo,
-                                            2024</span>
+                                        <span class="font-data-mono-bold text-data-mono-bold text-secondary text-[14px]">45
+                                            / 45 pts</span>
+                                        <span class="font-data-mono text-data-mono text-outline">23 de septiembre,
+                                            2026</span>
                                     </div>
                                 </div>
                             </div>
                             <!-- Hito 2: Aprobado -->
-                            <div
+                            {{-- <div
                                 class="flex items-start gap-gutter-md p-gutter-sm rounded bg-surface-container-lowest hover:bg-surface-container-low/60 transition-colors -mt-2">
                                 <div class="flex flex-col items-center">
                                     <div
@@ -459,9 +460,9 @@
                                             2024</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <!-- Hito 3: Aprobado -->
-                            <div
+                            {{-- <div
                                 class="flex items-start gap-gutter-md p-gutter-sm rounded bg-surface-container-lowest hover:bg-surface-container-low/60 transition-colors -mt-2">
                                 <div class="flex flex-col items-center">
                                     <div
@@ -491,9 +492,9 @@
                                             2024</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <!-- Hito 4: ESTADO ACTUAL -->
-                            <div
+                            {{-- <div
                                 class="flex items-start gap-gutter-md p-gutter-sm rounded bg-primary-fixed/20 shadow-sm -mt-2">
                                 <div class="flex flex-col items-center">
                                     <div
@@ -524,9 +525,9 @@
                                             28 de Oct.</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <!-- Hito 5: Pendiente -->
-                            <div
+                            {{-- <div
                                 class="flex items-start gap-gutter-md p-gutter-sm rounded bg-surface-container-lowest opacity-60 -mt-2">
                                 <div class="flex flex-col items-center">
                                     <div
@@ -550,7 +551,7 @@
                                             Acta</span>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </section>
                     <!-- 3. HISTORIAL DE ARCHIVOS Y VERSIONES SUBIDAS -->
@@ -1103,9 +1104,9 @@
                             class="font-label-md text-label-md text-on-surface-variant uppercase font-semibold">Horario</label>
                         <div
                             class="h-9 px-3 bg-surface-container-lowest rounded flex items-center justify-between shadow-xs">
-                            <span class="font-data-mono text-data-mono text-on-surface">14:30 -
+                            <span class="font-data-mono text-data-mono text-on-surface">14:30
                                 16:00</span>
-                            <span class="material-symbols-outlined text-outline text-[18px]">schedule</span>
+
                         </div>
                     </div>
                     <div class="md:col-span-4 flex flex-col gap-1">

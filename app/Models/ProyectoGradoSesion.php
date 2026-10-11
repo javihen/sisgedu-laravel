@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class ProyectoGradoSesion extends Model
@@ -12,7 +11,6 @@ class ProyectoGradoSesion extends Model
     protected $primaryKey = 'id_sesion';
 
     protected $fillable = [
-        'id_gestion',
         'idProyecto',
         'idGestion',
         'numero_sesion',
@@ -38,5 +36,10 @@ class ProyectoGradoSesion extends Model
     public function asistencias()
     {
         return $this->hasMany(ProyectoGradoAsistencias::class, 'id_sesion', 'id_sesion');
+    }
+
+    public function proyecto()
+    {
+        return $this->belongsTo(ProyectoGrado::class, 'idProyecto', 'idProyecto');
     }
 }

@@ -518,7 +518,7 @@
                                         </tr>
                                     @endforelse
                                 </tbody>
-                                @if (true)
+                                @if (false)
                                     <tbody class="divide-y divide-surface-container-low text-body-sm">
                                         <tr class="hover:bg-surface-container-low/40 transition-colors group">
                                             <td class="py-3.5 px-4 align-top">
