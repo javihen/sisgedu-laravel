@@ -1095,7 +1095,8 @@
                             Programada</label>
                         <div
                             class="h-9 px-3 bg-surface-container-lowest rounded flex items-center justify-between shadow-xs">
-                            <span class="font-data-mono text-data-mono text-on-surface">24/10/2024</span>
+                            <span
+                                class="font-data-mono text-data-mono text-on-surface">{{ now()->format('d/m/Y') }}</span>
                             <span class="material-symbols-outlined text-outline text-[18px]">calendar_today</span>
                         </div>
                     </div>

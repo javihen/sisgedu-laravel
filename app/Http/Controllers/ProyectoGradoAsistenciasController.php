@@ -82,7 +82,7 @@ class ProyectoGradoAsistenciasController extends Controller
         });
 
         return response()->json([
-            'message' => 'Asistencias registradas correctamente.',
+            'message' => 'Asistencias del postulate registradas correctamente.',
             'asistencias' => $asistencias,
         ]);
     }
