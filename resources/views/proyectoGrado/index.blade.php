@@ -287,7 +287,7 @@
                     </div>
                 </div>
             </div> --}}
-            <div
+            {{-- <div
                 class="bg-surface-container-lowest rounded-xl p-inset-card shadow-sm flex flex-col md:flex-row items-center justify-between gap-gutter-md">
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-gutter-md w-full md:w-auto flex-1">
                     <div class="flex flex-col">
@@ -358,7 +358,7 @@
                         <span class="material-symbols-outlined text-[20px]">filter_alt_off</span>
                     </button>
                 </div>
-            </div>
+            </div> --}}
             <div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter-lg items-start">
                 <div class="xl:col-span-8 flex flex-col gap-gutter-md">
                     <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
@@ -933,20 +933,41 @@
                         </div>
                         <div
                             class="px-inset-card py-3 bg-surface-container-low/40 flex flex-col sm:flex-row items-center justify-between gap-2">
-                            <span class="font-body-sm text-outline">{{ $proyectos->count() }} proyectos registrados</span>
+                            <span class="font-body-sm text-outline">
+                                Mostrando {{ $proyectos->firstItem() ?? 0 }} a {{ $proyectos->lastItem() ?? 0 }}
+                                de {{ $proyectos->total() }} proyectos registrados
+                            </span>
                             <div class="flex items-center gap-1">
-                                <button
-                                    class="px-2.5 py-1 rounded bg-surface-container text-on-surface-variant text-body-sm font-data-mono opacity-50 cursor-not-allowed">«
-                                    Anterior</button>
-                                <button
-                                    class="px-2.5 py-1 rounded bg-primary text-on-primary text-body-sm font-data-mono">1</button>
-                                <button
-                                    class="px-2.5 py-1 rounded bg-surface-container text-on-surface text-body-sm font-data-mono hover:bg-surface-container-high">2</button>
-                                <button
-                                    class="px-2.5 py-1 rounded bg-surface-container text-on-surface text-body-sm font-data-mono hover:bg-surface-container-high">3</button>
-                                <button
-                                    class="px-2.5 py-1 rounded bg-surface-container text-on-surface text-body-sm font-data-mono hover:bg-surface-container-high">Siguiente
-                                    »</button>
+                                @if ($proyectos->onFirstPage())
+                                    <span
+                                        class="px-2.5 py-1 rounded bg-surface-container text-on-surface-variant text-body-sm font-data-mono opacity-50 cursor-not-allowed"
+                                        aria-disabled="true">« Anterior</span>
+                                @else
+                                    <a href="{{ $proyectos->previousPageUrl() }}"
+                                        class="px-2.5 py-1 rounded bg-surface-container text-on-surface text-body-sm font-data-mono hover:bg-surface-container-high">«
+                                        Anterior</a>
+                                @endif
+
+                                @foreach ($proyectos->getUrlRange(1, $proyectos->lastPage()) as $page => $url)
+                                    @if ($page === $proyectos->currentPage())
+                                        <span
+                                            class="px-2.5 py-1 rounded bg-primary text-on-primary text-body-sm font-data-mono"
+                                            aria-current="page">{{ $page }}</span>
+                                    @else
+                                        <a href="{{ $url }}"
+                                            class="px-2.5 py-1 rounded bg-surface-container text-on-surface text-body-sm font-data-mono hover:bg-surface-container-high">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+
+                                @if ($proyectos->hasMorePages())
+                                    <a href="{{ $proyectos->nextPageUrl() }}"
+                                        class="px-2.5 py-1 rounded bg-surface-container text-on-surface text-body-sm font-data-mono hover:bg-surface-container-high">Siguiente
+                                        »</a>
+                                @else
+                                    <span
+                                        class="px-2.5 py-1 rounded bg-surface-container text-on-surface-variant text-body-sm font-data-mono opacity-50 cursor-not-allowed"
+                                        aria-disabled="true">Siguiente »</span>
+                                @endif
                             </div>
                         </div>
                     </div>

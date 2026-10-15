@@ -24,7 +24,7 @@ class ProyectoGradoController extends Controller
             'defensa',
             'proyectoEstudiantes.estudiante',
         ])->orderBy('titulo', 'asc')
-            ->get();
+            ->paginate(6);
 
         $gestionActual = session('gestion_activa');
         $estudiantesDisponibles = DB::table('inscripciones as i')

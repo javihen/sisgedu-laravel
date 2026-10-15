@@ -223,8 +223,9 @@
                         <div class="flex items-center gap-2">
                             <h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">Expediente
                                 Oficial de Titulación BTH</h1>
-                            class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-md text-label-md font-medium">BTH
-                            Vigente</span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-md text-label-md font-medium">BTH
+                                Vigente</span>
                         </div>
                         <p class="font-body-sm text-body-sm text-on-surface-variant">Convocatoria Técnico Medio y
                             Bachillerato Técnico Humanístico Gestión 2026</p>
