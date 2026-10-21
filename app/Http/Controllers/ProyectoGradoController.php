@@ -6,8 +6,8 @@ use App\Models\Curso;
 use App\Models\Estudiante;
 use App\Models\Gestion;
 use App\Models\Profesor;
-use App\Models\ProyectoGrado;
 use App\Models\ProyectoEstudiante;
+use App\Models\ProyectoGrado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -124,7 +124,7 @@ class ProyectoGradoController extends Controller
         $idGestion = $request->input('idGestion', session('gestion_activa'));
         $idCurso = $request->input('idCurso');
 
-        if (!$idCurso && $request->filled('idEstudiante')) {
+        if (! $idCurso && $request->filled('idEstudiante')) {
             $idCurso = DB::table('inscripciones')
                 ->where('id_estudiante', $request->idEstudiante)
                 ->where('id_gestion', $idGestion)
@@ -294,47 +294,47 @@ class ProyectoGradoController extends Controller
 
     public function pruebas()
     {
-       /* $id = 'C26B';
+        /* $id = 'C26B';
 
-        $estudiantes = Estudiante::with('proyectoGrado')
-            ->whereHas('inscripciones', function ($query) use ($id) {
-                $query->where('id_curso', $id);
-            })
-            ->get();
+         $estudiantes = Estudiante::with('proyectoGrado')
+             ->whereHas('inscripciones', function ($query) use ($id) {
+                 $query->where('id_curso', $id);
+             })
+             ->get();
 
-         $estudiantes2 = DB::table('inscripciones')
-            ->join(
-                'estudiantes',
-                'estudiantes.id_estudiante',
-                '=',
-                'inscripciones.id_estudiante'
-            )
-            ->leftJoin(
-                'proyectos_grado',
-                'proyectos_grado.idEstudiante',
-                '=',
-                'estudiantes.id_estudiante'
-            )
-            ->where('inscripciones.id_curso', 'C26A')
-            ->select(
-                'estudiantes.id_estudiante',
-                'estudiantes.nombre',
-                'estudiantes.apellido',
-                'proyectos_grado.id_proyecto',
-                'proyectos_grado.nombre_proyecto'
-            )
-            ->get();
-        $proyectos = Estudiante::with('proyectoGrado.tutor')
-            ->whereHas('inscripciones', function ($query) use ($id) {
-                $query->where('id_curso', $id);
-            })->orderBy('nombres', 'asc')
-            ->get();
-        dd($proyectos);
+          $estudiantes2 = DB::table('inscripciones')
+             ->join(
+                 'estudiantes',
+                 'estudiantes.id_estudiante',
+                 '=',
+                 'inscripciones.id_estudiante'
+             )
+             ->leftJoin(
+                 'proyectos_grado',
+                 'proyectos_grado.idEstudiante',
+                 '=',
+                 'estudiantes.id_estudiante'
+             )
+             ->where('inscripciones.id_curso', 'C26A')
+             ->select(
+                 'estudiantes.id_estudiante',
+                 'estudiantes.nombre',
+                 'estudiantes.apellido',
+                 'proyectos_grado.id_proyecto',
+                 'proyectos_grado.nombre_proyecto'
+             )
+             ->get();
+         $proyectos = Estudiante::with('proyectoGrado.tutor')
+             ->whereHas('inscripciones', function ($query) use ($id) {
+                 $query->where('id_curso', $id);
+             })->orderBy('nombres', 'asc')
+             ->get();
+         dd($proyectos);
 
-        dd([
-            'idProyecto' => $estudiante->proyectoGrado->idProyecto,
-            'idProfesorTutor' => $estudiante->proyectoGrado->idProfesorTutor,
-        ]);*/
+         dd([
+             'idProyecto' => $estudiante->proyectoGrado->idProyecto,
+             'idProfesorTutor' => $estudiante->proyectoGrado->idProfesorTutor,
+         ]);*/
         $idProyecto = '5';
         $proyecto = ProyectoGrado::with([
             'estudiante',
@@ -349,8 +349,19 @@ class ProyectoGradoController extends Controller
 
         dd($proyecto);
     }
+
     public function login()
     {
         return view('proyectoGrado.login');
+    }
+
+    public function asignacion()
+    {
+        return view('proyectoGrado.asignacion');
+    }
+
+    public function distribucion()
+    {
+        return view('proyectoGrado.distribucion');
     }
 }

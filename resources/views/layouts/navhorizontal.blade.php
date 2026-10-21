@@ -123,12 +123,21 @@
                     </div>
                 </div>
             </div>
-            <div class="flex items-center justify-center">
+            <div class="flex items-center gap-gutter-md">
+                <div class="hidden md:flex flex-col text-right"><span
+                        class="font-label-lg text-label-lg text-on-surface">LIC.
+                        {{ session('usuario_nombre') }}</span><span
+                        class="font-label-md text-label-md text-on-surface-variant">Docente de sistemas Informaticos /
+                        Tutor</span></div>
+                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span
+                        class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+            </div>
+            {{-- <div class="flex items-center justify-center">
                 <div class="rounded-md bg-[#E3DFE7] px-3 py-2 font-medium text-slate-700 text-[10px] sm:text-[14px]"
                     style='font-family: "Poppins", cursive;'>
                     PROF. {{ session('usuario_nombre') }}
                 </div>
-            </div>
+            </div> --}}
         </div>
     </header>
 
@@ -220,7 +229,8 @@
                                 <div class="nav__dropdown-collapse mt-1">
                                     <div class="nav__dropdown-content">
                                         <a href="{{ route('curso.index') }}" class="nav__dropdown-item">Listado</a>
-                                        <a href="{{ route('materia.index') }}" class="nav__dropdown-item">Materias</a>
+                                        <a href="{{ route('materia.index') }}"
+                                            class="nav__dropdown-item">Materias</a>
                                         <a href="{{ route('materia.asignacion') }}"
                                             class="nav__dropdown-item">Asignacion</a>
                                         <a href="{{ route('materia.cargaHoraria') }}"
@@ -347,24 +357,36 @@
                             <a href="{{ route('proyectoGrado.index') }}"
                                 class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
                                 <div class="flex items-center">
-                                    {{-- <i class='bx bx-chalkboard nav__icon'></i> --}}
-                                    <i class="fa-solid fa-user-graduate nav__icon"></i>
-                                    <span class="nav__name text-xs!">Defensa de grado</span>
+                                    <i class="fa-solid fa-layer-group nav__icon"></i>
+                                    <span class="nav__name text-xs!">Panel General</span>
                                 </div>
                                 {{--  <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i> --}}
                             </a>
-
-                            {{-- <div class="nav__dropdown-collapse mt-1">
-                                    <div class="nav__dropdown-content">
-
-                                        <a href="{{ route('profesor.index') }}" class="nav__dropdown-item">Panel de
-                                            citaciones</a>
-                                        <a href="{{ route('asignacion.curso') }}"
-                                            class="nav__dropdown-item">Historial</a>
-                                        <a href="#" class="nav__dropdown-item">Reportes</a>
-                                    </div>
+                            <a href="{{ route('proyectoGrado.asignacion') }}"
+                                class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-diagram-project nav__icon"></i>
+                                    <span class="nav__name text-xs!">Asignacion de tribunal</span>
                                 </div>
-                            </div> --}}
+                            </a>
+                            <a href="{{ route('proyectoGrado.distribucion') }}"
+                                class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-arrows-down-to-people nav__icon"></i>
+                                    <span class="nav__name text-xs!">Distribucion de mesas</span>
+                                </div>
+                            </a>
+                            {{-- <div class="nav__dropdown-collapse mt-1">
+                                <div class="nav__dropdown-content">
+
+                                    <a href="{{ route('profesor.index') }}" class="nav__dropdown-item">Panel de
+                                        citaciones</a>
+                                    <a href="{{ route('asignacion.curso') }}"
+                                        class="nav__dropdown-item">Historial</a>
+                                    <a href="#" class="nav__dropdown-item">Reportes</a>
+                                </div>
+                            </div>
+                    </div> --}}
                         @endif
                         {{-- <div class="nav__dropdown">
                             <a href="#"
@@ -477,7 +499,7 @@
         </nav>
     </div>
 
-    <div class="relative z-10 min-h-screen ml-1 w-[calc(100%-10px)] sm:w-[calc(100%-90px)] pt-2 lg:pt-4 lg:pl-14">
+    <div class="relative z-10 min-h-screen ml-1 w-[calc(100%)] sm:w-[calc(100%)] pt-2 lg:pt-4 lg:pl-14">
         @yield('content')
     </div>
 

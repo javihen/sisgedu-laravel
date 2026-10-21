@@ -52,7 +52,7 @@
                 extend: {
                     colors: {
                         "tertiary-fixed-dim": "#ffb77d",
-                        "primary": "#0040a1",
+                        "primary": "#334155",
                         "primary-container": "#0056d2",
                         "primary-fixed-dim": "#b2c5ff",
                         "surface-container-highest": "#dae2fd",
@@ -349,8 +349,9 @@
                                 </div>
                             </div>
                             <!-- Formulario Principal -->
-                            <form class="space-y-gutter-md" id="login-form"
-                                onsubmit="event.preventDefault(); handleLogin();">
+                            <form class="space-y-gutter-md" id="login-form" method="POST"
+                                action="{{ route('login.post') }}" onsubmit="handleLogin();">
+                                @csrf
                                 <!-- Campo Usuario / RDA -->
                                 <div class="space-y-1">
                                     <label
@@ -366,7 +367,7 @@
                                             class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">fingerprint</span>
                                         <input
                                             class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest text-on-surface rounded-lg font-body-md text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                                            id="user-identity" name="user-identity"
+                                            id="user-identity" name="username"
                                             placeholder="Ej. 492014-LP o usuario@vidanueva.edu.bo" required=""
                                             type="text" />
                                     </div>
