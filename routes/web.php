@@ -165,6 +165,7 @@ Route::get('/citaciones/prueba', [CitacionV2Controller::class, 'prueba']);
 Route::prefix('proyecto-grado')
     ->name('proyectoGrado.')
     ->group(function () {
+        Route::get('/login', [ProyectoGradoController::class, 'login'])->name('login');
         Route::get('/', [ProyectoGradoController::class, 'index'])->name('index');
         Route::get('/create', [ProyectoGradoController::class, 'create'])->name('create');
         Route::post('/', [ProyectoGradoController::class, 'store'])->name('store');

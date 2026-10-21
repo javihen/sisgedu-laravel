@@ -349,4 +349,8 @@ class ProyectoGradoController extends Controller
 
         dd($proyecto);
     }
+    public function login()
+    {
+        return view('proyectoGrado.login');
+    }
 }
