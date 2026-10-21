@@ -64,6 +64,11 @@
                     </button>
                 </div>
             </div>
+            @if (session('success'))
+                <div class="rounded-lg bg-secondary-container px-4 py-3 text-on-secondary-container" role="status">
+                    {{ session('success') }}
+                </div>
+            @endif
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-gutter-md">
                 <div
                     class="bg-surface-container-lowest rounded-xl p-inset-card shadow-sm flex flex-col justify-between relative overflow-hidden">
@@ -473,15 +478,74 @@
                                                             class="font-label-md text-outline">{{ $tribunal->cargo }}</span>
                                                     @empty
                                                         <span class="text-outline">Sin tribunal asignado</span>
-                                                        <div class="flex flex-col">
-                                                            <span
-                                                                class="font-label-md text-primary flex items-center gap-0.5 mt-0.5">
-                                                                <span
-                                                                    class="material-symbols-outlined text-[14px]">hourglass_top</span>
-                                                                En lectura metodológica
-                                                            </span>
-                                                        </div>
                                                     @endforelse
+                                                    @php
+                                                        $dictamenTitulo = $proyecto->dictamenOficial?->titulo;
+                                                        $dictamenEstado = match ($dictamenTitulo) {
+                                                            'Dictamen oficial: Sin visto bueno' => 'sin_visto_bueno',
+                                                            'Dictamen oficial: Informe favorable'
+                                                                => 'informe_favorable',
+                                                            'Dictamen oficial: Habilitado para la defensa'
+                                                                => 'habilitado_defensa',
+                                                            default => 'en_lectura',
+                                                        };
+                                                        $dictamenEtiqueta = match ($dictamenEstado) {
+                                                            'sin_visto_bueno' => 'Sin visto bueno',
+                                                            'informe_favorable' => 'Informe favorable',
+                                                            'habilitado_defensa' => 'Habilitado para la defensa',
+                                                            default => 'En lectura metodológica',
+                                                        };
+                                                    @endphp
+                                                    @if ($dictamenEstado === 'habilitado_defensa')
+                                                        <span
+                                                            class="font-label-md text-secondary flex items-center gap-0.5 mt-1"
+                                                            aria-label="Dictamen bloqueado: {{ $dictamenEtiqueta }}">
+                                                            <span
+                                                                class="material-symbols-outlined text-[14px]">verified</span>
+                                                            {{ $dictamenEtiqueta }}
+                                                        </span>
+                                                    @else
+                                                        <button type="button"
+                                                            class="abrir-modal-dictamen font-label-md text-primary flex items-center gap-0.5 mt-1 hover:underline text-left"
+                                                            data-project-id="{{ $proyecto->idProyecto }}"
+                                                            data-project-code="PG-2026-{{ $proyecto->idProyecto }}"
+                                                            data-project-title="{{ $proyecto->titulo }}"
+                                                            data-project-course="{{ $proyecto->curso?->display_name ?? $proyecto->idCurso }}"
+                                                            data-project-modality="{{ match ($proyecto->lineaInvestigacion) {
+                                                                'PI' => 'Proyecto de Innovación',
+                                                                'PS' => 'Proyecto de Servicio Social Comunitario',
+                                                                'PC' => 'Proyecto de Presentación Artística',
+                                                                'SC' => 'Práctica Laboral Comunitaria',
+                                                                default => 'Sin modalidad asignada',
+                                                            } }}"
+                                                            data-project-rude="{{ $proyecto->estudiante?->rude ?? 'No registrado' }}"
+                                                            data-project-students="{{ json_encode($participantes->map(fn($estudiante) => [
+                                                                'nombre' => trim($estudiante->nombres . ' ' . $estudiante->appaterno . ' ' . $estudiante->apmaterno),
+                                                                'ci' => $estudiante->ci ?: 'No registrado',
+                                                            ])->values()) }}"
+                                                            data-project-tutor="{{ $proyecto->tutor ? trim($proyecto->tutor->nombres . ' ' . $proyecto->tutor->appaterno . ' ' . $proyecto->tutor->apmaterno) : 'Sin tutor asignado' }}"
+                                                            data-project-tribunals="{{ json_encode($proyecto->tribunales->map(fn($tribunal) => [
+                                                                'nombre' => $tribunal->profesor ? trim($tribunal->profesor->nombres . ' ' . $tribunal->profesor->appaterno . ' ' . $tribunal->profesor->apmaterno) : 'Profesor no disponible',
+                                                                'cargo' => $tribunal->cargo,
+                                                            ])->values()) }}"
+                                                            data-dictamen-state="{{ $dictamenEstado }}"
+                                                            data-dictamen-date="{{ $proyecto->dictamenOficial?->fecha?->format('Y-m-d') }}"
+                                                            data-dictamen-resolution="{{ match ($proyecto->dictamenOficial?->descripcion) {
+                                                                'Aprobado por Unanimidad (2/2)' => 'unanimidad',
+                                                                'Aprobado por Mayoría con Respaldo Técnico' => 'mayoria',
+                                                                'Con Observaciones Menores no Impeditivas' => 'menores',
+                                                                'Rechazado para Reestructuración Profunda' => 'reestructuracion',
+                                                                default => '',
+                                                            } }}"
+                                                            data-dictamen-observations="{{ $proyecto->dictamenOficial?->observacion }}"
+                                                            data-default-date="{{ now()->toDateString() }}"
+                                                            aria-label="Registrar o editar dictamen de {{ $proyecto->titulo }}">
+                                                            <span class="material-symbols-outlined text-[14px]">
+                                                                {{ $dictamenEstado === 'informe_favorable' ? 'task_alt' : ($dictamenEstado === 'sin_visto_bueno' ? 'cancel' : 'hourglass_top') }}
+                                                            </span>
+                                                            {{ $dictamenEtiqueta }}
+                                                        </button>
+                                                    @endif
                                                     @if ($proyecto->defensa)
                                                         <span class="font-label-md text-secondary mt-1">
                                                             Defensa:
@@ -1384,7 +1448,6 @@
         </div>
     </form>
 </div>
-
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('modal-registro-proyecto');
@@ -1417,5 +1480,463 @@
                 ocultarModal();
             }
         });
+    });
+</script>
+{{-- Modal del registro de dictamen del tutor --}}
+<div id="modal-dictamen"
+    class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-inverse-surface/65 backdrop-blur-sm overflow-y-auto"
+    aria-labelledby="titulo-modal-dictamen" role="dialog" aria-modal="true">
+    <!-- MODAL DIALOG CONTAINER (Max Width ~740px) -->
+    <form id="form-dictamen" method="POST"
+        action="{{ route('proyectoGrado.dictamen.store', ['idProyecto' => 'PROJECT_ID']) }}"
+        class="relative w-full max-w-[730px] my-6 bg-surface-container-lowest rounded-2xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+        @csrf
+        <input id="dictamen-project-id" name="idProyecto" type="hidden" />
+        <!-- Top Decorative Institutional Accent Strip -->
+        <div class="w-full h-1.5 bg-gradient-to-r from-primary via-primary-container to-secondary">
+        </div>
+        <!-- 1. MODAL HEADER -->
+        <div class="px-7 pt-6 pb-4 bg-surface-container-lowest flex items-start justify-between gap-4">
+            <div class="flex flex-col gap-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-primary-container text-on-primary font-data-mono-bold text-data-mono-bold tracking-tight">
+                        <span class="material-symbols-outlined text-[15px]"
+                            style="font-variation-settings: 'FILL' 1;">gavel</span>
+                        DICTAMEN OFICIAL TRIBUNAL
+                    </span>
+                    <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container text-on-surface-variant font-label-md text-label-md">
+                        <span class="material-symbols-outlined text-[15px]">event_repeat</span>
+                        Fase 03 · Revisión de Conformidad
+                    </span>
+                </div>
+                <h2 id="titulo-modal-dictamen"
+                    class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight mt-1">
+                    Registro de Dictamen y Visto Bueno del Tribunal
+                </h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    Actualización del estado metodológico y aprobación reglamentaria para pase a defensa
+                    pública de grado.
+                </p>
+            </div>
+            <button id="cerrar-modal-dictamen" aria-label="Cerrar ventana"
+                class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors flex-shrink-0"
+                type="button">
+                <span class="material-symbols-outlined text-[24px]">close</span>
+            </button>
+        </div>
+        <!-- SCROLLABLE BODY -->
+        <div class="px-7 py-4 space-y-6 overflow-y-auto max-h-[calc(88vh-140px)]">
+            <!-- 2. SELECTED PROJECT REFERENCE CARD (Resumen del Proyecto Seleccionado) -->
+            @if ($errors->any())
+                <div class="mx-7 mt-4 rounded-lg bg-error-container p-3 text-on-error-container" role="alert">
+                    <p class="font-label-lg font-semibold">No se pudo guardar el dictamen:</p>
+                    <ul class="mt-1 list-inside list-disc font-body-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <div class="bg-surface-container-low p-4 rounded-xl flex flex-col gap-3">
+                <div class="flex items-center justify-between gap-2 pb-2">
+                    <div class="flex items-center gap-2">
+                        <span
+                            id="dictamen-project-code"
+                            class="font-data-mono-bold text-data-mono-bold px-2 py-0.5 rounded bg-surface-container-highest text-primary">
+                        </span>
+                        <span
+                            id="dictamen-project-course"
+                            class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-md text-label-md font-medium">
+                        </span>
+                        <span
+                            id="dictamen-project-modality"
+                            class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md font-medium">
+                        </span>
+                    </div>
+                    <span class="font-data-mono text-data-mono text-on-surface-variant text-right">RUDE:
+                        <span id="dictamen-project-rude"></span></span>
+                </div>
+                <div>
+                    <h3 id="dictamen-project-title"
+                        class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-snug">
+                    </h3>
+                </div>
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-on-surface-variant font-body-sm text-body-sm bg-surface-container-lowest/80 p-3 rounded-lg">
+                    <div class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-primary text-[18px] mt-0.5">person</span>
+                        <div class="flex flex-col">
+                            <span
+                                class="font-label-md text-label-md text-on-surface-variant uppercase font-medium">Postulante
+                                Titular</span>
+                            <div id="dictamen-project-students"
+                                class="font-label-lg text-label-lg font-bold text-on-surface"></div>
+                            <span class="font-data-mono text-data-mono text-on-surface-variant">CI:
+                                <span id="dictamen-project-ci"></span></span>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="material-symbols-outlined text-secondary text-[18px] mt-0.5">school</span>
+                        <div class="flex flex-col">
+                            <span
+                                class="font-label-md text-label-md text-on-surface-variant uppercase font-medium">Tutor
+                                Asignado</span>
+                            <span id="dictamen-project-tutor"
+                                class="font-label-lg text-label-lg font-semibold text-on-surface"></span>
+                            <span id="dictamen-project-speciality"
+                                class="font-label-md text-label-md text-on-surface-variant"></span>
+                        </div>
+                    </div>
+                    <div class="sm:col-span-2 flex items-start gap-2 pt-1">
+                        <span class="material-symbols-outlined text-primary text-[18px] mt-0.5">groups</span>
+                        <div class="flex flex-col">
+                            <span
+                                class="font-label-md text-label-md text-on-surface-variant uppercase font-medium">Tribunal
+                                Evaluador Asignado</span>
+                            <div id="dictamen-project-tribunals"
+                                class="font-body-md text-body-md text-on-surface"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 3. SELECTOR OBLIGATORIO DE ESTADOS NORMATIVOS -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="font-label-lg text-label-lg font-bold text-on-surface flex items-center gap-2">
+                        <span>Resolución Normativa del Tribunal</span>
+                        <span class="text-error font-bold">*</span>
+                    </label>
+                    <span class="font-label-md text-label-md text-on-surface-variant">Seleccione un
+                        único estado vinculante</span>
+                </div>
+                <!-- Radio cards group -->
+                <div class="grid grid-cols-1 gap-2.5" id="dictamen-options">
+                    <!-- Option 1: Sin visto bueno -->
+                    <label
+                        class="relative flex items-start gap-3.5 p-3.5 rounded-xl cursor-pointer transition-all bg-surface-container-lowest hover:bg-surface-container-low shadow-sm">
+                        <input class="mt-1 h-4 w-4 text-error focus:ring-0 cursor-pointer" name="dictamen_estado"
+                            type="radio" value="sin_visto_bueno" />
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="px-2 py-0.5 rounded bg-error-container text-on-error-container font-label-md text-label-md font-bold uppercase inline-flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">cancel</span>
+                                    Sin visto bueno
+                                </span>
+                                <span class="font-label-md text-label-md text-error font-medium">Subsanación
+                                    Requerida</span>
+                            </div>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+                                Observaciones pendientes de subsanación técnica o metodológica. Requiere
+                                corregir y reingresar informe en un plazo de 72 horas.
+                            </p>
+                        </div>
+                    </label>
+                    <!-- Option 2: En lectura metodológica -->
+                    <label
+                        class="relative flex items-start gap-3.5 p-3.5 rounded-xl cursor-pointer transition-all bg-surface-container-lowest hover:bg-surface-container-low shadow-sm">
+                        <input class="mt-1 h-4 w-4 text-primary focus:ring-0 cursor-pointer" name="dictamen_estado"
+                            type="radio" value="en_lectura" />
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="px-2 py-0.5 rounded bg-surface-container-highest text-primary font-label-md text-label-md font-bold uppercase inline-flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">menu_book</span>
+                                    En lectura metodológica
+                                </span>
+                                <span class="font-label-md text-label-md text-on-surface-variant">Terna
+                                    en Sesión</span>
+                            </div>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+                                En proceso activo de revisión por la terna examinadora. Plazo normativo
+                                de 5 días hábiles vigente según cronograma institucional.
+                            </p>
+                        </div>
+                    </label>
+                    <!-- Option 3: Informe favorable -->
+                    <label
+                        class="relative flex items-start gap-3.5 p-3.5 rounded-xl cursor-pointer transition-all bg-surface-container-lowest hover:bg-surface-container-low shadow-sm">
+                        <input class="mt-1 h-4 w-4 text-secondary focus:ring-0 cursor-pointer" name="dictamen_estado"
+                            type="radio" value="informe_favorable" />
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md font-bold uppercase inline-flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">task_alt</span>
+                                    Informe favorable
+                                </span>
+                                <span class="font-label-md text-label-md text-secondary font-medium">Vo.Bo.
+                                    Técnico Otorgado</span>
+                            </div>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+                                Cumple con los requisitos de fondo, sistematización y marco aplicativo.
+                                Visto bueno emitido a la espera de programar fecha definitiva.
+                            </p>
+                        </div>
+                    </label>
+                    <!-- Option 4: Habilitado para la defensa (SELECTED BY DEFAULT) -->
+                    <label
+                        class="relative flex items-start gap-3.5 p-3.5 rounded-xl cursor-pointer transition-all bg-secondary-container/25 shadow-sm">
+                        <input class="mt-1 h-4 w-4 text-secondary focus:ring-0 cursor-pointer" name="dictamen_estado"
+                            type="radio" value="habilitado_defensa" />
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="px-2.5 py-0.5 rounded bg-secondary text-on-secondary font-label-md text-label-md font-bold uppercase inline-flex items-center gap-1.5 shadow-sm">
+                                        <span class="material-symbols-outlined text-[15px]"
+                                            style="font-variation-settings: 'FILL' 1;">verified</span>
+                                        Habilitado para la defensa
+                                    </span>
+                                    <span class="font-label-md text-label-md text-secondary font-bold">Estado
+                                        Pleno</span>
+                                </div>
+                                <span
+                                    class="font-data-mono-bold text-data-mono-bold text-secondary text-xs uppercase">Recomendado</span>
+                            </div>
+                            <p class="font-body-sm text-body-sm text-on-surface mt-1 leading-relaxed">
+                                Aprobación unánime o mayoritaria. Proyecto apto para programación de
+                                fecha, hora y aula de sustentación oral formal ante el ministerio.
+                            </p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <!-- 4. DETALLE DEL DICTAMEN Y OBSERVACIONES -->
+            <div class="space-y-4 pt-1">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Date input -->
+                    <div class="space-y-1.5">
+                        <label
+                            class="font-label-md text-label-md font-semibold text-on-surface flex items-center gap-1.5"
+                            for="fecha-dictamen">
+                            <span class="material-symbols-outlined text-primary text-[16px]">calendar_today</span>
+                            <span>Fecha de Emisión del Dictamen</span>
+                            <span class="text-error">*</span>
+                        </label>
+                        <div class="relative">
+                            <input
+                                class="w-full bg-surface-container-lowest text-on-surface font-data-mono text-data-mono px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:bg-surface-container-low transition-all"
+                                id="fecha-dictamen" name="fecha_dictamen" type="date" required />
+                        </div>
+                    </div>
+                    <!-- Resolution Type -->
+                    <div class="space-y-1.5">
+                        <label
+                            class="font-label-md text-label-md font-semibold text-on-surface flex items-center gap-1.5"
+                            for="tipo-resolucion">
+                            <span class="material-symbols-outlined text-primary text-[16px]">how_to_reg</span>
+                            <span>Tipo de Resolución de Terna</span>
+                            <span class="text-error">*</span>
+                        </label>
+                        <select
+                            class="w-full bg-surface-container-lowest text-on-surface font-body-md text-body-md px-3 py-2 rounded-lg shadow-sm focus:outline-none focus:bg-surface-container-low transition-all"
+                            id="tipo-resolucion" name="tipo_resolucion" required>
+                            <option value="unanimidad">Aprobado por Unanimidad (2/2)
+                            </option>
+                            <option value="mayoria">Aprobado por Mayoría con Respaldo Técnico</option>
+                            <option value="menores">Con Observaciones Menores no Impeditivas</option>
+                            <option value="reestructuracion">Rechazado para Reestructuración Profunda
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Textarea for Observations -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <label
+                            class="font-label-md text-label-md font-semibold text-on-surface flex items-center gap-1.5"
+                            for="observaciones-tribunal">
+                            <span class="material-symbols-outlined text-primary text-[16px]">rate_review</span>
+                            <span>Observaciones y Conclusiones Metodológicas</span>
+                        </label>
+                        <span class="font-label-md text-label-md text-on-surface-variant">Carátula,
+                            marco lógico y anexos</span>
+                    </div>
+                    <textarea
+                        class="w-full bg-surface-container-lowest text-on-surface font-body-md text-body-md p-3 rounded-lg shadow-sm focus:outline-none focus:bg-surface-container-low transition-all"
+                        id="observaciones-tribunal" name="observaciones"
+                        placeholder="Describa las conclusiones del tribunal evaluador, observaciones de forma/fondo o recomendaciones prioritarias para la defensa oral..."
+                        rows="3"></textarea>
+                </div>
+            </div>
+            <!-- 5. CLÁUSULA DE VALIDEZ Y CREDENCIAL DEL EVALUADOR -->
+            <div class="bg-surface-container p-4 rounded-xl space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary">
+                            <span class="material-symbols-outlined text-[20px]">badge</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="font-label-md text-label-md text-on-surface-variant font-medium">Evaluador
+                                Responsable</span>
+                            <span class="font-label-lg text-label-lg font-bold text-on-surface">Lic.
+                                Javier Henry Quispe Pinto</span>
+                            <span class="font-data-mono text-data-mono text-primary font-bold">RDA:
+                                492014-LP</span>
+                        </div>
+                    </div>
+                    <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md font-bold">
+                        <span class="material-symbols-outlined text-[16px]"
+                            style="font-variation-settings: 'FILL' 1;">security</span>
+                        <span>Firma Digital RDA Homologada</span>
+                    </div>
+                </div>
+                <!-- Declaración jurada checkbox -->
+                <div class="pt-2">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input class="mt-0.5 h-4 w-4 rounded text-primary focus:ring-0 cursor-pointer"
+                            id="declaracion-jurada" name="declaracion_jurada" type="checkbox" value="1"
+                            required />
+                        <span class="font-body-sm text-body-sm text-on-surface leading-tight">
+                            Declaro bajo juramento reglamentario haber revisado minuciosamente el
+                            documento del proyecto conforme a las directrices vigentes del Subsistema de
+                            Educación Regular y el Reglamento BTH.
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <!-- 6. MODAL ACTIONS FOOTER -->
+        <div
+            class="px-7 py-4 bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <button id="cancelar-modal-dictamen"
+                class="px-4 py-2.5 rounded-lg bg-surface-container text-on-surface font-label-lg text-label-lg hover:bg-surface-container-high transition-colors font-medium text-center"
+                type="button">
+                Cancelar
+            </button>
+            <div class="flex items-center gap-2.5">
+                <button
+                    class="px-5 py-2.5 rounded-lg bg-secondary text-on-secondary font-label-lg text-label-lg hover:bg-secondary/90 transition-all shadow-md font-bold flex items-center justify-center gap-2"
+                    type="submit">
+                    <span class="material-symbols-outlined text-[20px]"
+                        style="font-variation-settings: 'FILL' 1;">task_alt</span>
+                    <span>Registrar Dictamen Oficial</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('modal-dictamen');
+        const form = document.getElementById('form-dictamen');
+        const fecha = document.getElementById('fecha-dictamen');
+        const resolucion = document.getElementById('tipo-resolucion');
+        const observaciones = document.getElementById('observaciones-tribunal');
+        const projectIdInput = document.getElementById('dictamen-project-id');
+        const actionTemplate = form.action;
+        const opciones = document.querySelectorAll('input[name="dictamen_estado"]');
+
+        const ocultarModal = () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        const actualizarOpcion = (radio) => {
+            document.querySelectorAll('#dictamen-options label').forEach(label => {
+                label.classList.remove('bg-secondary-container/25', 'bg-error-container/20',
+                    'bg-surface-container-highest/40');
+                label.classList.add('bg-surface-container-lowest');
+            });
+            const parentLabel = radio.closest('label');
+            if (radio.value === 'habilitado_defensa') {
+                parentLabel.classList.remove('bg-surface-container-lowest');
+                parentLabel.classList.add('bg-secondary-container/25');
+            } else if (radio.value === 'sin_visto_bueno') {
+                parentLabel.classList.remove('bg-surface-container-lowest');
+                parentLabel.classList.add('bg-error-container/20');
+            } else {
+                parentLabel.classList.remove('bg-surface-container-lowest');
+                parentLabel.classList.add('bg-surface-container-highest/40');
+            }
+        };
+
+        const abrirModal = (button, oldValues = null) => {
+            const projectId = button.dataset.projectId;
+            const students = JSON.parse(button.dataset.projectStudents || '[]');
+            const tribunals = JSON.parse(button.dataset.projectTribunals || '[]');
+            form.action = actionTemplate.replace('PROJECT_ID', projectId);
+            projectIdInput.value = projectId;
+            document.getElementById('dictamen-project-code').textContent = button.dataset.projectCode;
+            document.getElementById('dictamen-project-title').textContent = button.dataset.projectTitle;
+            document.getElementById('dictamen-project-course').textContent = button.dataset.projectCourse;
+            document.getElementById('dictamen-project-modality').textContent = button.dataset.projectModality;
+            document.getElementById('dictamen-project-rude').textContent = button.dataset.projectRude;
+            document.getElementById('dictamen-project-students').replaceChildren(
+                ...students.map((student, index) => {
+                    const name = document.createElement('div');
+                    name.textContent = student.nombre;
+                    if (index > 0) name.classList.add('mt-1');
+                    return name;
+                })
+            );
+            document.getElementById('dictamen-project-ci').textContent =
+                students.map(student => student.ci).join(' · ') || 'No registrado';
+            document.getElementById('dictamen-project-tutor').textContent = button.dataset.projectTutor;
+            document.getElementById('dictamen-project-speciality').textContent = button.dataset.projectCourse;
+
+            const tribunalsContainer = document.getElementById('dictamen-project-tribunals');
+            tribunalsContainer.replaceChildren();
+            if (tribunals.length === 0) {
+                tribunalsContainer.textContent = 'Sin tribunal asignado';
+            } else {
+                tribunals.forEach((tribunal, index) => {
+                    const entry = document.createElement('span');
+                    const name = document.createElement('strong');
+                    name.className = index === 0 ? 'font-semibold text-primary' : 'font-semibold text-on-surface';
+                    name.textContent = tribunal.nombre;
+                    entry.append(name, document.createTextNode(` (${tribunal.cargo || 'Sin cargo'})`));
+                    if (index < tribunals.length - 1) {
+                        entry.append(document.createTextNode(' · '));
+                    }
+                    tribunalsContainer.append(entry);
+                });
+            }
+            opciones.forEach(radio => {
+                radio.checked = radio.value === (oldValues?.state || button.dataset.dictamenState);
+            });
+            fecha.value = oldValues?.date || button.dataset.dictamenDate || button.dataset.defaultDate;
+            resolucion.value = oldValues?.resolution || button.dataset.dictamenResolution || 'unanimidad';
+            observaciones.value = oldValues?.observations ?? button.dataset.dictamenObservations ?? '';
+            document.getElementById('declaracion-jurada').checked = oldValues?.declaration === '1';
+            document.getElementById('titulo-modal-dictamen').textContent = button.dataset.dictamenDate ?
+                'Editar Dictamen y Visto Bueno del Tribunal' :
+                'Registro de Dictamen y Visto Bueno del Tribunal';
+            opciones.forEach(radio => radio.checked && actualizarOpcion(radio));
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        document.querySelectorAll('.abrir-modal-dictamen').forEach(button => {
+            button.addEventListener('click', () => abrirModal(button));
+        });
+        document.getElementById('cerrar-modal-dictamen').addEventListener('click', ocultarModal);
+        document.getElementById('cancelar-modal-dictamen').addEventListener('click', ocultarModal);
+        modal.addEventListener('click', event => {
+            if (event.target === modal) ocultarModal();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !modal.classList.contains('hidden')) ocultarModal();
+        });
+        opciones.forEach(radio => radio.addEventListener('change', () => actualizarOpcion(radio)));
+
+        const oldProjectId = @json(old('idProyecto'));
+        if (oldProjectId) {
+            const button = [...document.querySelectorAll('.abrir-modal-dictamen')]
+                .find(item => item.dataset.projectId === String(oldProjectId));
+            if (button) {
+                abrirModal(button, {
+                    state: @json(old('dictamen_estado')),
+                    date: @json(old('fecha_dictamen')),
+                    resolution: @json(old('tipo_resolucion')),
+                    observations: @json(old('observaciones')),
+                    declaration: @json(old('declaracion_jurada')),
+                });
+            }
+        }
     });
 </script>

@@ -22,7 +22,8 @@ use App\Http\Controllers\RolController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    /* return view('welcome'); */
+    return view('proyectoGrado.login');
 });
 
 // ------------------------- MODULO LOGIN ------------------------//
@@ -171,6 +172,7 @@ Route::prefix('proyecto-grado')
         Route::get('/', [ProyectoGradoController::class, 'index'])->name('index');
         Route::get('/create', [ProyectoGradoController::class, 'create'])->name('create');
         Route::post('/', [ProyectoGradoController::class, 'store'])->name('store');
+        Route::post('/{idProyecto}/dictamen', [ProyectoGradoController::class, 'guardarDictamen'])->name('dictamen.store');
         Route::get('/pruebas', [ProyectoGradoController::class, 'pruebas'])->name('pruebas');
         Route::get('/curso/{idCurso}', [ProyectoGradoController::class, 'searchXCurso'])->name('searchXCurso');
         Route::get('/{idProyecto}/edit', [ProyectoGradoController::class, 'edit'])->name('edit');

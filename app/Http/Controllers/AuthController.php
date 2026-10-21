@@ -72,6 +72,7 @@ class AuthController extends Controller
     {
         Session::flush();
 
-        return redirect()->route('login');
+        /* return redirect()->route('login'); */
+        return redirect()->route('proyectoGrado.login');
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Gestion;
 use App\Models\Profesor;
 use App\Models\ProyectoEstudiante;
 use App\Models\ProyectoGrado;
+use App\Models\ProyectoSeguimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -23,6 +24,7 @@ class ProyectoGradoController extends Controller
             'tribunales.profesor',
             'defensa',
             'proyectoEstudiantes.estudiante',
+            'dictamenOficial',
         ])->orderBy('titulo', 'asc')
             ->paginate(6);
 
@@ -67,6 +69,63 @@ class ProyectoGradoController extends Controller
         );
     }
 
+    public function guardarDictamen(Request $request, string $idProyecto)
+    {
+        $validated = $request->validate([
+            'dictamen_estado' => ['required', 'in:sin_visto_bueno,en_lectura,informe_favorable,habilitado_defensa'],
+            'fecha_dictamen' => ['required', 'date'],
+            'tipo_resolucion' => ['required', 'in:unanimidad,mayoria,menores,reestructuracion'],
+            'observaciones' => ['nullable', 'string', 'max:5000'],
+            'declaracion_jurada' => ['accepted'],
+        ]);
+
+        $estados = [
+            'sin_visto_bueno' => 'Sin visto bueno',
+            'en_lectura' => 'En lectura metodológica',
+            'informe_favorable' => 'Informe favorable',
+            'habilitado_defensa' => 'Habilitado para la defensa',
+        ];
+        $resoluciones = [
+            'unanimidad' => 'Aprobado por Unanimidad (2/2)',
+            'mayoria' => 'Aprobado por Mayoría con Respaldo Técnico',
+            'menores' => 'Con Observaciones Menores no Impeditivas',
+            'reestructuracion' => 'Rechazado para Reestructuración Profunda',
+        ];
+
+        $proyecto = ProyectoGrado::findOrFail($idProyecto);
+
+        DB::transaction(function () use ($proyecto, $validated, $estados, $resoluciones) {
+            ProyectoGrado::whereKey($proyecto->getKey())->lockForUpdate()->firstOrFail();
+
+            $dictamen = ProyectoSeguimiento::where('idProyecto', $proyecto->idProyecto)
+                ->where('titulo', 'like', 'Dictamen oficial:%')
+                ->lockForUpdate()
+                ->orderByDesc('idSeguimiento')
+                ->first();
+
+            if ($dictamen && str_starts_with($dictamen->titulo, 'Dictamen oficial: Habilitado para la defensa')) {
+                abort(403, 'El dictamen no se puede modificar después de habilitar la defensa.');
+            }
+
+            $attributes = [
+                'fecha' => $validated['fecha_dictamen'],
+                'titulo' => 'Dictamen oficial: ' . $estados[$validated['dictamen_estado']],
+                'descripcion' => $resoluciones[$validated['tipo_resolucion']],
+                'observacion' => $validated['observaciones'] ?? null,
+            ];
+
+            if ($dictamen) {
+                $dictamen->update($attributes);
+            } else {
+                $proyecto->seguimientos()->create($attributes);
+            }
+        });
+
+        return redirect()
+            ->route('proyectoGrado.index')
+            ->with('success', 'Dictamen oficial guardado correctamente.');
+    }
+
     public function searchXCurso(string $id)
     {
         $proyectos = ProyectoGrado::with([
@@ -77,6 +136,7 @@ class ProyectoGradoController extends Controller
             'tribunales.profesor',
             'defensa',
             'proyectoEstudiantes.estudiante',
+            'dictamenOficial',
         ])->where('idCurso', $id)
             ->orderBy('titulo', 'asc')
             ->get();

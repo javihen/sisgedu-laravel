@@ -77,6 +77,13 @@ class ProyectoGrado extends Model
             ->orderBy('idSeguimiento');
     }
 
+    public function dictamenOficial()
+    {
+        return $this->hasOne(ProyectoSeguimiento::class, 'idProyecto', 'idProyecto')
+            ->where('titulo', 'like', 'Dictamen oficial:%')
+            ->orderByDesc('idSeguimiento');
+    }
+
     public function profesorTutor()
     {
         return $this->belongsTo(Profesor::class, 'idProfesorTutor', 'id_Profesor');
