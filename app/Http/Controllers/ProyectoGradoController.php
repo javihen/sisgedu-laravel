@@ -43,10 +43,23 @@ class ProyectoGradoController extends Controller
             })
             ->orderBy('e.nombres', 'asc')
             ->get();
+            $totalLecturaMetodologica = ProyectoGrado::whereHas('dictamenOficial', function ($query) {
+                $query->where('titulo', 'En lectura metodológica');
+            })->count();
+
+            /* Proyectos faltantes */
+            $dictamen = ProyectoGrado::with(['seguimientos' => function ($query) {
+            $query->where('titulo', 'LIKE', '%Dictamen%');
+                }
+            ])
+            ->whereHas('seguimientos', function ($query) {
+                $query->where('titulo', 'LIKE', '%Habilitado%');
+            })
+            ->get();
 
         return view(
             'proyectoGrado.index',
-            compact('proyectos', 'estudiantesDisponibles')
+            compact('proyectos', 'estudiantesDisponibles', 'totalLecturaMetodologica', 'dictamen')
         );
     }
 
@@ -71,6 +84,14 @@ class ProyectoGradoController extends Controller
 
     public function guardarDictamen(Request $request, string $idProyecto)
     {
+        $proyecto = ProyectoGrado::findOrFail($idProyecto);
+        abort_unless(
+            session('profesor_id') !== null
+                && (string) session('profesor_id') === (string) $proyecto->idProfesorTutor,
+            403,
+            'Solo el tutor designado puede registrar el dictamen del proyecto.'
+        );
+
         $validated = $request->validate([
             'dictamen_estado' => ['required', 'in:sin_visto_bueno,en_lectura,informe_favorable,habilitado_defensa'],
             'fecha_dictamen' => ['required', 'date'],
@@ -91,8 +112,6 @@ class ProyectoGradoController extends Controller
             'menores' => 'Con Observaciones Menores no Impeditivas',
             'reestructuracion' => 'Rechazado para Reestructuración Profunda',
         ];
-
-        $proyecto = ProyectoGrado::findOrFail($idProyecto);
 
         DB::transaction(function () use ($proyecto, $validated, $estados, $resoluciones) {
             ProyectoGrado::whereKey($proyecto->getKey())->lockForUpdate()->firstOrFail();
@@ -395,7 +414,7 @@ class ProyectoGradoController extends Controller
              'idProyecto' => $estudiante->proyectoGrado->idProyecto,
              'idProfesorTutor' => $estudiante->proyectoGrado->idProfesorTutor,
          ]);*/
-        $idProyecto = '5';
+        /* $idProyecto = '5';
         $proyecto = ProyectoGrado::with([
             'estudiante',
             'proyectoEstudiantes.estudiante',
@@ -405,9 +424,17 @@ class ProyectoGradoController extends Controller
             'tribunales.profesor',
             'defensa',
             'seguimientos',
-        ])->findOrFail($idProyecto);
-
-        dd($proyecto);
+        ])->findOrFail($idProyecto); */
+    $proyectos = ProyectoGrado::with([
+        'seguimientos' => function ($query) {
+            $query->where('titulo', 'LIKE', '%Dictamen%');
+        }
+    ])
+    ->whereHas('seguimientos', function ($query) {
+        $query->where('titulo', 'LIKE', '%Informe favorable%');
+    })
+    ->get();
+        dd($proyectos);
     }
 
     public function login()

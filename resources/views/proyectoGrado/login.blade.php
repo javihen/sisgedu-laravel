@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta content="web_blank" name="shell-type" />
-    <title>Portal de Autenticación Institucional - BTH Vida Nueva</title>
+    <title>SISGEDUv1.2.3 - BTH Vida Nueva</title>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
@@ -236,7 +236,7 @@
                                 </p>
                             </div>
                             <!-- Puntos Clave Institucionales -->
-                            <div class="space-y-gutter-sm pt-2">
+                            <div class="space-y-gutter-sm pt-2 hidden lg:block">
                                 <div
                                     class="flex items-start gap-gutter-sm bg-surface-container-lowest/10 backdrop-blur-sm p-gutter-sm rounded-lg">
                                     <span
@@ -273,7 +273,7 @@
                             </div>
                         </div>
                         <!-- Tarjeta Flotante de Estado Activo -->
-                        <div class="relative z-10 mt-gutter-lg pt-gutter-sm">
+                        <div class="relative z-10 mt-gutter-lg pt-gutter-sm hidden lg:block">
                             <div
                                 class="bg-surface-container-lowest/15 backdrop-blur-md rounded-lg p-gutter-sm flex items-center justify-between">
                                 <div class="flex items-center gap-gutter-sm">

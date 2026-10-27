@@ -80,7 +80,7 @@
                                 class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Proyectos
                                 Registrados</span>
                             <div class="flex items-baseline gap-2 mt-2">
-                                <span class="font-display text-display text-primary">81</span>
+                                <span class="font-display text-display text-primary">{{ $proyectos->total() }}</span>
                                 <span class="font-data-mono text-body-sm text-secondary font-semibold">100%
                                     ACTIVO</span>
                             </div>
@@ -92,12 +92,12 @@
                     </div>
                     <div
                         class="mt-4 pt-3 bg-surface-container-low/50 -mx-inset-card -mb-inset-card px-inset-card py-2 flex items-center justify-between text-body-sm">
-                        <span class="text-on-surface-variant">81 BTH Técnica</span>
+                        <span class="text-on-surface-variant">Tecnica Tecnologica Especializada</span>
                         {{-- <span class="text-outline-variant">•</span>
                         <span class="text-on-surface-variant">8 Excelencia / Monog.</span> --}}
                     </div>
                 </div>
-                {{-- <div
+                <div
                     class="bg-surface-container-lowest rounded-xl p-inset-card shadow-sm flex flex-col justify-between relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-secondary/5 pointer-events-none">
                     </div>
@@ -107,7 +107,8 @@
                                 class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Avance
                                 Global del Ciclo</span>
                             <div class="flex items-baseline gap-2 mt-2">
-                                <span class="font-display text-display text-secondary">78.4%</span>
+                                <span
+                                    class="font-display text-display text-secondary">{{ number_format(($dictamen->count() * 100) / $proyectos->total(), 2) }}%</span>
                                 <span
                                     class="font-label-md text-label-md text-secondary bg-secondary-container px-1.5 py-0.5 rounded font-semibold">+4.2%
                                     mes</span>
@@ -125,11 +126,12 @@
                             </div>
                         </div>
                         <div class="flex justify-between text-body-sm text-outline font-data-mono">
-                            <span>Meta: 85% Nov</span>
-                            <span>Diferencial: -6.6%</span>
+                            <span>Meta: 90% Nov</span>
+                            <span>Diferencial:
+                                -{{ number_format(($dictamen->count() * 100) / $proyectos->total(), 2) }}%</span>
                         </div>
                     </div>
-                </div> --}}
+                </div>
                 <div
                     class="bg-surface-container-lowest rounded-xl p-inset-card shadow-sm flex flex-col justify-between relative overflow-hidden">
                     <div class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-error/5 pointer-events-none">
@@ -140,7 +142,8 @@
                                 class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Observados
                                 / En Riesgo</span>
                             <div class="flex items-baseline gap-2 mt-2">
-                                <span class="font-display text-display text-error">05</span>
+                                <span
+                                    class="font-display text-display text-error">{{ $proyectos->total() - $dictamen->count() }}</span>
                                 <span
                                     class="font-label-md text-label-md text-error bg-error-container px-1.5 py-0.5 rounded font-semibold">Acción
                                     Urgente</span>
@@ -148,12 +151,15 @@
                         </div>
                         <div
                             class="w-10 h-10 rounded-lg bg-error-container flex items-center justify-center text-on-error-container">
-                            <span class="material-symbols-outlined text-[22px]">warning</span>
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            {{--  <span class="material-symbols-outlined ">warning</span> --}}
                         </div>
                     </div>
                     <div
-                        class="mt-4 pt-3 bg-surface-container-low/50 -mx-inset-card -mb-inset-card px-inset-card py-2 flex items-center justify-between text-body-sm">
-                        <span class="text-error font-medium">3 Tribunal pendiente</span>
+                        class="mt-4
+                                pt-3 bg-surface-container-low/50 -mx-inset-card -mb-inset-card px-inset-card py-2 flex
+                                items-center justify-between text-body-sm">
+                        <span class="text-error font-medium">Tribunal pendiente</span>
                         {{-- <span class="text-outline-variant">•</span>
                         <span class="text-on-surface-variant">2 Perfil desfasado</span> --}}
                     </div>
@@ -168,8 +174,8 @@
                                 class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant">Defensas
                                 Programadas</span>
                             <div class="flex items-baseline gap-2 mt-2">
-                                <span class="font-display text-display text-on-surface">31</span>
-                                <span class="font-data-mono text-body-sm text-tertiary font-semibold">OCTUBRE</span>
+                                <span class="font-display text-display text-on-surface">{{ $dictamen->count() }}</span>
+                                <span class="font-data-mono text-body-sm text-tertiary font-semibold">PROYECTO</span>
                             </div>
                         </div>
                         <div
@@ -393,9 +399,7 @@
                                         <th class="py-3 px-4">Código / Proyecto</th>
                                         <th class="py-3 px-4">Postulantes</th>
                                         <th class="py-3 px-4">Modalidad</th>
-
                                         <th class="py-3 px-4">Tribunal Dictaminador</th>
-
                                         <th class="py-3 px-4 text-center">Acciones</th>
                                     </tr>
                                 </thead>
@@ -416,7 +420,8 @@
                                                         class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">{{ $proyecto->titulo }}</span>
                                                     <span class="font-label-md text-outline mt-1">
                                                         {{ $proyecto->curso?->display_name ?? $proyecto->idCurso }}
-                                                        · Gestión {{ $proyecto->gestion?->anio ?? $proyecto->idGestion }}
+                                                        · Gestión
+                                                        {{ $proyecto->gestion?->anio ?? $proyecto->idGestion }}
                                                         · <br> Esp. Sistemas Informaticos
                                                     </span>
                                                 </div>
@@ -495,6 +500,9 @@
                                                             'habilitado_defensa' => 'Habilitado para la defensa',
                                                             default => 'En lectura metodológica',
                                                         };
+                                                        $esTutorDesignado =
+                                                            (string) session('profesor_id') ===
+                                                            (string) $proyecto->idProfesorTutor;
                                                     @endphp
                                                     @if ($dictamenEstado === 'habilitado_defensa')
                                                         <span
@@ -504,9 +512,9 @@
                                                                 class="material-symbols-outlined text-[14px]">verified</span>
                                                             {{ $dictamenEtiqueta }}
                                                         </span>
-                                                    @else
+                                                    @elseif ($esTutorDesignado)
                                                         <button type="button"
-                                                            class="abrir-modal-dictamen font-label-md text-primary flex items-center gap-0.5 mt-1 hover:underline text-left"
+                                                            class="abrir-modal-dictamen font-label-md text-primary flex items-center gap-0.5 mt-1 cursor-pointer text-left"
                                                             data-project-id="{{ $proyecto->idProyecto }}"
                                                             data-project-code="PG-2026-{{ $proyecto->idProyecto }}"
                                                             data-project-title="{{ $proyecto->titulo }}"
@@ -519,15 +527,31 @@
                                                                 default => 'Sin modalidad asignada',
                                                             } }}"
                                                             data-project-rude="{{ $proyecto->estudiante?->rude ?? 'No registrado' }}"
-                                                            data-project-students="{{ json_encode($participantes->map(fn($estudiante) => [
-                                                                'nombre' => trim($estudiante->nombres . ' ' . $estudiante->appaterno . ' ' . $estudiante->apmaterno),
-                                                                'ci' => $estudiante->ci ?: 'No registrado',
-                                                            ])->values()) }}"
+                                                            data-project-students="{{ json_encode(
+                                                                $participantes->map(
+                                                                        fn($estudiante) => [
+                                                                            'nombre' => trim($estudiante->nombres . ' ' . $estudiante->appaterno . ' ' . $estudiante->apmaterno),
+                                                                            'ci' => $estudiante->ci ?: 'No registrado',
+                                                                        ],
+                                                                    )->values(),
+                                                            ) }}"
                                                             data-project-tutor="{{ $proyecto->tutor ? trim($proyecto->tutor->nombres . ' ' . $proyecto->tutor->appaterno . ' ' . $proyecto->tutor->apmaterno) : 'Sin tutor asignado' }}"
-                                                            data-project-tribunals="{{ json_encode($proyecto->tribunales->map(fn($tribunal) => [
-                                                                'nombre' => $tribunal->profesor ? trim($tribunal->profesor->nombres . ' ' . $tribunal->profesor->appaterno . ' ' . $tribunal->profesor->apmaterno) : 'Profesor no disponible',
-                                                                'cargo' => $tribunal->cargo,
-                                                            ])->values()) }}"
+                                                            data-project-tribunals="{{ json_encode(
+                                                                $proyecto->tribunales->map(
+                                                                        fn($tribunal) => [
+                                                                            'nombre' => $tribunal->profesor
+                                                                                ? trim(
+                                                                                    $tribunal->profesor->nombres .
+                                                                                        ' ' .
+                                                                                        $tribunal->profesor->appaterno .
+                                                                                        ' ' .
+                                                                                        $tribunal->profesor->apmaterno,
+                                                                                )
+                                                                                : 'Profesor no disponible',
+                                                                            'cargo' => $tribunal->cargo,
+                                                                        ],
+                                                                    )->values(),
+                                                            ) }}"
                                                             data-dictamen-state="{{ $dictamenEstado }}"
                                                             data-dictamen-date="{{ $proyecto->dictamenOficial?->fecha?->format('Y-m-d') }}"
                                                             data-dictamen-resolution="{{ match ($proyecto->dictamenOficial?->descripcion) {
@@ -545,6 +569,14 @@
                                                             </span>
                                                             {{ $dictamenEtiqueta }}
                                                         </button>
+                                                    @else
+                                                        <span
+                                                            class="font-label-md text-on-surface-variant flex items-center gap-0.5 mt-1">
+                                                            <span class="material-symbols-outlined text-[14px]">
+                                                                {{ $dictamenEstado === 'informe_favorable' ? 'task_alt' : ($dictamenEstado === 'sin_visto_bueno' ? 'cancel' : 'hourglass_top') }}
+                                                            </span>
+                                                            {{ $dictamenEtiqueta }}
+                                                        </span>
                                                     @endif
                                                     @if ($proyecto->defensa)
                                                         <span class="font-label-md text-secondary mt-1">
@@ -680,7 +712,8 @@
                                                     <span
                                                         class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Plataforma
                                                         Web de Facturación y Control de Stock para PYMEs</span>
-                                                    <span class="font-label-md text-outline mt-1">Especialidad: Sistemas
+                                                    <span class="font-label-md text-outline mt-1">Especialidad:
+                                                        Sistemas
                                                         Informáticos</span>
                                                 </div>
                                             </td>
@@ -739,7 +772,8 @@
                                                     <span
                                                         class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Prototipo
                                                         de Secadora Solar Asistida para Frutos del Valle</span>
-                                                    <span class="font-label-md text-outline mt-1">Especialidad: Mecánica
+                                                    <span class="font-label-md text-outline mt-1">Especialidad:
+                                                        Mecánica
                                                         Industrial</span>
                                                 </div>
                                             </td>
@@ -825,7 +859,8 @@
                                                 <span
                                                     class="inline-block px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-md text-label-md">Tesis
                                                     / Excelencia</span>
-                                                <div class="font-body-sm text-outline mt-1">Tutor: Lic. E. Morales</div>
+                                                <div class="font-body-sm text-outline mt-1">Tutor: Lic. E. Morales
+                                                </div>
                                             </td>
 
                                             <td class="py-3.5 px-4 align-top">
@@ -934,7 +969,8 @@
                                                     <span
                                                         class="font-label-lg text-body-sm font-semibold text-on-surface mt-0.5 max-w-[220px] leading-snug">Sistema
                                                         de Registro y Certificación BTH en Red Local Segura</span>
-                                                    <span class="font-label-md text-outline mt-1">Especialidad: Sistemas
+                                                    <span class="font-label-md text-outline mt-1">Especialidad:
+                                                        Sistemas
                                                         Informáticos</span>
                                                 </div>
                                             </td>
@@ -1044,13 +1080,13 @@
                                 <h2 class="font-headline-sm text-headline-sm text-on-surface">Defensas del Día</h2>
                             </div>
                             <span
-                                class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-data-mono-bold text-label-md">JUE
-                                14 NOV</span>
+                                class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-data-mono-bold text-label-md">{{ strtoupper(now()->locale('es')->translatedFormat('D')) }}
+                                {{ strtoupper(now()->locale('es')->translatedFormat('d M')) }}</span>
                         </div>
                         <p class="font-body-sm text-on-surface-variant mb-4">Cronograma de defensas públicas orales
                             y constitución de tribunales evaluadores.</p>
                         <div class="flex flex-col gap-3">
-                            <div
+                            {{-- <div
                                 class="p-3 rounded-lg bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-2 relative overflow-hidden">
                                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
                                 <div class="flex items-start justify-between">
@@ -1127,7 +1163,7 @@
                                         Laboratorio 01</span>
                                     <span class="font-data-mono text-outline">Pres: Lic. Quispe</span>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                         <button
                             class="mt-4 w-full py-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-lg text-label-lg flex items-center justify-center gap-1 transition-colors">
@@ -1542,16 +1578,13 @@
             <div class="bg-surface-container-low p-4 rounded-xl flex flex-col gap-3">
                 <div class="flex items-center justify-between gap-2 pb-2">
                     <div class="flex items-center gap-2">
-                        <span
-                            id="dictamen-project-code"
+                        <span id="dictamen-project-code"
                             class="font-data-mono-bold text-data-mono-bold px-2 py-0.5 rounded bg-surface-container-highest text-primary">
                         </span>
-                        <span
-                            id="dictamen-project-course"
+                        <span id="dictamen-project-course"
                             class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-md text-label-md font-medium">
                         </span>
-                        <span
-                            id="dictamen-project-modality"
+                        <span id="dictamen-project-modality"
                             class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md font-medium">
                         </span>
                     </div>
@@ -1595,8 +1628,8 @@
                             <span
                                 class="font-label-md text-label-md text-on-surface-variant uppercase font-medium">Tribunal
                                 Evaluador Asignado</span>
-                            <div id="dictamen-project-tribunals"
-                                class="font-body-md text-body-md text-on-surface"></div>
+                            <div id="dictamen-project-tribunals" class="font-body-md text-body-md text-on-surface">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1864,7 +1897,8 @@
             document.getElementById('dictamen-project-code').textContent = button.dataset.projectCode;
             document.getElementById('dictamen-project-title').textContent = button.dataset.projectTitle;
             document.getElementById('dictamen-project-course').textContent = button.dataset.projectCourse;
-            document.getElementById('dictamen-project-modality').textContent = button.dataset.projectModality;
+            document.getElementById('dictamen-project-modality').textContent = button.dataset
+                .projectModality;
             document.getElementById('dictamen-project-rude').textContent = button.dataset.projectRude;
             document.getElementById('dictamen-project-students').replaceChildren(
                 ...students.map((student, index) => {
@@ -1877,7 +1911,8 @@
             document.getElementById('dictamen-project-ci').textContent =
                 students.map(student => student.ci).join(' · ') || 'No registrado';
             document.getElementById('dictamen-project-tutor').textContent = button.dataset.projectTutor;
-            document.getElementById('dictamen-project-speciality').textContent = button.dataset.projectCourse;
+            document.getElementById('dictamen-project-speciality').textContent = button.dataset
+                .projectCourse;
 
             const tribunalsContainer = document.getElementById('dictamen-project-tribunals');
             tribunalsContainer.replaceChildren();
@@ -1887,9 +1922,11 @@
                 tribunals.forEach((tribunal, index) => {
                     const entry = document.createElement('span');
                     const name = document.createElement('strong');
-                    name.className = index === 0 ? 'font-semibold text-primary' : 'font-semibold text-on-surface';
+                    name.className = index === 0 ? 'font-semibold text-primary' :
+                        'font-semibold text-on-surface';
                     name.textContent = tribunal.nombre;
-                    entry.append(name, document.createTextNode(` (${tribunal.cargo || 'Sin cargo'})`));
+                    entry.append(name, document.createTextNode(
+                        ` (${tribunal.cargo || 'Sin cargo'})`));
                     if (index < tribunals.length - 1) {
                         entry.append(document.createTextNode(' · '));
                     }

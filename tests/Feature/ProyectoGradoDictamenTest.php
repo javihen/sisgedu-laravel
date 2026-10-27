@@ -17,6 +17,7 @@ class ProyectoGradoDictamenTest extends TestCase
 
         Schema::create('proyectos_grado', function (Blueprint $table) {
             $table->id('idProyecto');
+            $table->unsignedBigInteger('idProfesorTutor');
             $table->timestamps();
         });
 
@@ -33,6 +34,7 @@ class ProyectoGradoDictamenTest extends TestCase
 
         \DB::table('proyectos_grado')->insert([
             'idProyecto' => 31,
+            'idProfesorTutor' => 7,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -49,7 +51,9 @@ class ProyectoGradoDictamenTest extends TestCase
             'declaracion_jurada' => '1',
         ];
 
-        $this->post('/proyecto-grado/31/dictamen', $payload)->assertRedirect();
+        $this->withSession(['profesor_id' => 7])
+            ->post('/proyecto-grado/31/dictamen', $payload)
+            ->assertRedirect();
         $this->assertDatabaseHas('proyecto_seguimientos', [
             'idProyecto' => 31,
             'fecha' => '2026-10-21 00:00:00',
@@ -60,7 +64,9 @@ class ProyectoGradoDictamenTest extends TestCase
 
         $payload['dictamen_estado'] = 'informe_favorable';
         $payload['fecha_dictamen'] = '2026-10-22';
-        $this->post('/proyecto-grado/31/dictamen', $payload)->assertRedirect();
+        $this->withSession(['profesor_id' => 7])
+            ->post('/proyecto-grado/31/dictamen', $payload)
+            ->assertRedirect();
 
         $this->assertDatabaseCount('proyecto_seguimientos', 1);
         $this->assertDatabaseHas('proyecto_seguimientos', [
@@ -81,7 +87,8 @@ class ProyectoGradoDictamenTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $this->post('/proyecto-grado/31/dictamen', [
+        $this->withSession(['profesor_id' => 7])
+            ->post('/proyecto-grado/31/dictamen', [
             'idProyecto' => 31,
             'dictamen_estado' => 'en_lectura',
             'fecha_dictamen' => '2026-10-22',
@@ -93,5 +100,20 @@ class ProyectoGradoDictamenTest extends TestCase
             'idProyecto' => 31,
             'titulo' => 'Dictamen oficial: Habilitado para la defensa',
         ]);
+    }
+
+    public function test_it_forbids_a_professor_who_is_not_the_designated_tutor(): void
+    {
+        $this->withSession(['profesor_id' => 8])
+            ->post('/proyecto-grado/31/dictamen', [
+                'idProyecto' => 31,
+                'dictamen_estado' => 'en_lectura',
+                'fecha_dictamen' => '2026-10-22',
+                'tipo_resolucion' => 'unanimidad',
+                'declaracion_jurada' => '1',
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseCount('proyecto_seguimientos', 0);
     }
 }
