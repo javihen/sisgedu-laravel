@@ -128,7 +128,7 @@
                         <div class="flex justify-between text-body-sm text-outline font-data-mono">
                             <span>Meta: 90% Nov</span>
                             <span>Diferencial:
-                                -{{ number_format(($dictamen->count() * 100) / $proyectos->total(), 2) }}%</span>
+                                -{{ number_format((($proyectos->total() - $dictamen->count()) * 100) / $proyectos->total(), 2) }}%</span>
                         </div>
                     </div>
                 </div>
@@ -1365,10 +1365,10 @@
                                 class="text-[11px] text-secondary font-medium">Habilitado</span></div>
                         <div class="relative"><select name="idEstudiantes[]"
                                 class="w-full appearance-none bg-surface-container-low text-on-surface font-body-md text-body-md rounded px-3 py-2 pr-8 border border-outline-variant/30 focus:outline-none focus:border-primary">
-                                <option selected="" value="none">-- Sin segundo postulante (Individual) --
+                                <option selected value="none">-- Sin segundo postulante (Individual) --
                                 </option>
                                 @foreach ($estudiantesDisponibles as $estudiante)
-                                    <option selected="" value="{{ $estudiante->id_estudiante }}">
+                                    <option value="{{ $estudiante->id_estudiante }}">
                                         {{ $estudiante->id_estudiante }} -
                                         {{ $estudiante->nombres }}
                                         (6to Sec. '{{ $estudiante->paralelo }}')
