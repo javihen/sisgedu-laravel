@@ -173,6 +173,9 @@ Route::prefix('proyecto-grado')
         Route::get('/create', [ProyectoGradoController::class, 'create'])->name('create');
         Route::post('/', [ProyectoGradoController::class, 'store'])->name('store');
         Route::post('/{idProyecto}/dictamen', [ProyectoGradoController::class, 'guardarDictamen'])->name('dictamen.store');
+        Route::post('/sorteo/generar', [ProyectoGradoController::class, 'generarSorteo'])->name('sorteo.generar');
+        Route::post('/sorteo/confirmar', [ProyectoGradoController::class, 'confirmarSorteo'])->name('sorteo.confirmar');
+        Route::get('/sorteo/pdf', [ProyectoGradoController::class, 'exportarSorteoPdf'])->name('sorteo.pdf');
         Route::get('/pruebas', [ProyectoGradoController::class, 'pruebas'])->name('pruebas');
         Route::get('/curso/{idCurso}', [ProyectoGradoController::class, 'searchXCurso'])->name('searchXCurso');
         Route::get('/{idProyecto}/edit', [ProyectoGradoController::class, 'edit'])->name('edit');

@@ -52,6 +52,11 @@
 
                 </div>
                 <div class="flex items-center gap-3">
+                    <button id="abrir-modal-sorteo" type="button"
+                        class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-on-primary rounded shadow-sm transition-all font-label-lg text-label-lg active:scale-95">
+                        <span class="material-symbols-outlined text-[18px]">casino</span>
+                        <span>Sorteo de proyectos</span>
+                    </button>
                     {{-- <button
                         class="flex items-center gap-2 px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface rounded shadow-sm transition-all font-label-lg text-label-lg active:scale-95">
                         <span class="material-symbols-outlined text-[18px] text-on-surface-variant">file_download</span>
@@ -63,6 +68,10 @@
                         <span>Nuevo Registro de Proyecto</span>
                     </button>
                 </div>
+                <p class="text-body-sm text-on-surface-variant">
+                    Horas de cierre de cada turno: 08:30, 09:00, 09:30, 10:00, 10:30, 11:00, 11:30, 12:00,
+                    12:30, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00, 16:30, 17:00 y 17:30.
+                </p>
             </div>
             @if (session('success'))
                 <div class="rounded-lg bg-secondary-container px-4 py-3 text-on-secondary-container" role="status">
@@ -1494,6 +1503,7 @@
         const ocultarModal = () => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+            modal.classList.remove('flex');
         };
 
         const mostrarModal = () => {
@@ -1977,3 +1987,577 @@
         }
     });
 </script>
+
+{{-- Modal de sorteo aleatorio --}}
+@php($mesasMinimas = max(1, (int) ceil($proyectosSorteo->count() / 18)))
+@php($mesasIniciales = min(max(1, min(20, $proyectosSorteo->count())), max($mesasMinimas, min(5, $proyectosSorteo->count()))))
+<div id="modal-sorteo"
+    class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-6 bg-inverse-surface/40 backdrop-blur-sm overflow-y-auto"
+    aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-sorteo">
+    <input id="sorteo-csrf-token" type="hidden" value="{{ csrf_token() }}">
+    <!-- Institutional Modal Enclosure -->
+    <div
+        class="w-full max-w-5xl bg-surface-container-lowest rounded shadow-xl flex flex-col max-h-[942px] overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+        <!-- Modal Top Bar / Institutional Masthead -->
+        <div class="px-gutter-lg py-gutter-md bg-surface-container-low flex items-start justify-between">
+            <div class="flex items-start gap-3">
+                <div
+                    class="w-10 h-10 rounded bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-sm mt-0.5">
+                    <span class="material-symbols-outlined text-[24px]">casino</span>
+                </div>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <span id="titulo-modal-sorteo"
+                            class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight">Sorteo
+                            y Asignación Aleatoria de Mesas de Tribunal Evaluador</span>
+                        <span
+                            class="inline-flex items-center px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-data-mono text-data-mono font-semibold">
+                            REV. NORMATIVA 0184
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-0.5"><span
+                            class="font-label-md text-label-md tracking-wider uppercase text-on-surface-variant font-semibold">DISTRIBUCIÓN
+                            SORTEO POR CONFIGURAR • {{ $proyectosSorteo->count() }} PROYECTOS REGISTRADOS</span><span
+                            class="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span><span
+                            class="font-data-mono text-data-mono text-secondary font-semibold">SIN SORTEO
+                            GUARDADO</span></div>
+                </div>
+            </div>
+            <button id="cerrar-modal-sorteo"
+                class="p-1.5 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"
+                title="Cerrar modal" type="button">
+                <span class="material-symbols-outlined text-[22px]">close</span>
+            </button>
+        </div>
+        <!-- Scrollable Main Content -->
+        <div class="overflow-y-auto px-gutter-lg py-gutter-lg flex flex-col gap-6 bg-surface-container-lowest">
+            <!-- METRICAS CLAVE / RESUMEN SUPERIOR -->
+            <div>
+                <div class="flex items-center justify-between mb-2.5">
+                    <span
+                        class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-semibold flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-primary">analytics</span>
+                        Parámetros Operativos del Sorteo de Proyectos
+                    </span>
+                    <span class="font-data-mono text-data-mono text-secondary font-semibold flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[15px]">verified</span> Padrón
+                        Total: {{ $proyectosSorteo->count() }} Proyectos Registrados
+                    </span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                    <div class="p-3 rounded bg-surface-container-low flex flex-col justify-between">
+                        <span class="font-label-md text-label-md text-on-surface-variant">Total
+                            Proyectos</span>
+                        <div class="mt-1 flex items-baseline gap-1.5">
+                            <span
+                                class="font-display text-display text-on-surface font-bold leading-none">{{ $proyectosSorteo->count() }}</span>
+                            <span class="font-label-md text-label-md text-on-surface-variant">proyectos</span>
+                        </div>
+                        <span
+                            class="font-data-mono text-data-mono text-secondary mt-1 text-[12px]">{{ $proyectosSorteo->count() }}
+                            incluidos en el sorteo</span>
+                    </div>
+                    <div
+                        class="p-3 rounded bg-surface-container-low flex flex-col justify-between border-l-2 border-primary">
+                        <span class="font-label-md text-label-md text-on-surface-variant">Duración de
+                            referencia</span>
+                        <div class="mt-1 flex items-baseline gap-1.5">
+                            <span class="font-display text-display text-primary font-bold leading-none">30</span>
+                            <span class="font-label-md text-label-md text-on-surface-variant">minutos</span>
+                        </div>
+                        <span class="font-data-mono text-data-mono text-on-surface-variant mt-1 text-[12px]">Parámetro
+                            del sorteo</span>
+                    </div>
+                    <div
+                        class="p-3 rounded bg-surface-container-low flex flex-col justify-between border-l-2 border-secondary">
+                        <span class="font-label-md text-label-md text-on-surface-variant">Mesas
+                            seleccionadas</span>
+                        <div class="mt-1 flex items-baseline gap-1.5">
+                            <span id="sorteo-resumen-mesas"
+                                class="font-display text-display text-on-surface font-bold leading-none">{{ $mesasIniciales }}</span>
+                            <span class="font-label-md text-label-md text-on-surface-variant">mesas</span>
+                        </div>
+                        <span class="font-data-mono text-data-mono text-secondary font-semibold mt-1 text-[12px]">No
+                            persistidas</span>
+                    </div>
+                    <div class="p-3 rounded bg-surface-container-low flex flex-col justify-between">
+                        <span class="font-label-md text-label-md text-on-surface-variant">Carga por
+                            Mesa</span>
+                        <div class="mt-1 flex items-baseline gap-1">
+                            <span id="sorteo-resumen-carga"
+                                class="font-headline-lg text-headline-lg text-on-surface font-bold leading-none">{{ intdiv($proyectosSorteo->count(), $mesasIniciales) }}
+                                - {{ (int) ceil($proyectosSorteo->count() / $mesasIniciales) }}</span>
+                            <span class="font-label-md text-label-md text-on-surface-variant">proy./mesa</span>
+                        </div>
+                        <span id="sorteo-resumen-distribucion"
+                            class="font-data-mono text-data-mono text-secondary font-semibold mt-1 text-[12px]">{{ $mesasIniciales - ($proyectosSorteo->count() % $mesasIniciales) }}
+                            × {{ intdiv($proyectosSorteo->count(), $mesasIniciales) }} +
+                            {{ $proyectosSorteo->count() % $mesasIniciales }}
+                            × {{ intdiv($proyectosSorteo->count(), $mesasIniciales) + 1 }} =
+                            {{ $proyectosSorteo->count() }}</span>
+                    </div>
+                    <div class="p-3 rounded bg-surface-container-low flex flex-col justify-between">
+                        <span class="font-label-md text-label-md text-on-surface-variant">Hora de
+                            Inicio</span>
+                        <div class="mt-1 flex items-baseline gap-1.5">
+                            <span id="sorteo-hora-inicio"
+                                class="font-headline-lg text-headline-lg text-on-surface font-bold">—</span>
+                            <span id="sorteo-periodo-inicio"
+                                class="font-label-md text-label-md text-on-surface-variant">sin horario</span>
+                        </div>
+                        <span class="font-data-mono text-data-mono text-on-surface-variant mt-1 text-[12px]">No
+                            registrado</span>
+                    </div>
+                    <div
+                        class="p-3 rounded bg-surface-container-low flex flex-col justify-between bg-primary-fixed/20">
+                        <span class="font-label-md text-label-md text-on-primary-fixed font-semibold">Hora
+                            Conclusión Est.</span>
+                        <div class="mt-1 flex items-baseline gap-1.5">
+                            <span id="sorteo-hora-fin"
+                                class="font-headline-lg text-headline-lg text-primary font-bold">—</span>
+                            <span id="sorteo-periodo-fin"
+                                class="font-label-md text-label-md text-on-surface-variant">sin horario</span>
+                        </div>
+                        <span class="font-data-mono text-data-mono text-primary mt-1 text-[12px]">Cronograma
+                            no registrado</span>
+                    </div>
+                </div>
+            </div>
+            <!-- PANEL DE CONFIGURACIÓN DINÁMICA DE MESAS Y HORARIOS -->
+            <div
+                class="bg-surface-container-low p-gutter-md rounded border border-outline-variant/30 flex flex-col gap-3.5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px] text-primary">tune</span>
+                        <span class="font-label-lg text-label-lg font-semibold text-on-surface">Configuración
+                            de Distribución y Cantidad de Mesas de Tribunal</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">Hora de Inicio
+                            General:</span>
+                        <div
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-lowest border border-outline-variant/40 font-data-mono text-data-mono font-bold text-on-surface shadow-sm">
+                            <span class="material-symbols-outlined text-[15px] text-primary">alarm</span>
+                            <span class="">08:00 AM</span>
+                        </div>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant ml-1">Duración
+                            fija:</span>
+                        <span
+                            class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-data-mono text-data-mono font-bold text-[12px]">30
+                            min</span>
+                        <label for="sorteo-fecha-defensa"
+                            class="ml-auto flex items-center gap-2 text-body-sm text-on-surface-variant">
+                            Fecha del cronograma:
+                            <input id="sorteo-fecha-defensa" type="date" min="{{ now()->toDateString() }}"
+                                value="{{ now()->toDateString() }}"
+                                class="rounded border border-outline-variant/40 bg-surface-container-lowest px-2 py-1 font-data-mono text-data-mono text-on-surface">
+                        </label>
+                    </div>
+                </div>
+                <!-- Selector Interactivo de Cantidad de Mesas -->
+                <div class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between text-body-sm text-on-surface-variant">
+                        <span class="">Seleccione la cantidad de mesas evaluadoras para prorratear
+                            automáticamente los {{ $proyectosSorteo->count() }} proyectos:</span>
+                        <span class="font-data-mono text-data-mono text-primary font-semibold">Fórmula:
+                            {{ $proyectosSorteo->count() }} ÷ N Mesas × 30 min</span>
+                    </div>
+                    <label for="sorteo-numero-mesas"
+                        class="flex items-center gap-2 text-body-sm font-semibold text-on-surface">
+                        Cantidad de mesas:
+                        <input id="sorteo-numero-mesas" type="number" min="{{ $mesasMinimas }}"
+                            max="{{ max(1, min(20, $proyectosSorteo->count())) }}" value="{{ $mesasIniciales }}"
+                            class="w-20 rounded border border-outline-variant/40 bg-surface-container-lowest px-2 py-1 font-data-mono text-data-mono">
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2"><!-- Preset 3 Mesas -->
+                        <button data-mesas="3" aria-pressed="false"
+                            class="flex flex-col p-2.5 rounded bg-surface-container-lowest hover:bg-surface-container text-on-surface text-left border border-outline-variant/30 transition-all"
+                            {{ $mesasMinimas > 3 || $proyectosSorteo->count() < 3 ? 'disabled' : '' }} type="button">
+                            <div class="flex items-center justify-between w-full">
+                                <span class="font-label-lg text-label-lg font-semibold">3 Mesas</span>
+                                <span data-check hidden
+                                    class="material-symbols-outlined text-[16px] hidden">check_circle</span>
+                                <span
+                                    class="font-data-mono text-data-mono text-[11px] text-on-surface-variant">{{ intdiv($proyectosSorteo->count(), 3) }}-{{ (int) ceil($proyectosSorteo->count() / 3) }}
+                                    c/u</span>
+                            </div>
+                            <span
+                                class="font-data-mono text-data-mono text-[11px] text-on-surface-variant mt-1">{{ $proyectosSorteo->count() }}
+                                proyectos para 3 mesas</span>
+                            <span class="font-data-mono text-data-mono text-[11px] text-on-surface-variant">Turnos de
+                                30 min</span>
+                        </button>
+                        <!-- Preset 4 Mesas -->
+                        <button data-mesas="4" aria-pressed="false"
+                            class="flex flex-col p-2.5 rounded bg-surface-container-lowest hover:bg-surface-container text-on-surface text-left border border-outline-variant/30 transition-all"
+                            {{ $mesasMinimas > 4 || $proyectosSorteo->count() < 4 ? 'disabled' : '' }} type="button">
+                            <div class="flex items-center justify-between w-full">
+                                <span class="font-label-lg text-label-lg font-semibold">4 Mesas</span>
+                                <span data-check hidden
+                                    class="material-symbols-outlined text-[16px] hidden">check_circle</span>
+                                <span
+                                    class="font-data-mono text-data-mono text-[11px] text-on-surface-variant">{{ intdiv($proyectosSorteo->count(), 4) }}-{{ (int) ceil($proyectosSorteo->count() / 4) }}
+                                    c/u</span>
+                            </div>
+                            <span
+                                class="font-data-mono text-data-mono text-[11px] text-on-surface-variant mt-1">{{ $proyectosSorteo->count() }}
+                                proyectos para 4 mesas</span>
+                            <span class="font-data-mono text-data-mono text-[11px] text-secondary font-medium">Turnos
+                                de 30 min</span>
+                        </button>
+                        <!-- Preset 5 Mesas (Activo) -->
+                        <button data-mesas="5" aria-pressed="true"
+                            class="flex flex-col p-2.5 rounded bg-primary text-on-primary text-left shadow-sm border border-primary transition-all"
+                            {{ $mesasMinimas > 5 || $proyectosSorteo->count() < 5 ? 'disabled' : '' }} type="button">
+                            <div class="flex items-center justify-between w-full">
+                                <span class="font-label-lg text-label-lg font-bold">5 Mesas</span>
+                                <span data-check class="material-symbols-outlined text-[16px]">check_circle</span>
+                            </div>
+                            <span
+                                class="font-data-mono text-data-mono text-[11px] opacity-90 mt-1">{{ intdiv($proyectosSorteo->count(), 5) }}
+                                -
+                                {{ (int) ceil($proyectosSorteo->count() / 5) }} proy./mesa</span>
+                            <span
+                                class="font-data-mono text-data-mono text-[11px] text-secondary-fixed font-semibold">Turnos
+                                de 30 min</span>
+                        </button>
+                        <!-- Preset 6 Mesas -->
+                        <button data-mesas="6" aria-pressed="false"
+                            class="flex flex-col p-2.5 rounded bg-surface-container-lowest hover:bg-surface-container text-on-surface text-left border border-outline-variant/30 transition-all"
+                            {{ $mesasMinimas > 6 || $proyectosSorteo->count() < 6 ? 'disabled' : '' }} type="button">
+                            <div class="flex items-center justify-between w-full">
+                                <span class="font-label-lg text-label-lg font-semibold">6 Mesas</span>
+                                <span data-check hidden
+                                    class="material-symbols-outlined text-[16px] hidden">check_circle</span>
+                                <span
+                                    class="font-data-mono text-data-mono text-[11px] text-on-surface-variant">{{ intdiv($proyectosSorteo->count(), 6) }}-{{ (int) ceil($proyectosSorteo->count() / 6) }}
+                                    c/u</span>
+                            </div>
+                            <span
+                                class="font-data-mono text-data-mono text-[11px] text-on-surface-variant mt-1">{{ $proyectosSorteo->count() }}
+                                proyectos para 6 mesas</span>
+                            <span class="font-data-mono text-data-mono text-[11px] text-secondary font-medium">Turnos
+                                de 30 min</span>
+                        </button>
+                        <!-- Preset 9 Mesas -->
+                        <button data-mesas="9" aria-pressed="false"
+                            class="flex flex-col p-2.5 rounded bg-surface-container-lowest hover:bg-surface-container text-on-surface text-left border border-outline-variant/30 transition-all"
+                            {{ $mesasMinimas > 9 || $proyectosSorteo->count() < 9 ? 'disabled' : '' }}
+                            type="button">
+                            <div class="flex items-center justify-between w-full">
+                                <span class="font-label-lg text-label-lg font-semibold">9 Mesas</span>
+                                <span data-check hidden
+                                    class="material-symbols-outlined text-[16px] hidden">check_circle</span>
+                                <span
+                                    class="font-data-mono text-data-mono text-[11px] text-secondary font-semibold">{{ intdiv($proyectosSorteo->count(), 9) }}-{{ (int) ceil($proyectosSorteo->count() / 9) }}
+                                    c/u</span>
+                            </div>
+                            <span
+                                class="font-data-mono text-data-mono text-[11px] text-on-surface-variant mt-1">{{ $proyectosSorteo->count() }}
+                                proyectos para 9 mesas</span>
+                            <span class="font-data-mono text-data-mono text-[11px] text-secondary font-semibold">Turnos
+                                de 30 min</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="sorteo-mensaje" class="hidden rounded bg-error-container px-4 py-3 text-on-error-container"
+                role="alert"></div>
+            <div id="sorteo-vista-previa" aria-live="polite">
+                <div class="rounded border border-dashed border-outline-variant/40 p-4 text-on-surface-variant">
+                    Presione “Reordenar Sorteo Aleatorio” para generar y visualizar la distribución de los proyectos.
+                </div>
+            </div>
+            <!-- AUDITORÍA DE GARANTÍAS Y METADATA DEL SORTEO -->
+            <div
+                class="flex flex-wrap items-center justify-between text-on-surface-variant bg-surface-container-low/60 px-3.5 py-2.5 rounded border border-outline-variant/20 text-body-sm">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="font-data-mono text-data-mono flex items-center gap-1 text-secondary font-semibold">
+                        <span class="material-symbols-outlined text-[16px]">database</span> Fuente:
+                        proyectos y dictámenes oficiales
+                    </span>
+                    <span class="text-outline-variant">•</span>
+                    <span class="font-data-mono text-data-mono flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px] text-primary">timer</span>
+                        <span
+                            id="sorteo-auditoria">{{ $ultimoSorteo ? 'Último cronograma confirmado #' . $ultimoSorteo->idSorteo : 'No hay mesas ni horarios de sorteo guardados' }}</span>
+                    </span>
+                </div>
+                <span class="font-data-mono text-data-mono text-on-surface-variant text-[12px]">
+                    <span
+                        id="sorteo-estado">{{ $ultimoSorteo ? 'Último sorteo confirmado #' . $ultimoSorteo->idSorteo : 'Sorteo: no ejecutado' }}</span>
+                </span>
+            </div>
+        </div>
+        <!-- Modal Footer & Decision Actions -->
+        <div
+            class="px-gutter-lg py-gutter-md bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-on-surface-variant max-w-md">
+                <span class="material-symbols-outlined text-[20px] text-primary shrink-0">info</span>
+                <p id="sorteo-footer-message" class="font-body-sm text-body-sm leading-tight">
+                    Se consideran los {{ $proyectosSorteo->count() }} proyectos registrados.
+                    {{ $ultimoSorteo ? 'Puede exportar el último cronograma confirmado o generar uno nuevo.' : 'El PDF estará disponible al confirmar un cronograma.' }}
+                </p>
+            </div>
+            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end flex-wrap">
+                <!-- Button: Exportar Cronograma de Mesas (PDF) -->
+                <a id="exportar-sorteo-pdf" href="{{ $ultimoSorteo ? route('proyectoGrado.sorteo.pdf') : '#' }}"
+                    target="_blank" @if (!$ultimoSorteo) aria-disabled="true" @endif
+                    class="flex items-center gap-1.5 px-3 py-2 rounded bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors shadow-sm border border-outline-variant/30"
+                    @if (!$ultimoSorteo) style="opacity:.5;pointer-events:none" @endif>
+                    <span class="material-symbols-outlined text-[18px] text-error">picture_as_pdf</span>
+                    <span class="">Exportar Cronograma (PDF)</span>
+                </a>
+                <!-- Button: Ejecutar / Reordenar Sorteo Aleatorio -->
+                <button id="generar-sorteo"
+                    class="flex items-center gap-1.5 px-3.5 py-2 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-md text-label-md font-semibold transition-colors shadow-sm border border-outline-variant/40 active:scale-[0.99]"
+                    type="button">
+                    <span class="material-symbols-outlined text-[18px]">casino</span>
+                    <span class="">Reordenar Sorteo Aleatorio</span>
+                </button>
+                <!-- Button: Guardar y Confirmar Cronograma Oficial -->
+                <button id="confirmar-sorteo"
+                    class="flex items-center gap-2 px-5 py-2 rounded bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg font-semibold transition-all shadow-md hover:shadow-lg active:scale-[0.99]"
+                    type="button" disabled>
+                    <span class="material-symbols-outlined text-[18px]">verified</span>
+                    <span class="">Guardar y Confirmar Cronograma Oficial</span>
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modal = document.getElementById('modal-sorteo');
+                const abrir = document.getElementById('abrir-modal-sorteo');
+                const cerrar = document.getElementById('cerrar-modal-sorteo');
+
+                if (!modal || !abrir || !cerrar) return;
+
+                const csrfToken = document.getElementById('sorteo-csrf-token').value;
+                const generar = document.getElementById('generar-sorteo');
+                const confirmar = document.getElementById('confirmar-sorteo');
+                const exportarPdf = document.getElementById('exportar-sorteo-pdf');
+                const fechaDefensa = document.getElementById('sorteo-fecha-defensa');
+                const mensaje = document.getElementById('sorteo-mensaje');
+                const vistaPrevia = document.getElementById('sorteo-vista-previa');
+                const selectorMesas = [...modal.querySelectorAll('[data-mesas]')];
+                const selectorNumeroMesas = document.getElementById('sorteo-numero-mesas');
+                let numeroMesas = Number(selectorNumeroMesas.value);
+                let sorteoGenerado = false;
+                const totalProyectos = {{ $proyectosSorteo->count() }};
+
+                const limpiarHorarioResumen = () => {
+                    document.getElementById('sorteo-hora-inicio').textContent = '—';
+                    document.getElementById('sorteo-periodo-inicio').textContent = 'sin horario';
+                    document.getElementById('sorteo-hora-fin').textContent = '—';
+                    document.getElementById('sorteo-periodo-fin').textContent = 'sin horario';
+                };
+                const actualizarHorarioResumen = () => {
+                    const formatear = minutos => {
+                        const hora = Math.floor(minutos / 60) % 24;
+                        const periodo = hora >= 12 ? 'PM' : 'AM';
+                        return {
+                            hora: `${hora % 12 || 12}:${String(minutos % 60).padStart(2, '0')}`,
+                            periodo,
+                        };
+                    };
+                    const inicio = formatear(8 * 60);
+                    const horariosFin = [
+                        '09:00', '09:30', '10:00', '10:30', '11:00',
+                        '11:30', '12:00', '12:30', '13:30', '14:00', '14:30',
+                        '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00',
+                    ];
+                    const fin = formatear(
+                        horariosFin[Math.ceil(totalProyectos / numeroMesas) - 1]
+                        .split(':').reduce((total, parte) => total * 60 + Number(parte), 0)
+                    );
+                    document.getElementById('sorteo-hora-inicio').textContent = inicio.hora;
+                    document.getElementById('sorteo-periodo-inicio').textContent = inicio.periodo;
+                    document.getElementById('sorteo-hora-fin').textContent = fin.hora;
+                    document.getElementById('sorteo-periodo-fin').textContent = fin.periodo;
+                };
+
+                const mostrarError = texto => {
+                    mensaje.textContent = texto;
+                    mensaje.classList.remove('hidden');
+                };
+                const ocultarError = () => {
+                    mensaje.textContent = '';
+                    mensaje.classList.add('hidden');
+                };
+                selectorMesas.forEach(boton => boton.addEventListener('click', () => {
+                    numeroMesas = Number(boton.dataset.mesas);
+                    selectorMesas.forEach(opcion => {
+                        const seleccionado = opcion === boton;
+                        opcion.setAttribute('aria-pressed', String(seleccionado));
+                        opcion.classList.toggle('bg-primary', seleccionado);
+                        opcion.classList.toggle('text-on-primary', seleccionado);
+                        opcion.classList.toggle('shadow-sm', seleccionado);
+                        opcion.classList.toggle('border-primary', seleccionado);
+                        opcion.classList.toggle('bg-surface-container-lowest', !seleccionado);
+                        opcion.classList.toggle('text-on-surface', !seleccionado);
+                        opcion.classList.toggle('border-outline-variant/30', !seleccionado);
+                        const indicador = opcion.querySelector('[data-check]');
+                        if (indicador) {
+                            indicador.hidden = !seleccionado;
+                            indicador.classList.toggle('hidden', !seleccionado);
+                        }
+                    });
+                    selectorNumeroMesas.value = numeroMesas;
+                    actualizarResumenMesas();
+                }));
+                const actualizarResumenMesas = () => {
+                    document.getElementById('sorteo-resumen-mesas').textContent = numeroMesas;
+                    const total = totalProyectos;
+                    const base = Math.floor(total / numeroMesas);
+                    const excedente = total % numeroMesas;
+                    document.getElementById('sorteo-resumen-carga').textContent =
+                        `${base} - ${Math.ceil(total / numeroMesas)}`;
+                    document.getElementById('sorteo-resumen-distribucion').textContent =
+                        `${numeroMesas - excedente} × ${base} + ${excedente} × ${base + 1} = ${total}`;
+                    if (sorteoGenerado) {
+                        confirmar.disabled = true;
+                        limpiarHorarioResumen();
+                        mostrarError('La configuración cambió. Vuelva a reordenar el sorteo antes de confirmar.');
+                    }
+                };
+                selectorNumeroMesas.addEventListener('change', () => {
+                    if (!selectorNumeroMesas.reportValidity()) return;
+                    numeroMesas = Number(selectorNumeroMesas.value);
+                    selectorMesas.forEach(opcion => {
+                        const seleccionado = Number(opcion.dataset.mesas) === numeroMesas;
+                        opcion.setAttribute('aria-pressed', String(seleccionado));
+                        opcion.classList.toggle('bg-primary', seleccionado);
+                        opcion.classList.toggle('text-on-primary', seleccionado);
+                        opcion.classList.toggle('shadow-sm', seleccionado);
+                        opcion.classList.toggle('border-primary', seleccionado);
+                        opcion.classList.toggle('bg-surface-container-lowest', !seleccionado);
+                        opcion.classList.toggle('text-on-surface', !seleccionado);
+                        opcion.classList.toggle('border-outline-variant/30', !seleccionado);
+                        const indicador = opcion.querySelector('[data-check]');
+                        if (indicador) {
+                            indicador.hidden = !seleccionado;
+                            indicador.classList.toggle('hidden', !seleccionado);
+                        }
+                    });
+                    actualizarResumenMesas();
+                });
+                selectorNumeroMesas.dispatchEvent(new Event('change'));
+                fechaDefensa.addEventListener('change', () => {
+                    if (sorteoGenerado) {
+                        confirmar.disabled = true;
+                        limpiarHorarioResumen();
+                        mostrarError('La fecha cambió. Vuelva a reordenar el sorteo antes de confirmar.');
+                    }
+                });
+
+                const ocultarModal = () => {
+                    modal.classList.add('hidden');
+                    modal.setAttribute('aria-hidden', 'true');
+                    document.body.classList.remove('overflow-hidden');
+                    abrir.focus();
+                };
+
+                abrir.addEventListener('click', () => {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('overflow-hidden');
+                    cerrar.focus();
+                });
+
+                cerrar.addEventListener('click', ocultarModal);
+                modal.addEventListener('click', event => {
+                    if (event.target === modal) ocultarModal();
+                });
+                document.addEventListener('keydown', event => {
+                    if (event.key === 'Escape' && !modal.classList.contains('hidden')) ocultarModal();
+                });
+
+                generar.addEventListener('click', async () => {
+                    ocultarError();
+                    if (!fechaDefensa.value) {
+                        mostrarError('Seleccione la fecha del cronograma.');
+                        return;
+                    }
+
+                    generar.disabled = true;
+                    confirmar.disabled = true;
+                    try {
+                        if (!selectorNumeroMesas.reportValidity()) {
+                            throw new Error('Seleccione una cantidad de mesas válida.');
+                        }
+                        const respuesta = await fetch(@json(route('proyectoGrado.sorteo.generar')), {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                            },
+                            body: JSON.stringify({
+                                numeroMesas,
+                                fechaDefensa: fechaDefensa.value,
+                            }),
+                        });
+                        const resultado = await respuesta.json();
+                        if (!respuesta.ok) {
+                            throw new Error(resultado.message || Object.values(resultado.errors || {})
+                            .flat()[0]);
+                        }
+                        vistaPrevia.innerHTML = resultado.html;
+                        sorteoGenerado = true;
+                        actualizarHorarioResumen();
+                        document.getElementById('sorteo-estado').textContent =
+                            'Sorteo: borrador no confirmado';
+                        document.getElementById('sorteo-auditoria').textContent =
+                            'Borrador temporal; todavía no está registrado';
+                        document.getElementById('sorteo-footer-message').textContent =
+                            'Distribución generada. Puede reordenarla; solo se registrará al confirmar el cronograma.';
+                        confirmar.disabled = false;
+                    } catch (error) {
+                        mostrarError(error.message || 'No se pudo generar el sorteo.');
+                    } finally {
+                        generar.disabled = false;
+                    }
+                });
+
+                confirmar.addEventListener('click', async () => {
+                    ocultarError();
+                    confirmar.disabled = true;
+                    try {
+                        const respuesta = await fetch(@json(route('proyectoGrado.sorteo.confirmar')), {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                            },
+                        });
+                        const resultado = await respuesta.json();
+                        if (!respuesta.ok) {
+                            throw new Error(resultado.message || Object.values(resultado.errors || {})
+                            .flat()[0]);
+                        }
+                        mostrarError(resultado.message);
+                        mensaje.classList.remove('bg-error-container', 'text-on-error-container');
+                        mensaje.classList.add('bg-secondary-container', 'text-on-secondary-container');
+                        document.getElementById('sorteo-estado').textContent =
+                            `Sorteo confirmado #${resultado.idSorteo}`;
+                        document.getElementById('sorteo-auditoria').textContent =
+                            'Cronograma confirmado y registrado';
+                        document.getElementById('sorteo-footer-message').textContent = resultado.message;
+                        exportarPdf.href = @json(route('proyectoGrado.sorteo.pdf'));
+                        exportarPdf.removeAttribute('aria-disabled');
+                        exportarPdf.style.removeProperty('opacity');
+                        exportarPdf.style.removeProperty('pointer-events');
+                        generar.disabled = true;
+                    } catch (error) {
+                        mostrarError(error.message || 'No se pudo confirmar el cronograma.');
+                        confirmar.disabled = false;
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>

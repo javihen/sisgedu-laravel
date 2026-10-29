@@ -8,14 +8,38 @@ use App\Models\Gestion;
 use App\Models\Profesor;
 use App\Models\ProyectoEstudiante;
 use App\Models\ProyectoGrado;
+use App\Models\ProyectoGradoSorteo;
 use App\Models\ProyectoSeguimiento;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProyectoGradoController extends Controller
 {
     public function index()
     {
+        $ultimoSorteo = null;
+        if (session('gestion_activa')) {
+            $ultimoSorteo = ProyectoGradoSorteo::where('idGestion', session('gestion_activa'))
+                ->where('estado', 'confirmado')
+                ->latest('idSorteo')
+                ->first();
+        }
+
+        $proyectosSorteo = ProyectoGrado::with([
+            'estudiante',
+            'tutor',
+            'curso',
+            'gestion',
+            'defensa',
+            'tribunales.profesor',
+            'proyectoEstudiantes.estudiante',
+        ])
+            ->orderBy('idProyecto')
+            ->get();
+
         $proyectos = ProyectoGrado::with([
             'estudiante',
             'tutor',
@@ -59,7 +83,7 @@ class ProyectoGradoController extends Controller
 
         return view(
             'proyectoGrado.index',
-            compact('proyectos', 'estudiantesDisponibles', 'totalLecturaMetodologica', 'dictamen')
+            compact('proyectos', 'estudiantesDisponibles', 'totalLecturaMetodologica', 'dictamen', 'proyectosSorteo', 'ultimoSorteo')
         );
     }
 
@@ -143,6 +167,217 @@ class ProyectoGradoController extends Controller
         return redirect()
             ->route('proyectoGrado.index')
             ->with('success', 'Dictamen oficial guardado correctamente.');
+    }
+
+    public function generarSorteo(Request $request)
+    {
+        $validated = $request->validate([
+            'numeroMesas' => ['required', 'integer', 'min:1', 'max:20'],
+            'fechaDefensa' => ['required', 'date', 'after_or_equal:today'],
+        ]);
+
+        $idGestion = session('gestion_activa');
+        if (!$idGestion || !Gestion::whereKey($idGestion)->exists()) {
+            throw ValidationException::withMessages([
+                'gestion' => 'No hay una gestión activa para registrar el sorteo.',
+            ]);
+        }
+
+        $proyectos = ProyectoGrado::with([
+            'estudiante',
+            'tutor',
+            'curso',
+            'gestion',
+            'tribunales.profesor',
+            'proyectoEstudiantes.estudiante',
+        ])->orderBy('idProyecto')->get();
+
+        if ($proyectos->isEmpty()) {
+            throw ValidationException::withMessages([
+                'proyectos' => 'No hay proyectos registrados para realizar el sorteo.',
+            ]);
+        }
+
+        $cantidadMesas = (int) $validated['numeroMesas'];
+        if ($cantidadMesas > $proyectos->count()) {
+            throw ValidationException::withMessages([
+                'numeroMesas' => 'El número de mesas no puede superar la cantidad de proyectos registrados.',
+            ]);
+        }
+
+        $proyectosPorMesa = (int) ceil($proyectos->count() / $cantidadMesas);
+        if ($proyectosPorMesa > 18) {
+            throw ValidationException::withMessages([
+                'numeroMesas' => 'La cantidad seleccionada supera los 18 horarios disponibles por mesa. Aumente el número de mesas.',
+            ]);
+        }
+
+        $fechaDefensa = $validated['fechaDefensa'];
+        $proyectosMezclados = $proyectos->shuffle()->values();
+        $mesas = collect(range(1, $cantidadMesas))->map(fn (int $numeroMesa) => [
+            'numeroMesa' => $numeroMesa,
+            'proyectos' => [],
+        ])->all();
+        $asignaciones = [];
+
+        foreach ($proyectosMezclados as $indice => $proyecto) {
+            $numeroMesa = ($indice % $cantidadMesas) + 1;
+            $orden = intdiv($indice, $cantidadMesas) + 1;
+            [$horaInicio, $horaFin] = $this->horarioSorteo($orden);
+            $asignacion = [
+                'proyecto' => $proyecto,
+                'numeroMesa' => $numeroMesa,
+                'orden' => $orden,
+                'fechaDefensa' => $fechaDefensa,
+                'horaInicio' => $horaInicio->format('H:i:s'),
+                'horaFin' => $horaFin->format('H:i:s'),
+            ];
+
+            $mesas[$numeroMesa - 1]['proyectos'][] = $asignacion;
+            $asignaciones[] = [
+                'idProyecto' => $proyecto->idProyecto,
+                'numeroMesa' => $numeroMesa,
+                'orden' => $orden,
+                'fechaDefensa' => $fechaDefensa,
+                'horaInicio' => $horaInicio->format('H:i:s'),
+                'horaFin' => $horaFin->format('H:i:s'),
+            ];
+        }
+
+        $request->session()->put('proyecto_grado_sorteo_borrador', [
+            'idGestion' => (int) $idGestion,
+            'numeroMesas' => $cantidadMesas,
+            'fechaDefensa' => $fechaDefensa,
+            'proyectoIds' => $proyectos->pluck('idProyecto')->map(fn ($id) => (int) $id)->all(),
+            'asignaciones' => $asignaciones,
+        ]);
+
+        return response()->json([
+            'html' => view('proyectoGrado.partials.sorteo-proyectos', [
+                'mesas' => $mesas,
+                'proyectosCount' => $proyectos->count(),
+                'fechaDefensa' => $fechaDefensa,
+            ])->render(),
+            'proyectos' => $proyectos->count(),
+            'mesas' => $cantidadMesas,
+        ]);
+    }
+
+    public function exportarSorteoPdf()
+    {
+        $idGestion = session('gestion_activa');
+        abort_unless($idGestion, 404, 'No hay una gestión activa seleccionada.');
+
+        $sorteo = ProyectoGradoSorteo::with([
+            'gestion',
+            'detalles' => fn ($query) => $query->orderBy('numeroMesa')->orderBy('orden'),
+            'detalles.proyecto.estudiante',
+            'detalles.proyecto.proyectoEstudiantes.estudiante',
+            'detalles.proyecto.tutor',
+            'detalles.proyecto.curso',
+            'detalles.proyecto.tribunales.profesor',
+        ])
+            ->where('idGestion', $idGestion)
+            ->where('estado', 'confirmado')
+            ->latest('idSorteo')
+            ->firstOrFail();
+
+        $detallesPorMesa = $sorteo->detalles->groupBy('numeroMesa');
+        $mesas = collect(range(1, $sorteo->numeroMesas))
+            ->map(fn (int $numeroMesa) => [
+                'numeroMesa' => $numeroMesa,
+                'proyectos' => $detallesPorMesa->get($numeroMesa, collect()),
+            ]);
+
+        $pdf = Pdf::loadView('proyectoGrado.pdf-sorteo', [
+            'sorteo' => $sorteo,
+            'mesas' => $mesas,
+            'institucion' => 'Unidad Educativa Cristiano Vida Nueva',
+            'generadoPor' => session('usuario_nombre', 'Sistema de Gestión Educativa'),
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream('cronograma-sorteo-' . $sorteo->idSorteo . '.pdf');
+    }
+
+    private function horarioSorteo(int $orden): array
+    {
+        $horasFin = [
+            '08:30', '09:00', '09:30', '10:00', '10:30', '11:00',
+            '11:30', '12:00', '12:30', '13:30', '14:00', '14:30',
+            '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
+        ];
+
+        if (!isset($horasFin[$orden - 1])) {
+            throw ValidationException::withMessages([
+                'numeroMesas' => 'Se superó la cantidad de horarios disponibles por mesa.',
+            ]);
+        }
+
+        $horaFin = Carbon::createFromFormat('H:i', $horasFin[$orden - 1]);
+        $horaInicio = $horaFin->copy()->subMinutes(30);
+
+        return [$horaInicio, $horaFin];
+    }
+
+    public function confirmarSorteo(Request $request)
+    {
+        $borrador = $request->session()->get('proyecto_grado_sorteo_borrador');
+
+        if (!$borrador) {
+            throw ValidationException::withMessages([
+                'sorteo' => 'Primero debe generar un sorteo antes de confirmarlo.',
+            ]);
+        }
+
+        if ((string) $borrador['idGestion'] !== (string) session('gestion_activa')) {
+            throw ValidationException::withMessages([
+                'sorteo' => 'La gestión activa cambió. Genere nuevamente el sorteo antes de confirmar.',
+            ]);
+        }
+
+        $sorteo = DB::transaction(function () use ($borrador) {
+            $proyectosActuales = ProyectoGrado::query()
+                ->orderBy('idProyecto')
+                ->lockForUpdate()
+                ->pluck('idProyecto')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+            $proyectosDelBorrador = $borrador['proyectoIds'];
+            sort($proyectosActuales);
+            sort($proyectosDelBorrador);
+
+            if ($proyectosActuales !== $proyectosDelBorrador) {
+                throw ValidationException::withMessages([
+                    'sorteo' => 'Los proyectos registrados cambiaron. Genere nuevamente el sorteo antes de confirmar.',
+                ]);
+            }
+
+            $sorteo = ProyectoGradoSorteo::create([
+                'idGestion' => $borrador['idGestion'],
+                'numeroMesas' => $borrador['numeroMesas'],
+                'estado' => 'confirmado',
+                'idUsuario' => session('usuario_id'),
+            ]);
+
+            $ahora = now();
+            $detalles = array_map(fn (array $asignacion) => [
+                'idSorteo' => $sorteo->idSorteo,
+                ...$asignacion,
+                'created_at' => $ahora,
+                'updated_at' => $ahora,
+            ], $borrador['asignaciones']);
+
+            DB::table('proyecto_grado_sorteo_detalles')->insert($detalles);
+
+            return $sorteo;
+        });
+
+        $request->session()->forget('proyecto_grado_sorteo_borrador');
+
+        return response()->json([
+            'message' => 'El cronograma fue confirmado y registrado correctamente.',
+            'idSorteo' => $sorteo->idSorteo,
+        ]);
     }
 
     public function searchXCurso(string $id)
