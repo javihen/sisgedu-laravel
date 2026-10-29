@@ -167,15 +167,25 @@ Route::prefix('proyecto-grado')
     ->name('proyectoGrado.')
     ->group(function () {
         Route::get('/login', [ProyectoGradoController::class, 'login'])->name('login');
-        Route::get('/asignacion', [ProyectoGradoController::class, 'asignacion'])->name('asignacion');
-        Route::get('/distribucion', [ProyectoGradoController::class, 'distribucion'])->name('distribucion');
+        Route::get('/asignacion', [ProyectoGradoController::class, 'asignacion'])
+            ->middleware('proyecto-grado.schedule-access')
+            ->name('asignacion');
+        Route::get('/distribucion', [ProyectoGradoController::class, 'distribucion'])
+            ->middleware('proyecto-grado.schedule-access')
+            ->name('distribucion');
         Route::get('/', [ProyectoGradoController::class, 'index'])->name('index');
         Route::get('/create', [ProyectoGradoController::class, 'create'])->name('create');
         Route::post('/', [ProyectoGradoController::class, 'store'])->name('store');
         Route::post('/{idProyecto}/dictamen', [ProyectoGradoController::class, 'guardarDictamen'])->name('dictamen.store');
-        Route::post('/sorteo/generar', [ProyectoGradoController::class, 'generarSorteo'])->name('sorteo.generar');
-        Route::post('/sorteo/confirmar', [ProyectoGradoController::class, 'confirmarSorteo'])->name('sorteo.confirmar');
-        Route::get('/sorteo/pdf', [ProyectoGradoController::class, 'exportarSorteoPdf'])->name('sorteo.pdf');
+        Route::post('/sorteo/generar', [ProyectoGradoController::class, 'generarSorteo'])
+            ->middleware('proyecto-grado.schedule-access')
+            ->name('sorteo.generar');
+        Route::post('/sorteo/confirmar', [ProyectoGradoController::class, 'confirmarSorteo'])
+            ->middleware('proyecto-grado.schedule-access')
+            ->name('sorteo.confirmar');
+        Route::get('/sorteo/pdf', [ProyectoGradoController::class, 'exportarSorteoPdf'])
+            ->middleware('proyecto-grado.schedule-access')
+            ->name('sorteo.pdf');
         Route::get('/pruebas', [ProyectoGradoController::class, 'pruebas'])->name('pruebas');
         Route::get('/curso/{idCurso}', [ProyectoGradoController::class, 'searchXCurso'])->name('searchXCurso');
         Route::get('/{idProyecto}/edit', [ProyectoGradoController::class, 'edit'])->name('edit');

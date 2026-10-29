@@ -206,9 +206,9 @@ class ProyectoGradoController extends Controller
         }
 
         $proyectosPorMesa = (int) ceil($proyectos->count() / $cantidadMesas);
-        if ($proyectosPorMesa > 18) {
+        if ($proyectosPorMesa > 16) {
             throw ValidationException::withMessages([
-                'numeroMesas' => 'La cantidad seleccionada supera los 18 horarios disponibles por mesa. Aumente el número de mesas.',
+                'numeroMesas' => 'La cantidad seleccionada supera los 16 horarios disponibles por mesa. Aumente el número de mesas.',
             ]);
         }
 
@@ -302,9 +302,9 @@ class ProyectoGradoController extends Controller
     private function horarioSorteo(int $orden): array
     {
         $horasFin = [
-            '08:30', '09:00', '09:30', '10:00', '10:30', '11:00',
-            '11:30', '12:00', '12:30', '13:30', '14:00', '14:30',
-            '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
+            '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+            '12:00', '12:30', '14:00', '14:30', '15:00', '15:30',
+            '16:00', '16:30', '17:00', '17:30',
         ];
 
         if (!isset($horasFin[$orden - 1])) {

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
         'role' => \App\Http\Middleware\RoleMiddleware::class,
         'permiso' => \App\Http\Middleware\PermisoMiddleware::class,
+        'proyecto-grado.schedule-access' => \App\Http\Middleware\EnsureProjectScheduleAccess::class,
     ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

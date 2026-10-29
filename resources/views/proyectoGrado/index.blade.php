@@ -52,11 +52,13 @@
 
                 </div>
                 <div class="flex items-center gap-3">
-                    <button id="abrir-modal-sorteo" type="button"
-                        class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-on-primary rounded shadow-sm transition-all font-label-lg text-label-lg active:scale-95">
-                        <span class="material-symbols-outlined text-[18px]">casino</span>
-                        <span>Sorteo de proyectos</span>
-                    </button>
+                    @if (\App\Support\ProyectoGradoAccess::canManageSchedule())
+                        <button id="abrir-modal-sorteo" type="button"
+                            class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-on-primary rounded shadow-sm transition-all font-label-lg text-label-lg active:scale-95">
+                            <span class="material-symbols-outlined text-[18px]">casino</span>
+                            <span>Sorteo de proyectos</span>
+                        </button>
+                    @endif
                     {{-- <button
                         class="flex items-center gap-2 px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface rounded shadow-sm transition-all font-label-lg text-label-lg active:scale-95">
                         <span class="material-symbols-outlined text-[18px] text-on-surface-variant">file_download</span>
@@ -68,9 +70,9 @@
                         <span>Nuevo Registro de Proyecto</span>
                     </button>
                 </div>
-                <p class="text-body-sm text-on-surface-variant">
-                    Horas de cierre de cada turno: 08:30, 09:00, 09:30, 10:00, 10:30, 11:00, 11:30, 12:00,
-                    12:30, 13:30, 14:00, 14:30, 15:00, 15:30, 16:00, 16:30, 17:00 y 17:30.
+                <p class="text-body-sm text-on-surface-variant hidden">
+                    Horas de cierre de cada turno: 09:00, 09:30, 10:00, 10:30, 11:00, 11:30, 12:00, 12:30,
+                    14:00, 14:30, 15:00, 15:30, 16:00, 16:30, 17:00 y 17:30.
                 </p>
             </div>
             @if (session('success'))
@@ -119,8 +121,8 @@
                                 <span
                                     class="font-display text-display text-secondary">{{ number_format(($dictamen->count() * 100) / $proyectos->total(), 2) }}%</span>
                                 <span
-                                    class="font-label-md text-label-md text-secondary bg-secondary-container px-1.5 py-0.5 rounded font-semibold">+4.2%
-                                    mes</span>
+                                    class="font-label-md text-label-md text-secondary bg-secondary-container px-1.5 py-0.5 rounded font-semibold">
+                                    Avance</span>
                             </div>
                         </div>
                         <div
@@ -1989,7 +1991,7 @@
 </script>
 
 {{-- Modal de sorteo aleatorio --}}
-@php($mesasMinimas = max(1, (int) ceil($proyectosSorteo->count() / 18)))
+@php($mesasMinimas = max(1, (int) ceil($proyectosSorteo->count() / 16)))
 @php($mesasIniciales = min(max(1, min(20, $proyectosSorteo->count())), max($mesasMinimas, min(5, $proyectosSorteo->count()))))
 <div id="modal-sorteo"
     class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-6 bg-inverse-surface/40 backdrop-blur-sm overflow-y-auto"
@@ -2044,7 +2046,7 @@
                         Total: {{ $proyectosSorteo->count() }} Proyectos Registrados
                     </span>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                <div class=" hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
                     <div class="p-3 rounded bg-surface-container-low flex flex-col justify-between">
                         <span class="font-label-md text-label-md text-on-surface-variant">Total
                             Proyectos</span>
@@ -2138,7 +2140,7 @@
                         <div
                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-lowest border border-outline-variant/40 font-data-mono text-data-mono font-bold text-on-surface shadow-sm">
                             <span class="material-symbols-outlined text-[15px] text-primary">alarm</span>
-                            <span class="">08:00 AM</span>
+                            <span class="">08:30 AM</span>
                         </div>
                         <span class="font-body-sm text-body-sm text-on-surface-variant ml-1">Duración
                             fija:</span>
@@ -2361,11 +2363,11 @@
                             periodo,
                         };
                     };
-                    const inicio = formatear(8 * 60);
+                    const inicio = formatear(8 * 60 + 30);
                     const horariosFin = [
                         '09:00', '09:30', '10:00', '10:30', '11:00',
-                        '11:30', '12:00', '12:30', '13:30', '14:00', '14:30',
-                        '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00',
+                        '11:30', '12:00', '12:30', '14:00', '14:30',
+                        '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
                     ];
                     const fin = formatear(
                         horariosFin[Math.ceil(totalProyectos / numeroMesas) - 1]
@@ -2503,7 +2505,7 @@
                         const resultado = await respuesta.json();
                         if (!respuesta.ok) {
                             throw new Error(resultado.message || Object.values(resultado.errors || {})
-                            .flat()[0]);
+                                .flat()[0]);
                         }
                         vistaPrevia.innerHTML = resultado.html;
                         sorteoGenerado = true;
@@ -2537,7 +2539,7 @@
                         const resultado = await respuesta.json();
                         if (!respuesta.ok) {
                             throw new Error(resultado.message || Object.values(resultado.errors || {})
-                            .flat()[0]);
+                                .flat()[0]);
                         }
                         mostrarError(resultado.message);
                         mensaje.classList.remove('bg-error-container', 'text-on-error-container');

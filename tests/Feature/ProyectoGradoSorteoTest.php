@@ -143,10 +143,10 @@ class ProyectoGradoSorteoTest extends TestCase
         ]);
 
         for ($i = 1; $i <= 10; $i++) {
-            $estudianteId = 'EST-' . $i;
+            $estudianteId = 'EST-'.$i;
             DB::table('estudiantes')->insert([
                 'id_estudiante' => $estudianteId,
-                'nombres' => 'Estudiante ' . $i,
+                'nombres' => 'Estudiante '.$i,
                 'appaterno' => 'Apellido',
                 'apmaterno' => 'Prueba',
                 'created_at' => $now,
@@ -158,7 +158,7 @@ class ProyectoGradoSorteoTest extends TestCase
                 'idProfesorTutor' => 1,
                 'idCurso' => 'CURSO-1',
                 'idGestion' => $this->gestionId,
-                'titulo' => 'Proyecto ' . $i,
+                'titulo' => 'Proyecto '.$i,
                 'estado' => 'REGISTRADO',
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -171,6 +171,7 @@ class ProyectoGradoSorteoTest extends TestCase
         $this->withSession([
             'gestion_activa' => $this->gestionId,
             'usuario_id' => 7,
+            'profesor_id' => 1,
         ])->postJson('/proyecto-grado/sorteo/generar', [
             'numeroMesas' => 3,
             'fechaDefensa' => now()->addDay()->toDateString(),
@@ -216,14 +217,17 @@ class ProyectoGradoSorteoTest extends TestCase
         );
         $this->assertDatabaseHas('proyecto_grado_sorteo_detalles', [
             'fechaDefensa' => now()->addDays(2)->toDateString(),
-            'horaInicio' => '08:00:00',
-            'horaFin' => '08:30:00',
+            'horaInicio' => '08:30:00',
+            'horaFin' => '09:00:00',
         ]);
     }
 
     public function test_it_rejects_confirmation_without_a_generated_schedule(): void
     {
-        $this->withSession(['gestion_activa' => $this->gestionId])
+        $this->withSession([
+            'gestion_activa' => $this->gestionId,
+            'profesor_id' => 1,
+        ])
             ->postJson('/proyecto-grado/sorteo/confirmar')
             ->assertUnprocessable()
             ->assertJsonValidationErrors('sorteo');
@@ -234,20 +238,37 @@ class ProyectoGradoSorteoTest extends TestCase
     public function test_it_uses_the_requested_turn_closing_times_and_exports_the_confirmed_draw_as_pdf(): void
     {
         $fechaDefensa = now()->addDay()->toDateString();
+        $now = now();
+        for ($i = 11; $i <= 16; $i++) {
+            DB::table('proyectos_grado')->insert([
+                'idProyecto' => $i,
+                'idEstudiante' => 'EST-1',
+                'idProfesorTutor' => 1,
+                'idCurso' => 'CURSO-1',
+                'idGestion' => $this->gestionId,
+                'titulo' => 'Proyecto '.$i,
+                'estado' => 'REGISTRADO',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
 
-        $this->withSession(['gestion_activa' => $this->gestionId])
+        $respuesta = $this->withSession([
+            'gestion_activa' => $this->gestionId,
+            'profesor_id' => 1,
+        ])
             ->postJson('/proyecto-grado/sorteo/generar', [
                 'numeroMesas' => 1,
                 'fechaDefensa' => $fechaDefensa,
             ])
             ->assertOk()
             ->assertJsonPath('mesas', 1);
+        $this->assertStringContainsString('08:30 - 09:00', $respuesta->json('html'));
 
         $this->postJson('/proyecto-grado/sorteo/confirmar')->assertOk();
 
         $this->assertSame(
             [
-                ['08:00:00', '08:30:00'],
                 ['08:30:00', '09:00:00'],
                 ['09:00:00', '09:30:00'],
                 ['09:30:00', '10:00:00'],
@@ -256,7 +277,14 @@ class ProyectoGradoSorteoTest extends TestCase
                 ['11:00:00', '11:30:00'],
                 ['11:30:00', '12:00:00'],
                 ['12:00:00', '12:30:00'],
-                ['13:00:00', '13:30:00'],
+                ['13:30:00', '14:00:00'],
+                ['14:00:00', '14:30:00'],
+                ['14:30:00', '15:00:00'],
+                ['15:00:00', '15:30:00'],
+                ['15:30:00', '16:00:00'],
+                ['16:00:00', '16:30:00'],
+                ['16:30:00', '17:00:00'],
+                ['17:00:00', '17:30:00'],
             ],
             DB::table('proyecto_grado_sorteo_detalles')
                 ->orderBy('orden')
@@ -273,7 +301,10 @@ class ProyectoGradoSorteoTest extends TestCase
 
     public function test_it_rejects_a_table_count_greater_than_the_project_count(): void
     {
-        $this->withSession(['gestion_activa' => $this->gestionId])
+        $this->withSession([
+            'gestion_activa' => $this->gestionId,
+            'profesor_id' => 1,
+        ])
             ->postJson('/proyecto-grado/sorteo/generar', [
                 'numeroMesas' => 11,
                 'fechaDefensa' => now()->addDay()->toDateString(),
@@ -282,5 +313,75 @@ class ProyectoGradoSorteoTest extends TestCase
             ->assertJsonValidationErrors('numeroMesas');
 
         $this->assertDatabaseCount('proyecto_grado_sorteos', 0);
+    }
+
+    public function test_it_rejects_more_projects_per_table_than_available_time_slots(): void
+    {
+        $now = now();
+        for ($i = 11; $i <= 17; $i++) {
+            DB::table('proyectos_grado')->insert([
+                'idProyecto' => $i,
+                'idEstudiante' => 'EST-1',
+                'idProfesorTutor' => 1,
+                'idCurso' => 'CURSO-1',
+                'idGestion' => $this->gestionId,
+                'titulo' => 'Proyecto '.$i,
+                'estado' => 'REGISTRADO',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        $this->withSession([
+            'gestion_activa' => $this->gestionId,
+            'profesor_id' => 1,
+        ])
+            ->postJson('/proyecto-grado/sorteo/generar', [
+                'numeroMesas' => 1,
+                'fechaDefensa' => now()->addDay()->toDateString(),
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('numeroMesas');
+
+        $this->assertDatabaseCount('proyecto_grado_sorteos', 0);
+    }
+
+    public function test_it_denies_schedule_pages_and_draw_actions_to_other_users(): void
+    {
+        $this->withSession([
+            'usuario_id' => 9,
+            'profesor_id' => 2,
+        ]);
+
+        $this->get('/proyecto-grado/asignacion')->assertForbidden();
+        $this->get('/proyecto-grado/distribucion')->assertForbidden();
+        $this->postJson('/proyecto-grado/sorteo/generar')->assertForbidden();
+        $this->postJson('/proyecto-grado/sorteo/confirmar')->assertForbidden();
+        $this->get('/proyecto-grado/sorteo/pdf')->assertForbidden();
+    }
+
+    public function test_it_allows_schedule_pages_for_the_authorized_user_or_professor(): void
+    {
+        $this->withSession([
+            'usuario_id' => 8,
+            'profesor_id' => 2,
+        ]);
+
+        $this->get('/proyecto-grado/asignacion')
+            ->assertOk()
+            ->assertSee('Asignacion de tribunal')
+            ->assertSee('Distribucion de mesas');
+        $this->get('/proyecto-grado/distribucion')->assertOk();
+
+        $this->withSession([
+            'usuario_id' => 9,
+            'profesor_id' => 1,
+        ]);
+
+        $this->get('/proyecto-grado/asignacion')
+            ->assertOk()
+            ->assertSee('Asignacion de tribunal')
+            ->assertSee('Distribucion de mesas');
+        $this->get('/proyecto-grado/distribucion')->assertOk();
     }
 }

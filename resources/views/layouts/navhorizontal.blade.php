@@ -362,6 +362,19 @@
                                 </div>
                                 {{--  <i class='bx bx-chevron-down nav__icon nav__dropdown-icon'></i> --}}
                             </a>
+                            {{-- <div class="nav__dropdown-collapse mt-1">
+                                <div class="nav__dropdown-content">
+
+                                    <a href="{{ route('profesor.index') }}" class="nav__dropdown-item">Panel de
+                                        citaciones</a>
+                                    <a href="{{ route('asignacion.curso') }}"
+                                        class="nav__dropdown-item">Historial</a>
+                                    <a href="#" class="nav__dropdown-item">Reportes</a>
+                                </div>
+                            </div>
+                    </div> --}}
+                        @endif
+                        @if (\App\Support\ProyectoGradoAccess::canManageSchedule())
                             <a href="{{ route('proyectoGrado.asignacion') }}"
                                 class="flex items-center justify-between py-3 pl-2 rounded-md text-white hover:text-slate-700 hover:bg-white">
                                 <div class="flex items-center">
@@ -376,17 +389,6 @@
                                     <span class="nav__name text-xs!">Distribucion de mesas</span>
                                 </div>
                             </a>
-                            {{-- <div class="nav__dropdown-collapse mt-1">
-                                <div class="nav__dropdown-content">
-
-                                    <a href="{{ route('profesor.index') }}" class="nav__dropdown-item">Panel de
-                                        citaciones</a>
-                                    <a href="{{ route('asignacion.curso') }}"
-                                        class="nav__dropdown-item">Historial</a>
-                                    <a href="#" class="nav__dropdown-item">Reportes</a>
-                                </div>
-                            </div>
-                    </div> --}}
                         @endif
                         {{-- <div class="nav__dropdown">
                             <a href="#"
