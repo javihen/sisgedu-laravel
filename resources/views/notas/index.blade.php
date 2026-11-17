@@ -12,7 +12,7 @@
     </style>
 
 
-    <div class=" mx-auto px-4 py-8 absolute left-1/2 -translate-x-1/2 flex flex-col gap-6 w-2/3 justify-center">
+    <div class=" mx-auto px-4 py-8 absolute left-1/2 -translate-x-1/2 flex flex-col gap-6 w-[90%] justify-center">
         <div class="mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-800">Centralizador de Calificaciones</h1>
