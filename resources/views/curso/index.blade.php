@@ -1181,6 +1181,12 @@
                                         </a>
                                     </div>
                                     <div>
+                                        <a href="{{ route('curso.reprobaciones', $MI->id) }}" title="Estudiantes reprobados"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                            <i class='bx bx-error-circle'></i>
+                                        </a>
+                                    </div>
+                                    <div>
                                         <form action="{{ route('curso.destroy', $MI->id) }}" method="POST"
                                             class="inline">
                                             @csrf
@@ -1221,6 +1227,12 @@
                                         <a href="{{ route('estudiante.curso', $TI->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="{{ route('curso.reprobaciones', $TI->id) }}" title="Estudiantes reprobados"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                            <i class='bx bx-error-circle'></i>
                                         </a>
                                     </div>
                                     <div>
@@ -1289,6 +1301,12 @@
                                         </a>
                                     </div>
                                     <div>
+                                        <a href="{{ route('curso.reprobaciones', $MP->id) }}" title="Estudiantes reprobados"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                            <i class='bx bx-error-circle'></i>
+                                        </a>
+                                    </div>
+                                    <div>
                                         <form action="{{ route('curso.destroy', $MP->id) }}" method="POST"
                                             class="inline">
                                             @csrf
@@ -1329,6 +1347,12 @@
                                         <a href="{{ route('estudiante.curso', $TP->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="{{ route('curso.reprobaciones', $TP->id) }}" title="Estudiantes reprobados"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                            <i class='bx bx-error-circle'></i>
                                         </a>
                                     </div>
                                     <div>
@@ -1397,6 +1421,12 @@
                                         </a>
                                     </div>
                                     <div>
+                                        <a href="{{ route('curso.reprobaciones', $MS->id) }}" title="Estudiantes reprobados"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                            <i class='bx bx-error-circle'></i>
+                                        </a>
+                                    </div>
+                                    <div>
                                         <form action="{{ route('curso.destroy', $MS->id) }}" method="POST"
                                             class="inline">
                                             @csrf
@@ -1437,6 +1467,12 @@
                                         <a href="{{ route('estudiante.curso', $TS->id) }}"
                                             class="h-9 flex bg-white justify-center items-center w-9 border border-green-600 text-green-600 hover:text-white hover:bg-green-600">
                                             <i class='bx bx-book'></i>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="{{ route('curso.reprobaciones', $TS->id) }}" title="Estudiantes reprobados"
+                                            class="h-9 flex bg-white justify-center items-center w-9 border border-red-600 text-red-600 hover:text-white hover:bg-red-600">
+                                            <i class='bx bx-error-circle'></i>
                                         </a>
                                     </div>
                                     <div>

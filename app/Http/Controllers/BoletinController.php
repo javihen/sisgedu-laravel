@@ -11,8 +11,13 @@ use Throwable;
 
 class BoletinController extends Controller
 {
-    public function obtenerBoletin($idEstudiante): JsonResponse
+    public function obtenerBoletin(Request $request, $idEstudiante): JsonResponse
     {
+        $validated = $request->validate([
+            'id_curso' => 'nullable|string|exists:cursos,id',
+        ]);
+        $idCurso = $validated['id_curso'] ?? null;
+
         try {
             $estudiante = Estudiante::with(['inscripciones.curso'])->find($idEstudiante);
 
@@ -22,6 +27,14 @@ class BoletinController extends Controller
 
             $notas = Nota::with(['asignacion.materia', 'asignacion.profesor', 'asignacion.curso', 'gestion'])
                 ->where('id_estudiante', $idEstudiante)
+                ->when($idCurso, function ($query) use ($idCurso) {
+                    $gestionActiva = session('gestion_activa');
+                    $query->where('notas.id_gestion', $gestionActiva)
+                        ->whereHas('asignacion', function ($asignacionQuery) use ($idCurso, $gestionActiva) {
+                            $asignacionQuery->where('idcurso', $idCurso)
+                                ->where('id_gestion', $gestionActiva);
+                        });
+                })
                 ->orderBy('idAsignacion')
                 ->orderBy('periodo')
                 ->get();
