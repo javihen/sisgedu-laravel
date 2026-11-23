@@ -141,10 +141,10 @@
 
             <div aria-labelledby="modal-title" aria-modal="true"
                 aria-hidden="true"
-                class="invisible pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-900/60 p-3 font-[poppins] opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out motion-reduce:transition-none sm:p-6"
+                class="invisible pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-900/60 p-2 font-[poppins] opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out motion-reduce:transition-none sm:p-4 lg:p-6"
                 id="boletin-modal" role="dialog" tabindex="-1">
                 <div
-                    class="my-auto flex max-h-[92vh] w-full max-w-4xl translate-y-4 scale-95 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white opacity-0 shadow-2xl transition-all duration-300 ease-out motion-reduce:transition-none">
+                    class="my-auto flex max-h-[92vh] w-full max-w-6xl translate-y-4 scale-95 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white opacity-0 shadow-2xl transition-all duration-300 ease-out motion-reduce:transition-none">
                     <div
                         class="bg-[#005edb] text-white px-6 py-4 flex items-center justify-between shadow-sm flex-shrink-0">
                         <div class="flex items-center space-x-3">
@@ -193,7 +193,7 @@
                         </div>
                         <div class="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
                             <div class="overflow-x-auto">
-                                <table class="w-full text-left text-xs">
+                                <table class="w-full min-w-[760px] text-left text-xs">
                                     <thead
                                         class="bg-slate-100/90 text-slate-700 font-semibold border-b border-slate-200 uppercase text-[11px] tracking-wider">
                                         <tr>
@@ -808,6 +808,7 @@
         const cursoBoletinId = @json($curso->id);
         const boletinModal = document.getElementById('boletin-modal');
         const boletinPanel = boletinModal.firstElementChild;
+        const boletinContenido = boletinPanel.querySelector('.overflow-y-auto');
         const boletinFilas = document.getElementById('boletin-filas');
         const botonEditarCalificaciones = document.getElementById('editar-calificaciones');
         const alertaBoletin = document.getElementById('boletin-alerta');
@@ -1059,6 +1060,8 @@
             if (!refrescar) {
                 establecerModoEdicionCalificaciones(false);
                 ocultarAlertaBoletin();
+                boletinModal.scrollTop = 0;
+                boletinContenido.scrollTop = 0;
                 boletinFilas.innerHTML =
                     '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Cargando boletín...</td></tr>';
                 document.getElementById('modal-title').textContent = 'Boletín de Calificaciones';
