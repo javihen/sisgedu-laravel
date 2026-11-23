@@ -131,6 +131,7 @@ class ReprobacionesCursoTest extends TestCase
 
         $response->assertOk()
             ->assertJsonCount(2, 'asignaciones')
+            ->assertJsonPath('asignaciones.0.idAsignacion', 1)
             ->assertJsonPath('asignaciones.0.materia', 'Materia reprobada')
             ->assertJsonPath('asignaciones.0.notas.1', 51);
 
@@ -138,6 +139,122 @@ class ReprobacionesCursoTest extends TestCase
             'Materia de otro curso',
             array_column($response->json('asignaciones'), 'materia')
         );
+    }
+
+    public function test_it_updates_and_clears_grades_for_the_enrolled_student(): void
+    {
+        $response = $this->withSession(['gestion_activa' => 1])
+            ->putJson('/boletin/E001/calificaciones', [
+                'id_curso' => 'C21A',
+                'calificaciones' => [
+                    1 => [1 => 88, 2 => null, 3 => 77],
+                    2 => [1 => null, 2 => null, 3 => null],
+                ],
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('notas', [
+            'id_estudiante' => 'E001',
+            'idAsignacion' => 1,
+            'id_gestion' => 1,
+            'periodo' => 1,
+            'calificacion' => 88,
+        ]);
+        $this->assertDatabaseHas('notas', [
+            'id_estudiante' => 'E001',
+            'idAsignacion' => 1,
+            'id_gestion' => 1,
+            'periodo' => 3,
+            'calificacion' => 77,
+        ]);
+        $this->assertDatabaseMissing('notas', [
+            'id_estudiante' => 'E001',
+            'idAsignacion' => 1,
+            'id_gestion' => 1,
+            'periodo' => 2,
+        ]);
+        $this->assertDatabaseMissing('notas', [
+            'id_estudiante' => 'E001',
+            'idAsignacion' => 2,
+            'id_gestion' => 1,
+        ]);
+    }
+
+    public function test_it_rejects_grades_for_an_assignment_outside_the_selected_course(): void
+    {
+        $response = $this->withSession(['gestion_activa' => 1])
+            ->putJson('/boletin/E001/calificaciones', [
+                'id_curso' => 'C21A',
+                'calificaciones' => [
+                    3 => [1 => 100, 2 => null, 3 => null],
+                ],
+            ]);
+
+        $response->assertForbidden()
+            ->assertJsonPath('error', 'Una o más materias no pertenecen al curso y gestión seleccionados.');
+
+        $this->assertDatabaseMissing('notas', [
+            'id_estudiante' => 'E001',
+            'idAsignacion' => 3,
+            'id_gestion' => 1,
+        ]);
+    }
+
+    public function test_it_can_add_a_grade_to_a_subject_without_existing_grades(): void
+    {
+        $this->withSession(['gestion_activa' => 1])
+            ->getJson('/boletin/E003/json?id_curso=C21A')
+            ->assertOk()
+            ->assertJsonCount(2, 'asignaciones')
+            ->assertJsonPath('asignaciones.1.idAsignacion', 2)
+            ->assertJsonPath('asignaciones.1.notas.1', null);
+
+        $response = $this->withSession(['gestion_activa' => 1])
+            ->putJson('/boletin/E003/calificaciones', [
+                'id_curso' => 'C21A',
+                'calificaciones' => [
+                    2 => [1 => 64, 2 => null, 3 => null],
+                ],
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('notas', [
+            'id_estudiante' => 'E003',
+            'idAsignacion' => 2,
+            'id_gestion' => 1,
+            'periodo' => 1,
+            'calificacion' => 64,
+        ]);
+    }
+
+    public function test_editing_a_grade_preserves_other_scores_with_decimal_precision(): void
+    {
+        $this->withSession(['gestion_activa' => 1])
+            ->getJson('/boletin/E003/json?id_curso=C21A')
+            ->assertOk()
+            ->assertJsonPath('asignaciones.0.notas.3', 51)
+            ->assertJsonPath('asignaciones.0.notasOriginales.3', '50.50');
+
+        $this->withSession(['gestion_activa' => 1])
+            ->putJson('/boletin/E003/calificaciones', [
+                'id_curso' => 'C21A',
+                'calificaciones' => [
+                    1 => [1 => 60, 2 => 50, 3 => '50.50'],
+                ],
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('notas', [
+            'id_estudiante' => 'E003',
+            'idAsignacion' => 1,
+            'id_gestion' => 1,
+            'periodo' => 3,
+            'calificacion' => '50.50',
+        ]);
     }
 
     public function test_it_generates_a_course_centralizer_pdf(): void

@@ -137,85 +137,271 @@
 
                 </table>
             </div>
+            {{-- modal boletin de calificaciones nuevo --}}
 
-            <div id="boletinModal"
-                class="hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/70 p-4">
+            <div aria-labelledby="modal-title" aria-modal="true"
+                aria-hidden="true"
+                class="invisible pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-900/60 p-3 font-[poppins] opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out motion-reduce:transition-none sm:p-6"
+                id="boletin-modal" role="dialog" tabindex="-1">
                 <div
-                    class="relative w-1/2 max-w-6xl rounded-3xl bg-white shadow-2xl ring-1 ring-slate-200 overflow-hidden py-2">
+                    class="my-auto flex max-h-[92vh] w-full max-w-4xl translate-y-4 scale-95 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white opacity-0 shadow-2xl transition-all duration-300 ease-out motion-reduce:transition-none">
                     <div
-                        class="flex flex-col gap-4 border-b border-slate-200 bg-white px-6 py-5 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Boletín de calificaciones</p>
-                            <h2 id="boletinTitulo" class="mt-2 text-2xl font-semibold text-slate-900">Estudiante</h2>
-                            <p id="boletinSubtitulo" class="text-sm text-slate-500">Curso • Gestión</p>
+                        class="bg-[#005edb] text-white px-6 py-4 flex items-center justify-between shadow-sm flex-shrink-0">
+                        <div class="flex items-center space-x-3">
+                            <div
+                                class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center border border-white/20">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewbox="0 0 24 24">
+                                    <path
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-white leading-tight" id="modal-title">Boletín de
+                                    Calificaciones</h3>
+                                <p class="text-xs text-blue-100 font-normal mt-0.5" id="boletin-encabezado">Cargando datos...</p>
+                            </div>
+                        </div><button aria-label="Cerrar"
+                            class="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-white/10 transition-colors"
+                            id="cerrar-boletin-superior" type="button"><svg class="w-5 h-5"
+                                fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+                                <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg></button>
+                    </div>
+                    <div class="p-6 overflow-y-auto space-y-5 flex-1 bg-slate-50/50">
+                        <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                                <div class="sm:col-span-2"><span
+                                        class="text-slate-400 block font-normal mb-0.5">Estudiante:</span>
+                                    <div class="text-sm font-bold text-slate-900 flex items-center space-x-2"><span
+                                            class="text-slate-500 font-medium" id="boletin-codigo">—</span><span id="boletin-estudiante">Cargando...</span></div>
+                                </div>
+                                <div><span class="text-slate-400 block font-normal mb-0.5">Código RUDE:</span><span
+                                        class="font-mono font-semibold text-slate-800" id="boletin-rude">—</span></div>
+                                <div><span class="text-slate-400 block font-normal mb-0.5">Estado de Gestión:</span><span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full border text-[11px] font-semibold" id="boletin-estado">Cargando...</span></div>
+                                <div><span class="text-slate-400 block font-normal mb-0.5">Curso y Paralelo:</span><span
+                                        class="font-semibold text-slate-800" id="boletin-curso">—</span></div>
+                                <div><span class="text-slate-400 block font-normal mb-0.5">Nivel Educativo:</span><span
+                                        class="text-slate-700 font-medium" id="boletin-nivel">—</span></div>
+                                <div><span class="text-slate-400 block font-normal mb-0.5">Turno:</span><span
+                                        class="text-slate-700 font-medium" id="boletin-turno">—</span></div>
+                                <div><span class="text-slate-400 block font-normal mb-0.5">Tutor Asignado:</span><span
+                                        class="text-slate-700 font-medium">No registrado</span></div>
+                            </div>
                         </div>
-                        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-                            <button id="btnImprimirBoletin" type="button"
-                                class="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"><i
-                                    class="fa-solid fa-print mr-2"></i>Imprimir</button>
-                            <button id="closeBoletinModal" type="button"
-                                class="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">Cerrar</button>
+                        <div class="bg-white rounded-lg border border-slate-200 shadow-xs overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead
+                                        class="bg-slate-100/90 text-slate-700 font-semibold border-b border-slate-200 uppercase text-[11px] tracking-wider">
+                                        <tr>
+                                            <th class="py-2.5 px-4">Área / Asignatura</th>
+                                            <th class="py-2.5 px-3">Docente</th>
+                                            <th class="py-2.5 px-2 text-center w-16">1er T.</th>
+                                            <th class="py-2.5 px-2 text-center w-16">2do T.</th>
+                                            <th class="py-2.5 px-2 text-center w-16">3er T.</th>
+                                            <th class="py-2.5 px-3 text-center w-20">Promedio</th>
+                                            <th class="py-2.5 px-3 text-center w-32">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100" id="boletin-filas">
+                                        <tr class="hover:bg-rose-50/40 transition-colors bg-rose-50/20">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Comunicación y lenguajes
+                                                (Castellana)</td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Mario F. Mercado
+                                                Mamani
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-bold text-rose-600 bg-rose-50/60">45
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-bold text-rose-600 bg-rose-50/60">35
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">75</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-rose-600">51.7</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-rose-100 text-rose-700 rounded-md border border-rose-200">Requiere
+                                                    Refuerzo</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Lengua Extranjera (Inglés)
+                                            </td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Gladys Choque</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">65</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">70</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">68</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-slate-800">67.7</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-md border border-emerald-200">Aprobado</span>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-rose-50/40 transition-colors bg-rose-50/20">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Educación Musical</td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Luisa Espinoza
+                                                Fernandez
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-bold text-rose-600 bg-rose-50/60">45
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-bold text-rose-600 bg-rose-50/60">35
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">75</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-rose-600">51.7</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-rose-100 text-rose-700 rounded-md border border-rose-200">Requiere
+                                                    Refuerzo</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-rose-50/40 transition-colors bg-rose-50/20">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Artes Plásticas y Visuales
+                                            </td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Victor Hugo Sanchez
+                                                Lopez
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-bold text-rose-600 bg-rose-50/60">45
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-bold text-rose-600 bg-rose-50/60">35
+                                            </td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">75</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-rose-600">51.7</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-rose-100 text-rose-700 rounded-md border border-rose-200">Requiere
+                                                    Refuerzo</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Educación Física y Deportes
+                                            </td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Roberto Canaviri</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">80</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">85</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">90</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-slate-800">85.0</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-md border border-emerald-200">Aprobado</span>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Ciencias Sociales</td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Marlene Vargas</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">60</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">62</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">68</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-slate-800">63.3</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-md border border-emerald-200">Aprobado</span>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Matemática</td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Carlos Mendoza</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">58</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">60</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">64</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-slate-800">60.7</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-md border border-emerald-200">Aprobado</span>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Física - Química</td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Andrea Rocha</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">62</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">59</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">65</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-slate-800">62.0</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-md border border-emerald-200">Aprobado</span>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Biología - Geografía</td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Wilson Condori</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">70</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">68</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">72</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-slate-800">70.0</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-md border border-emerald-200">Aprobado</span>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="py-2.5 px-4 font-medium text-slate-900">Filosofía y Psicología</td>
+                                            <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. Rene Quispe</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">65</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">70</td>
+                                            <td class="py-2.5 px-2 text-center font-medium text-slate-700">68</td>
+                                            <td class="py-2.5 px-3 text-center font-bold text-slate-800">67.7</td>
+                                            <td class="py-2.5 px-3 text-center"><span
+                                                    class="inline-block px-2 py-0.5 text-[10px] font-semibold bg-emerald-100 text-emerald-800 rounded-md border border-emerald-200">Aprobado</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-center space-x-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-blue-50 text-[#005edb] flex items-center justify-center font-bold text-sm border border-blue-100">
+                                    <span id="boletin-promedio">—</span></div>
+                                <div><span class="text-[11px] text-slate-400 block font-normal leading-none">Promedio
+                                        General</span><span class="text-xs font-bold text-slate-800">Escala 1 a 100</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-center space-x-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm border border-emerald-100">
+                                    <span id="boletin-aprobadas">— / —</span></div>
+                                <div><span class="text-[11px] text-slate-400 block font-normal leading-none">Materias
+                                        Aprobadas</span><span class="text-xs font-bold text-slate-800" id="boletin-porcentaje">—</span>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-center space-x-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-sm border border-rose-100">
+                                    <span id="boletin-reprobadas">—</span></div>
+                                <div><span class="text-[11px] text-slate-400 block font-normal leading-none">En Riesgo /
+                                        Reprobadas</span>                                        <span class="text-xs font-bold text-rose-600" id="boletin-riesgo-etiqueta">—</span></div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-amber-50/70 border border-amber-200/80 rounded-lg p-3 text-xs flex items-start space-x-2.5">
+                            <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                                stroke-width="2" viewbox="0 0 24 24">
+                                <path
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <div><span class="font-bold text-amber-900 block mb-0.5">Observaciones pedagógicas /
+                                    Recomendación:</span>
+                                <p class="text-amber-800 leading-relaxed" id="boletin-observaciones">Cargando observaciones...</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="print-area max-h-[76vh] overflow-hidden bg-slate-50">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full border-separate border-spacing-0 text-sm text-slate-700">
-                                <thead
-                                    class="sticky top-0 bg-slate-100 text-left text-xs uppercase tracking-wider text-slate-600">
-                                    <tr>
-                                        <th class="border-b border-slate-200 px-4 py-3">Área / Materia</th>
-                                        <th class="border-b border-slate-200 px-4 py-3 text-center">1er Tri</th>
-                                        <th class="border-b border-slate-200 px-4 py-3 text-center">2do Tri</th>
-                                        <th class="border-b border-slate-200 px-4 py-3 text-center">3er Tri</th>
-                                        <th class="border-b border-slate-200 px-4 py-3 text-center">P.Final</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="boletinBody" class="divide-y divide-slate-200 bg-white"></tbody>
-                            </table>
-                        </div>
+                    <div
+                        class="bg-slate-50 border-t border-slate-200 px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
+                        <div class="hidden basis-full rounded-md border px-3 py-2 text-xs" id="boletin-alerta"
+                            role="status" aria-live="polite"></div>
+                        <button
+                            class="px-4 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors shadow-2xs"
+                            id="cerrar-boletin" type="button">Cerrar</button>
+                        <div class="flex flex-wrap items-center justify-end gap-2.5"><button
+                                class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 rounded shadow-sm transition-colors"
+                                disabled id="editar-calificaciones" type="button">Modificar calificaciones</button><button
+                                class="px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors shadow-2xs flex items-center space-x-1.5"
+                                id="descargar-boletin" type="button"><svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewbox="0 0 24 24">
+                                    <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                        stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg><span>Descargar PDF</span></button><button
+                                class="px-4 py-2 text-xs font-semibold text-white bg-[#00875a] hover:bg-[#00754e] rounded shadow-sm transition-colors flex items-center space-x-1.5"
+                                id="imprimir-boletin" type="button"><svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewbox="0 0 24 24">
+                                    <path
+                                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                                        stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg><span>Imprimir Boletín Oficial</span></button></div>
                     </div>
                 </div>
             </div>
-
-            <style>
-                #boletinModal.hidden {
-                    display: none;
-                }
-
-                #boletinModal {
-                    backdrop-filter: blur(6px);
-                }
-
-                .boletin-score-low {
-                    color: #b91c1c;
-                    font-weight: 600;
-                }
-
-                .boletin-final {
-                    background-color: #2563eb;
-                    color: white;
-                }
-
-                @media print {
-                    body * {
-                        visibility: hidden;
-                    }
-
-                    .print-area,
-                    .print-area * {
-                        visibility: visible;
-                    }
-
-                    #boletinModal {
-                        position: static;
-                        visibility: visible;
-                    }
-
-                    #boletinModal .print-area {
-                        max-height: none;
-                    }
-                }
-            </style>
 
             <div class="flex justify-end bg-white w-full  border border-slate-300 rounded-md mb-16 h-30">
                 <div class="flex my-auto flex-col mr-2">
@@ -619,6 +805,18 @@
         }
 
         const boletinRutaTemplate = '{{ route('boletin.obtener', ['idEstudiante' => ':id']) }}';
+        const cursoBoletinId = @json($curso->id);
+        const boletinModal = document.getElementById('boletin-modal');
+        const boletinPanel = boletinModal.firstElementChild;
+        const boletinFilas = document.getElementById('boletin-filas');
+        const botonEditarCalificaciones = document.getElementById('editar-calificaciones');
+        const alertaBoletin = document.getElementById('boletin-alerta');
+        let estudianteBoletinActual = null;
+        let modoEdicionCalificaciones = false;
+        let temporizadorAlertaBoletin;
+        document.body.appendChild(boletinModal);
+        boletinFilas.innerHTML =
+            '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Seleccione un estudiante para consultar sus calificaciones.</td></tr>';
 
         document.addEventListener('click', function(event) {
             const button = event.target.closest('.btn-ver-boletin');
@@ -631,31 +829,259 @@
             abrirBoletin(idEstudiante);
         });
 
-        document.getElementById('closeBoletinModal').addEventListener('click', function() {
-            document.getElementById('boletinModal').classList.add('hidden');
+        botonEditarCalificaciones.addEventListener('click', function() {
+            if (modoEdicionCalificaciones) {
+                guardarCalificaciones();
+                return;
+            }
+
+            ocultarAlertaBoletin();
+            establecerModoEdicionCalificaciones(true);
         });
 
-        document.getElementById('btnImprimirBoletin').addEventListener('click', function() {
-            window.print();
+        ['cerrar-boletin-superior', 'cerrar-boletin'].forEach(id => {
+            document.getElementById(id).addEventListener('click', cerrarBoletin);
         });
 
-        function formatNota(value) {
-            return value === null || value === undefined ? '-' : value;
+        ['descargar-boletin', 'imprimir-boletin'].forEach(id => {
+            document.getElementById(id).addEventListener('click', function() {
+                window.print();
+            });
+        });
+
+        boletinModal.addEventListener('click', function(event) {
+            if (event.target === boletinModal) {
+                cerrarBoletin();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && boletinModal.getAttribute('aria-hidden') === 'false') {
+                cerrarBoletin();
+            }
+        });
+
+        function mostrarBoletin() {
+            boletinModal.classList.remove('invisible', 'pointer-events-none', 'opacity-0');
+            boletinModal.classList.add('opacity-100');
+            boletinModal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('overflow-hidden');
+            requestAnimationFrame(() => {
+                boletinPanel.classList.remove('translate-y-4', 'scale-95', 'opacity-0');
+                boletinPanel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+            });
+            boletinModal.focus();
         }
 
-        function abrirBoletin(idEstudiante) {
-            const modal = document.getElementById('boletinModal');
-            const body = document.getElementById('boletinBody');
-            const titulo = document.getElementById('boletinTitulo');
-            const subtitulo = document.getElementById('boletinSubtitulo');
+        function cerrarBoletin() {
+            boletinModal.classList.remove('opacity-100');
+            boletinModal.classList.add('opacity-0', 'pointer-events-none');
+            boletinPanel.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
+            boletinPanel.classList.add('translate-y-4', 'scale-95', 'opacity-0');
+            boletinModal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('overflow-hidden');
+            window.setTimeout(() => {
+                if (boletinModal.getAttribute('aria-hidden') === 'true') {
+                    boletinModal.classList.add('invisible');
+                }
+            }, 300);
+        }
 
-            body.innerHTML =
-                '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Cargando boletín...</td></tr>';
-            modal.classList.remove('hidden');
+        function formatNota(value) {
+            return value === null || value === undefined || value === '' ? '-' : value;
+        }
 
-            const url = boletinRutaTemplate.replace(':id', encodeURIComponent(idEstudiante));
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;',
+            })[character]);
+        }
 
-            fetch(url, {
+        function mostrarAlertaBoletin(mensaje, tipo = 'success') {
+            clearTimeout(temporizadorAlertaBoletin);
+            const clases = tipo === 'error' ?
+                'border-red-200 bg-red-50 text-red-700' :
+                tipo === 'warning' ?
+                'border-amber-200 bg-amber-50 text-amber-800' :
+                'border-emerald-200 bg-emerald-50 text-emerald-700';
+            alertaBoletin.className = `basis-full rounded-md border px-3 py-2 text-xs ${clases}`;
+            alertaBoletin.textContent = mensaje;
+            temporizadorAlertaBoletin = window.setTimeout(ocultarAlertaBoletin, 6000);
+        }
+
+        function ocultarAlertaBoletin() {
+            clearTimeout(temporizadorAlertaBoletin);
+            alertaBoletin.classList.add('hidden');
+            alertaBoletin.textContent = '';
+        }
+
+        function establecerModoEdicionCalificaciones(editar) {
+            modoEdicionCalificaciones = editar;
+            botonEditarCalificaciones.textContent = editar ?
+                'Guardar modificaciones' :
+                'Modificar calificaciones';
+
+            boletinFilas.querySelectorAll('.boletin-nota-input').forEach(input => {
+                input.classList.toggle('hidden', !editar);
+            });
+            boletinFilas.querySelectorAll('.boletin-nota-texto').forEach(texto => {
+                texto.classList.toggle('hidden', editar);
+            });
+        }
+
+        function renderizarNotaEditable(valor, valorOriginal, idAsignacion, periodo) {
+            const valorInput = valorOriginal === null || valorOriginal === undefined ?
+                '' :
+                String(valorOriginal);
+            const claseNota = valor !== null && valor !== undefined && Number(valor) < 51 ?
+                'font-bold text-rose-600 bg-rose-50/60' :
+                'font-medium text-slate-700';
+
+            return `<td class="py-2.5 px-2 text-center ${claseNota}">
+                <span class="boletin-nota-texto">${escapeHtml(formatNota(valor))}</span>
+                <input aria-label="Calificación del periodo ${periodo}" class="boletin-nota-input hidden w-16 rounded border border-blue-300 bg-white px-1.5 py-1 text-center text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    type="number" min="0" max="100" step="0.01" value="${escapeHtml(valorInput)}"
+                    data-asignacion="${escapeHtml(idAsignacion)}" data-periodo="${periodo}">
+            </td>`;
+        }
+
+        async function guardarCalificaciones() {
+            const calificaciones = {};
+            boletinFilas.querySelectorAll('.boletin-nota-input').forEach(input => {
+                const idAsignacion = input.dataset.asignacion;
+                const periodo = input.dataset.periodo;
+                calificaciones[idAsignacion] ??= {};
+                calificaciones[idAsignacion][periodo] = input.value === '' ? null : input.value;
+            });
+
+            botonEditarCalificaciones.disabled = true;
+            botonEditarCalificaciones.textContent = 'Guardando...';
+            ocultarAlertaBoletin();
+
+            try {
+                const response = await fetch(
+                    `{{ route('boletin.calificaciones.actualizar', ['idEstudiante' => ':id']) }}`.replace(
+                        ':id',
+                        encodeURIComponent(estudianteBoletinActual)
+                    ), {
+                        method: 'PUT',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: JSON.stringify({
+                            id_curso: cursoBoletinId,
+                            calificaciones,
+                        }),
+                    }
+                );
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    const validationError = data.errors ? Object.values(data.errors).flat()[0] : null;
+                    throw new Error(validationError || data.error || data.message ||
+                        'No se pudieron guardar las calificaciones.');
+                }
+
+                establecerModoEdicionCalificaciones(false);
+                const actualizado = await abrirBoletin(estudianteBoletinActual, true);
+                mostrarAlertaBoletin(
+                    actualizado ?
+                    (data.message || 'Las calificaciones se guardaron correctamente.') :
+                    'Las calificaciones se guardaron, pero no se pudo actualizar la vista. Cierre y vuelva a abrir el boletín.',
+                    actualizado ? 'success' : 'warning'
+                );
+            } catch (error) {
+                console.error('Error guardando calificaciones:', error);
+                establecerModoEdicionCalificaciones(true);
+                mostrarAlertaBoletin(error.message, 'error');
+            } finally {
+                if (modoEdicionCalificaciones) {
+                    botonEditarCalificaciones.disabled = false;
+                    botonEditarCalificaciones.textContent = 'Guardar modificaciones';
+                }
+            }
+        }
+
+        function actualizarResumenBoletin(estudiante, asignaciones) {
+            const notasFinales = asignaciones
+                .filter(asignacion => asignacion.promedio_final !== null &&
+                    asignacion.promedio_final !== undefined && asignacion.promedio_final !== '')
+                .map(asignacion => Number(asignacion.promedio_final))
+                .filter(Number.isFinite);
+            const aprobadas = notasFinales.filter(nota => nota >= 51).length;
+            const reprobadas = notasFinales.length - aprobadas;
+            const promedio = notasFinales.length ?
+                (notasFinales.reduce((total, nota) => total + nota, 0) / notasFinales.length).toFixed(1) :
+                '—';
+            const estado = {
+                E: ['Efectivo', 'bg-emerald-100', 'text-emerald-700', 'border-emerald-200'],
+                R: ['Retirado', 'bg-rose-100', 'text-rose-700', 'border-rose-200'],
+                A: ['Abandono', 'bg-slate-100', 'text-slate-700', 'border-slate-200'],
+            }[estudiante.estado] || ['No registrado', 'bg-slate-100', 'text-slate-700', 'border-slate-200'];
+            const estadoElemento = document.getElementById('boletin-estado');
+
+            estadoElemento.textContent = estado[0];
+            estadoElemento.className =
+                `inline-flex items-center px-2.5 py-0.5 rounded-full border text-[11px] font-semibold ${estado.slice(1).join(' ')}`;
+            document.getElementById('boletin-promedio').textContent = promedio;
+            document.getElementById('boletin-aprobadas').textContent = `${aprobadas} / ${notasFinales.length}`;
+            document.getElementById('boletin-porcentaje').textContent = notasFinales.length ?
+                `${Math.round((aprobadas / notasFinales.length) * 100)}% de asignaturas` :
+                'Sin calificaciones';
+            document.getElementById('boletin-reprobadas').textContent = reprobadas;
+            document.getElementById('boletin-riesgo-etiqueta').textContent = reprobadas ?
+                'Atención prioritaria' :
+                'Sin materias reprobadas';
+
+            const observacion = estudiante.observacion?.trim();
+            const materiasEnRiesgo = asignaciones
+                .filter(asignacion => asignacion.promedio_final !== null &&
+                    asignacion.promedio_final !== undefined && asignacion.promedio_final !== '' &&
+                    Number.isFinite(Number(asignacion.promedio_final)) &&
+                    Number(asignacion.promedio_final) < 51)
+                .map(asignacion => asignacion.materia);
+            const recomendacion = observacion || (materiasEnRiesgo.length ?
+                `Se recomienda reforzar las siguientes áreas: ${materiasEnRiesgo.join(', ')}.` :
+                'No hay observaciones registradas para este estudiante.');
+            document.getElementById('boletin-observaciones').textContent = recomendacion;
+        }
+
+        function abrirBoletin(idEstudiante, refrescar = false) {
+            estudianteBoletinActual = idEstudiante;
+            botonEditarCalificaciones.disabled = true;
+
+            if (!refrescar) {
+                establecerModoEdicionCalificaciones(false);
+                ocultarAlertaBoletin();
+                boletinFilas.innerHTML =
+                    '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Cargando boletín...</td></tr>';
+                document.getElementById('modal-title').textContent = 'Boletín de Calificaciones';
+                document.getElementById('boletin-encabezado').textContent = 'Cargando datos...';
+                document.getElementById('boletin-estudiante').textContent = 'Cargando...';
+                document.getElementById('boletin-estado').textContent = 'Cargando...';
+                document.getElementById('boletin-rude').textContent = '—';
+                document.getElementById('boletin-curso').textContent = '—';
+                document.getElementById('boletin-nivel').textContent = '—';
+                document.getElementById('boletin-turno').textContent = '—';
+                document.getElementById('boletin-codigo').textContent = idEstudiante;
+                document.getElementById('boletin-promedio').textContent = '—';
+                document.getElementById('boletin-aprobadas').textContent = '— / —';
+                document.getElementById('boletin-porcentaje').textContent = '—';
+                document.getElementById('boletin-reprobadas').textContent = '—';
+                document.getElementById('boletin-riesgo-etiqueta').textContent = '—';
+                document.getElementById('boletin-observaciones').textContent = 'Cargando observaciones...';
+                mostrarBoletin();
+            }
+
+            const url = `${boletinRutaTemplate.replace(':id', encodeURIComponent(idEstudiante))}?id_curso=${encodeURIComponent(cursoBoletinId)}`;
+
+            return fetch(url, {
                     headers: {
                         'Accept': 'application/json',
                     },
@@ -671,48 +1097,79 @@
                 })
                 .then(data => {
                     const estudiante = data.estudiante || {};
-                    titulo.textContent = estudiante.nombre_completo || 'Estudiante';
-                    subtitulo.textContent =
-                        `${estudiante.curso || 'Sin curso'} • ${estudiante.gestion || 'Sin gestión'}`;
+                    const asignaciones = Array.isArray(data.asignaciones) ? data.asignaciones : [];
 
-                    if (!data.asignaciones || data.asignaciones.length === 0) {
-                        body.innerHTML =
-                            '<tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Este estudiante no tiene calificaciones registradas.</td></tr>';
-                        return;
+                    document.getElementById('boletin-estudiante').textContent =
+                        estudiante.nombre_completo || 'Estudiante';
+                    document.getElementById('boletin-rude').textContent = estudiante.rude || 'No registrado';
+                    document.getElementById('boletin-curso').textContent = estudiante.curso || 'Sin curso asignado';
+                    document.getElementById('boletin-nivel').textContent = estudiante.nivel || 'No disponible';
+                    document.getElementById('boletin-turno').textContent = estudiante.turno || 'No disponible';
+                    document.getElementById('modal-title').textContent =
+                        `Boletín de Calificaciones - Gestión ${estudiante.gestion || 'No registrada'}`;
+                    document.getElementById('boletin-encabezado').textContent =
+                        `${estudiante.curso || 'Sin curso'} · Gestión ${estudiante.gestion || 'No registrada'}`;
+                    actualizarResumenBoletin(estudiante, asignaciones);
+
+                    if (asignaciones.length === 0) {
+                        boletinFilas.innerHTML =
+                            '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Este estudiante no tiene calificaciones registradas.</td></tr>';
+                        establecerModoEdicionCalificaciones(false);
+                        botonEditarCalificaciones.disabled = true;
+                        return true;
                     }
 
-                    body.innerHTML = data.asignaciones.map(asignacion => {
-                        const nota1 = formatNota(asignacion.notas['1']);
-                        const nota2 = formatNota(asignacion.notas['2']);
-                        const nota3 = formatNota(asignacion.notas['3']);
+                    boletinFilas.innerHTML = asignaciones.map(asignacion => {
+                        const notas = asignacion.notas || {};
+                        const notasOriginales = asignacion.notasOriginales || notas;
                         const promedio = formatNota(asignacion.promedio_final);
-
-                        const nota1Class = asignacion.notas['1'] !== null && asignacion.notas['1'] < 51 ?
-                            'boletin-score-low' : '';
-                        const nota2Class = asignacion.notas['2'] !== null && asignacion.notas['2'] < 51 ?
-                            'boletin-score-low' : '';
-                        const nota3Class = asignacion.notas['3'] !== null && asignacion.notas['3'] < 51 ?
-                            'boletin-score-low' : '';
+                        const promedioNumerico = Number(asignacion.promedio_final);
+                        const tienePromedio = asignacion.promedio_final !== null &&
+                            asignacion.promedio_final !== undefined && asignacion.promedio_final !== '' &&
+                            Number.isFinite(promedioNumerico);
+                        const necesitaRefuerzo = tienePromedio && promedioNumerico < 51;
+                        const filaClase = necesitaRefuerzo ?
+                            'hover:bg-rose-50/40 bg-rose-50/20' :
+                            'hover:bg-slate-50';
+                        const estadoClase = !tienePromedio ?
+                            'bg-slate-100 text-slate-700 border-slate-200' :
+                            necesitaRefuerzo ?
+                            'bg-rose-100 text-rose-700 border-rose-200' :
+                            'bg-emerald-100 text-emerald-800 border-emerald-200';
+                        const estadoTexto = !tienePromedio ?
+                            'Pendiente' :
+                            necesitaRefuerzo ?
+                            'Requiere refuerzo' :
+                            'Aprobado';
 
                         return `
-                            <tr class="border-b border-slate-200 hover:bg-slate-200 odd:bg-white even:bg-slate-50">
-                                <td class="px-4 py-1 align-top w-fit">
-                                    <div class="text-sm font-medium text-slate-900">${asignacion.materia}</div>
-                                    <div class="mt-1 text-[10px] text-slate-500">PROF. ${asignacion.profesor}</div>
-                                </td>
-                                <td class="px-4 py-1 text-center ${nota1Class}">${nota1}</td>
-                                <td class="px-4 py-1 text-center ${nota2Class}">${nota2}</td>
-                                <td class="px-4 py-1 text-center ${nota3Class}">${nota3}</td>
-                                <td class="px-4 py-1 text-center">
-                                    <span class="inline-flex min-w-[56px] items-center justify-center rounded-full px-3 py-1 text-sm font-semibold boletin-final">${promedio}</span>
-                                </td>
+                            <tr class="transition-colors ${filaClase}">
+                                <td class="py-2.5 px-4 font-medium text-slate-900">${escapeHtml(asignacion.materia || 'Sin materia')}</td>
+                                <td class="py-2.5 px-3 text-slate-500 text-[11px]">Prof. ${escapeHtml(asignacion.profesor || 'No asignado')}</td>
+                                ${renderizarNotaEditable(notas['1'], notasOriginales['1'], asignacion.idAsignacion, 1)}
+                                ${renderizarNotaEditable(notas['2'], notasOriginales['2'], asignacion.idAsignacion, 2)}
+                                ${renderizarNotaEditable(notas['3'], notasOriginales['3'], asignacion.idAsignacion, 3)}
+                                <td class="py-2.5 px-3 text-center font-bold ${necesitaRefuerzo ? 'text-rose-600' : 'text-slate-800'}">${escapeHtml(promedio)}</td>
+                                <td class="py-2.5 px-3 text-center"><span class="inline-block rounded-md border px-2 py-0.5 text-[10px] font-semibold ${estadoClase}">${estadoTexto}</span></td>
                             </tr>`;
                     }).join('');
+                    establecerModoEdicionCalificaciones(false);
+                    botonEditarCalificaciones.disabled = false;
+                    return true;
                 })
                 .catch(error => {
                     console.error('Error cargando boletín:', error);
-                    body.innerHTML =
-                        '<tr><td colspan="5" class="px-4 py-8 text-center text-red-600">No se pudo cargar el boletín. Intente de nuevo.</td></tr>';
+                    boletinFilas.innerHTML =
+                        '<tr><td colspan="7" class="px-4 py-8 text-center text-red-600">No se pudo cargar el boletín. Intente de nuevo.</td></tr>';
+                    document.getElementById('boletin-estudiante').textContent = 'No se pudieron cargar los datos';
+                    document.getElementById('boletin-observaciones').textContent = error.message;
+                    botonEditarCalificaciones.disabled = true;
+                    if (refrescar) {
+                        mostrarAlertaBoletin('No se pudo volver a cargar la información del boletín.', 'warning');
+                    } else {
+                        mostrarAlertaBoletin(error.message, 'error');
+                    }
+                    return false;
                 });
         }
 

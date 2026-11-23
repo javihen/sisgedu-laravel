@@ -56,6 +56,8 @@ Route::delete('/estudiante/destroy/{id}', [EstudianteController::class, 'destroy
 Route::put('/estudiante/{id}', [EstudianteController::class, 'update'])->name('estudiante.update');
 Route::get('/estudiante-curso/{id}', [EstudianteController::class, 'estudiantexcurso'])->name('estudiante.curso');
 Route::get('/boletin/{idEstudiante}/json', [BoletinController::class, 'obtenerBoletin'])->name('boletin.obtener');
+Route::put('/boletin/{idEstudiante}/calificaciones', [BoletinController::class, 'actualizarCalificaciones'])
+    ->name('boletin.calificaciones.actualizar');
 
 Route::get('/estudiante-asistencia/{id}', [EstudianteController::class, 'estudiantexasistencia'])->name('estudiante.asistencia');
 
