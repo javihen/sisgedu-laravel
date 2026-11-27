@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Asignacion;
 use App\Models\Estudiante;
+use App\Models\Gestion;
+use App\Models\Nota;
 use App\Models\PromedioHistoricoBth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,19 +38,30 @@ class HistorialBthController extends Controller
             ->whereIn('anio', self::ANIOS)
             ->get()
             ->groupBy('id_materia');
+        $promediosFinales = $this->promediosFinalesGestion($idEstudiante, $validated['id_curso']);
 
-        $filas = $materias->map(function ($materia) use ($promedios) {
+        $filas = $materias->map(function ($materia) use ($promedios, $promediosFinales) {
             $valores = $promedios->get($materia->id_materia, collect())
                 ->keyBy('anio')
-                ->map(fn (PromedioHistoricoBth $registro) => (float) $registro->promedio);
-            $ultimasTres = $valores->only([2024, 2025, 2026])->values();
+                ->map(fn (PromedioHistoricoBth $registro) => (int) round((float) $registro->promedio));
+            $promedioFinalGestion = $promediosFinales->get($materia->id_materia);
+            $promediosAnuales = collect(self::ANIOS)
+                ->mapWithKeys(fn (int $anio) => [
+                    $anio => $anio === 2026 && $promedioFinalGestion !== null
+                        ? $promedioFinalGestion
+                        : $valores->get($anio),
+                ]);
+            $ultimasTres = collect([
+                $valores->get(2024),
+                $valores->get(2025),
+                $promedioFinalGestion ?? $valores->get(2026),
+            ])->filter(fn ($promedio) => $promedio !== null);
 
             return [
                 'id_materia' => $materia->id_materia,
                 'materia' => trim($materia->area),
-                'promedios' => collect(self::ANIOS)
-                    ->mapWithKeys(fn (int $anio) => [$anio => $valores->get($anio)])
-                    ->all(),
+                'promedios' => $promediosAnuales->all(),
+                'promedio_2026_automatico' => $promedioFinalGestion !== null,
                 'promedio_ultimas_tres' => $ultimasTres->isNotEmpty()
                     ? round($ultimasTres->avg(), 2)
                     : null,
@@ -74,12 +87,16 @@ class HistorialBthController extends Controller
         ];
 
         foreach (self::ANIOS as $anio) {
-            $reglas["promedios.*.{$anio}"] = ['present', 'nullable', 'numeric', 'decimal:0,2', 'between:0,100'];
+            $reglas["promedios.*.{$anio}"] = [
+                $anio === 2026 ? 'sometimes' : 'present',
+                'nullable',
+                'integer',
+                'between:0,100',
+            ];
         }
 
         $validated = $request->validate($reglas, [
-            'promedios.*.*.numeric' => 'Cada promedio debe ser un número.',
-            'promedios.*.*.decimal' => 'Cada promedio admite como máximo dos decimales.',
+            'promedios.*.*.integer' => 'Cada promedio debe ser un número entero.',
             'promedios.*.*.between' => 'Cada promedio debe estar entre 0 y 100.',
         ]);
         $idGestion = session('gestion_activa');
@@ -107,9 +124,24 @@ class HistorialBthController extends Controller
             return response()->json(['error' => 'Una o más materias no pertenecen al curso seleccionado.'], 403);
         }
 
-        DB::transaction(function () use ($validated, $idEstudiante) {
+        $promediosFinales = $this->promediosFinalesGestion($idEstudiante, $validated['id_curso']);
+
+        DB::transaction(function () use ($validated, $idEstudiante, $promediosFinales) {
             foreach ($validated['promedios'] as $idMateria => $promediosPorAnio) {
                 foreach (self::ANIOS as $anio) {
+                    if ($anio === 2026 && $promediosFinales->has($idMateria)) {
+                        PromedioHistoricoBth::query()
+                            ->where('id_estudiante', $idEstudiante)
+                            ->where('id_materia', $idMateria)
+                            ->where('anio', $anio)
+                            ->delete();
+                        continue;
+                    }
+
+                    if (! array_key_exists($anio, $promediosPorAnio)) {
+                        continue;
+                    }
+
                     $promedio = $promediosPorAnio[$anio];
                     $consulta = PromedioHistoricoBth::query()
                         ->where('id_estudiante', $idEstudiante)
@@ -157,5 +189,43 @@ class HistorialBthController extends Controller
             ->filter()
             ->unique('id_materia')
             ->values();
+    }
+
+    private function promediosFinalesGestion(string $idEstudiante, string $idCurso): Collection
+    {
+        $gestionId = session('gestion_activa');
+        $gestion = $gestionId ? Gestion::find($gestionId) : null;
+
+        if (! $gestion || (int) $gestion->anio !== 2026) {
+            return collect();
+        }
+
+        $notasPorMateria = Nota::query()
+            ->join('asignaciones', 'notas.idAsignacion', '=', 'asignaciones.idAsignacion')
+            ->where('notas.id_estudiante', $idEstudiante)
+            ->where('notas.id_gestion', $gestionId)
+            ->where('asignaciones.idcurso', $idCurso)
+            ->where('asignaciones.id_gestion', $gestionId)
+            ->whereIn('notas.periodo', [1, 2, 3])
+            ->get([
+                'asignaciones.id_materia',
+                'notas.periodo',
+                'notas.calificacion',
+            ])
+            ->groupBy('id_materia');
+
+        return $notasPorMateria
+            ->map(function (Collection $notasMateria) {
+                $promediosTrimestrales = $notasMateria
+                    ->groupBy('periodo')
+                    ->map(fn (Collection $notasTrimestre) => $notasTrimestre->avg('calificacion'));
+
+                if ($promediosTrimestrales->count() !== 3) {
+                    return null;
+                }
+
+                return (int) round($promediosTrimestrales->avg());
+            })
+            ->filter(fn ($promedio) => $promedio !== null);
     }
 }

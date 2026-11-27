@@ -13,10 +13,14 @@ class HistorialBthTest extends TestCase
     {
         parent::setUp();
 
-        foreach (['promedios_historicos_bth', 'notas', 'asignaciones', 'materias', 'inscripciones', 'estudiantes', 'cursos'] as $table) {
+        foreach (['promedios_historicos_bth', 'notas', 'asignaciones', 'materias', 'inscripciones', 'estudiantes', 'cursos', 'gestiones'] as $table) {
             Schema::dropIfExists($table);
         }
 
+        Schema::create('gestiones', function (Blueprint $table) {
+            $table->unsignedBigInteger('id_gestion')->primary();
+            $table->integer('anio');
+        });
         Schema::create('cursos', function (Blueprint $table) {
             $table->string('id')->primary();
         });
@@ -66,6 +70,7 @@ class HistorialBthTest extends TestCase
             $table->unique(['id_estudiante', 'id_materia', 'anio']);
         });
 
+        DB::table('gestiones')->insert(['id_gestion' => 1, 'anio' => 2026]);
         DB::table('cursos')->insert(['id' => 'C1']);
         DB::table('estudiantes')->insert([
             'id_estudiante' => 'E001',
@@ -162,5 +167,141 @@ class HistorialBthTest extends TestCase
             ->assertForbidden();
 
         $this->assertDatabaseCount('promedios_historicos_bth', 0);
+    }
+
+    public function test_it_uses_the_current_management_final_average_for_the_2026_column(): void
+    {
+        DB::table('notas')->insert([
+            [
+                'calificacion' => 88,
+                'periodo' => 2,
+                'id_estudiante' => 'E001',
+                'idAsignacion' => 1,
+                'id_gestion' => 1,
+            ],
+            [
+                'calificacion' => 91,
+                'periodo' => 3,
+                'id_estudiante' => 'E001',
+                'idAsignacion' => 1,
+                'id_gestion' => 1,
+            ],
+        ]);
+        DB::table('promedios_historicos_bth')->insert([
+            'id_estudiante' => 'E001',
+            'id_materia' => 10,
+            'anio' => 2026,
+            'promedio' => 99,
+        ]);
+
+        $this->withSession(['gestion_activa' => 1])
+            ->getJson('/estudiante/E001/historial-bth?id_curso=C1')
+            ->assertOk()
+            ->assertJsonPath('materias.0.promedios.2026', 84)
+            ->assertJsonPath('materias.0.promedio_2026_automatico', true);
+    }
+
+    public function test_it_does_not_show_a_2026_final_average_until_all_three_trimesters_are_recorded(): void
+    {
+        $this->withSession(['gestion_activa' => 1])
+            ->getJson('/estudiante/E001/historial-bth?id_curso=C1')
+            ->assertOk()
+            ->assertJsonPath('materias.0.promedios.2026', null)
+            ->assertJsonPath('materias.0.promedio_2026_automatico', false);
+    }
+
+    public function test_it_only_uses_the_active_management_for_the_2026_column_when_its_year_is_2026(): void
+    {
+        DB::table('gestiones')->where('id_gestion', 1)->update(['anio' => 2025]);
+        DB::table('notas')->insert([
+            [
+                'calificacion' => 88,
+                'periodo' => 2,
+                'id_estudiante' => 'E001',
+                'idAsignacion' => 1,
+                'id_gestion' => 1,
+            ],
+            [
+                'calificacion' => 91,
+                'periodo' => 3,
+                'id_estudiante' => 'E001',
+                'idAsignacion' => 1,
+                'id_gestion' => 1,
+            ],
+        ]);
+
+        $this->withSession(['gestion_activa' => 1])
+            ->getJson('/estudiante/E001/historial-bth?id_curso=C1')
+            ->assertOk()
+            ->assertJsonPath('materias.0.promedios.2026', null)
+            ->assertJsonPath('materias.0.promedio_2026_automatico', false);
+    }
+
+    public function test_historical_average_inputs_only_accept_integers(): void
+    {
+        $this->withSession(['gestion_activa' => 1])
+            ->putJson('/estudiante/E001/historial-bth', [
+                'id_curso' => 'C1',
+                'promedios' => [
+                    10 => [
+                        2022 => 70,
+                        2023 => 75.5,
+                        2024 => 80,
+                        2025 => 90,
+                        2026 => null,
+                    ],
+                ],
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('promedios.10.2023');
+
+        $this->assertDatabaseCount('promedios_historicos_bth', 0);
+    }
+
+    public function test_saving_the_history_does_not_overwrite_or_keep_a_stored_2026_average_when_the_final_is_available(): void
+    {
+        DB::table('notas')->insert([
+            [
+                'calificacion' => 88,
+                'periodo' => 2,
+                'id_estudiante' => 'E001',
+                'idAsignacion' => 1,
+                'id_gestion' => 1,
+            ],
+            [
+                'calificacion' => 91,
+                'periodo' => 3,
+                'id_estudiante' => 'E001',
+                'idAsignacion' => 1,
+                'id_gestion' => 1,
+            ],
+        ]);
+        DB::table('promedios_historicos_bth')->insert([
+            'id_estudiante' => 'E001',
+            'id_materia' => 10,
+            'anio' => 2026,
+            'promedio' => 99,
+        ]);
+
+        $this->withSession(['gestion_activa' => 1])
+            ->putJson('/estudiante/E001/historial-bth', [
+                'id_curso' => 'C1',
+                'promedios' => [
+                    10 => [
+                        2022 => 70,
+                        2023 => 75,
+                        2024 => 80,
+                        2025 => 90,
+                        2026 => 100,
+                    ],
+                ],
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseMissing('promedios_historicos_bth', [
+            'id_estudiante' => 'E001',
+            'id_materia' => 10,
+            'anio' => 2026,
+        ]);
     }
 }

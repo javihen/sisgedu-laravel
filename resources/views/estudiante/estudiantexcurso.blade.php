@@ -430,8 +430,8 @@
                     </div>
                     <div class="flex-1 overflow-auto bg-slate-50 p-4 sm:p-6">
                         <p class="mb-4 text-sm text-slate-600">
-                            Registre o corrija los promedios anuales de cada materia. Estos datos se guardan por separado
-                            y no modifican las calificaciones ni los promedios del boletín actual.
+                            Registre los promedios anuales como números enteros. El promedio de 2026 se calcula
+                            automáticamente cuando están registradas las notas de los tres trimestres.
                         </p>
                         <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
                             <table class="w-full min-w-[900px] text-sm">
@@ -996,10 +996,17 @@
                 historialBthFilas.innerHTML = data.materias.map(materia => {
                     const celdas = data.anios.map(anio => {
                         const valor = materia.promedios[anio] ?? '';
+                        const promedioAutomatico = anio === 2026 && materia.promedio_2026_automatico;
+                        const claseAutomatico = promedioAutomatico ?
+                            ' bg-slate-100 text-slate-600 cursor-not-allowed' :
+                            '';
+                        const atributoAutomatico = promedioAutomatico ?
+                            ' readonly aria-readonly="true" data-automatico="true"' :
+                            '';
 
                         return `<td class="px-2 py-2 text-center">
-                            <input aria-label="${escapeHtml(materia.materia)} ${anio}" class="historial-bth-input w-20 rounded border border-slate-300 px-2 py-1.5 text-center text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                                type="number" min="0" max="100" step="0.01" value="${escapeHtml(valor)}"
+                            <input aria-label="${escapeHtml(materia.materia)} ${anio}" class="historial-bth-input w-20 rounded border border-slate-300 px-2 py-1.5 text-center text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500${claseAutomatico}"
+                                type="number" inputmode="numeric" min="0" max="100" step="1" value="${escapeHtml(valor)}"${atributoAutomatico}
                                 data-materia="${escapeHtml(materia.id_materia)}" data-anio="${anio}">
                         </td>`;
                     }).join('');
@@ -1042,6 +1049,10 @@
         async function guardarHistorialBth() {
             const promedios = {};
             historialBthFilas.querySelectorAll('.historial-bth-input').forEach(input => {
+                if (input.dataset.automatico === 'true') {
+                    return;
+                }
+
                 const { materia, anio } = input.dataset;
                 promedios[materia] ??= {};
                 promedios[materia][anio] = input.value === '' ? null : input.value;
