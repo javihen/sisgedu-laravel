@@ -257,6 +257,19 @@ class ReprobacionesCursoTest extends TestCase
         ]);
     }
 
+    public function test_course_navigation_page_renders_routes_for_its_actions(): void
+    {
+        $response = $this->withSession(['gestion_activa' => 1])
+            ->get('/curso');
+
+        $response->assertOk()
+            ->assertSee(route('curso.reporte-matricula'), false)
+            ->assertSee(route('curso.validar-rude'), false)
+            ->assertSee(route('notas.index', ['id_gestion' => 1]), false)
+            ->assertSee('__COURSE_ID__')
+            ->assertSee('C21A');
+    }
+
     public function test_it_generates_a_course_centralizer_pdf(): void
     {
         $response = $this->withSession(['gestion_activa' => 1])
@@ -266,6 +279,33 @@ class ReprobacionesCursoTest extends TestCase
             ->assertHeader('content-type', 'application/pdf');
 
         $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
+
+    public function test_it_generates_the_general_enrollment_report_for_the_active_management(): void
+    {
+        $response = $this->withSession(['gestion_activa' => 1])
+            ->get('/curso/reporte-matricula');
+
+        $response->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
+
+    public function test_it_reports_missing_and_duplicate_rudes_for_the_active_management(): void
+    {
+        DB::table('estudiantes')->where('id_estudiante', 'E001')->update(['rude' => ' RUDE-2 ']);
+        DB::table('estudiantes')->where('id_estudiante', 'E003')->update(['rude' => null]);
+
+        $response = $this->withSession(['gestion_activa' => 1])
+            ->get('/curso/validar-rude');
+
+        $response->assertOk()
+            ->assertSee('Estudiante Uno Reprobado')
+            ->assertSee('Estudiante Tres Limite')
+            ->assertSee('RUDE-2')
+            ->assertSee('RUDE duplicados')
+            ->assertSee('sin RUDE');
     }
 
     private function createAcademicFixture(): void

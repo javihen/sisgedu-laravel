@@ -38,6 +38,8 @@ Route::post('/gestion/cambiar-estado/{id}', [GestionController::class, 'cambiarE
 
 // -------------- MODULO CURSO ---------------------//
 Route::get('/curso', [CursoController::class, 'index'])->name('curso.index');
+Route::get('/curso/reporte-matricula', [CursoController::class, 'reporteMatricula'])->name('curso.reporte-matricula');
+Route::get('/curso/validar-rude', [CursoController::class, 'validarRude'])->name('curso.validar-rude');
 Route::post('/curso/store', [CursoController::class, 'store'])->name('curso.store');
 Route::delete('/curso/destroy/{id}', [CursoController::class, 'destroy'])->name('curso.destroy');
 Route::get('/curso/asignado/{id}', [CursoController::class, 'CursosAsignados'])->name('curso.asignados');

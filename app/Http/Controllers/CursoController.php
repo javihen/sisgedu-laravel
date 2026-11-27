@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Curso;
 use App\Models\Asignacion;
+use App\Models\Estudiante;
 use App\Models\Gestion;
 use App\Models\Inscripcion;
 use App\Models\Nota;
@@ -55,7 +56,97 @@ class CursoController extends Controller
                 $query->where('id_gestion', $gestionActiva);
             }
         ])->orderBy('grado')->orderBy('paralelo')->get();
-        return view('curso.index', compact('Minicial', 'Tinicial', 'Mprimaria', 'Tprimaria', 'Msecundaria', 'Tsecundaria'));              /* Retorna el frontend de curso con la variable donde se guardara todas las tuplas */
+
+        $coursesForNavigation = collect([
+            $Minicial,
+            $Tinicial,
+            $Mprimaria,
+            $Tprimaria,
+            $Msecundaria,
+            $Tsecundaria,
+        ])->flatten(1)->map(fn (Curso $curso) => [
+            'id' => $curso->id,
+            'nivel' => (int) $curso->nivel,
+            'grado' => (int) $curso->grado,
+            'paralelo' => (string) $curso->paralelo,
+            'turno' => $curso->turno,
+        ])->values();
+
+        return view('curso.index', compact(
+            'Minicial',
+            'Tinicial',
+            'Mprimaria',
+            'Tprimaria',
+            'Msecundaria',
+            'Tsecundaria',
+            'coursesForNavigation'
+        ));
+    }
+
+    public function reporteMatricula()
+    {
+        $gestionId = session('gestion_activa');
+        abort_if(! $gestionId, 409, 'No hay una gestión activa para generar el reporte.');
+
+        $gestion = Gestion::findOrFail($gestionId);
+        $cursos = Curso::withCount([
+            'inscripciones as total_estudiantes' => function ($query) use ($gestionId) {
+                $query->where('id_gestion', $gestionId);
+            },
+        ])
+            ->orderBy('nivel')
+            ->orderBy('turno')
+            ->orderBy('grado')
+            ->orderBy('paralelo')
+            ->get();
+
+        $niveles = [
+            0 => 'Inicial en Familia Comunitaria',
+            1 => 'Primaria Comunitaria Vocacional',
+            2 => 'Secundaria Comunitaria Productiva',
+        ];
+
+        $pdf = Pdf::loadView('curso.reporte-matricula', [
+            'gestion' => $gestion,
+            'cursos' => $cursos,
+            'niveles' => $niveles,
+            'totalEstudiantes' => $cursos->sum('total_estudiantes'),
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream("reporte_matricula_{$gestion->anio}.pdf");
+    }
+
+    public function validarRude()
+    {
+        $gestionId = session('gestion_activa');
+        abort_if(! $gestionId, 409, 'No hay una gestión activa para validar los RUDE.');
+
+        $gestion = Gestion::findOrFail($gestionId);
+        $estudiantes = Estudiante::query()
+            ->select('id_estudiante', 'rude', 'nombres', 'appaterno', 'apmaterno')
+            ->whereHas('inscripciones', function ($query) use ($gestionId) {
+                $query->where('id_gestion', $gestionId);
+            })
+            ->with(['inscripciones' => function ($query) use ($gestionId) {
+                $query->where('id_gestion', $gestionId)->with('curso');
+            }])
+            ->orderBy('appaterno')
+            ->orderBy('apmaterno')
+            ->orderBy('nombres')
+            ->get();
+
+        $rudesDuplicados = $estudiantes
+            ->filter(fn (Estudiante $estudiante) => trim((string) $estudiante->rude) !== '')
+            ->groupBy(fn (Estudiante $estudiante) => mb_strtoupper(trim($estudiante->rude)))
+            ->filter(fn ($grupo) => $grupo->count() > 1);
+        $estudiantesSinRude = $estudiantes
+            ->filter(fn (Estudiante $estudiante) => trim((string) $estudiante->rude) === '');
+
+        return view('curso.validar-rude', compact(
+            'gestion',
+            'rudesDuplicados',
+            'estudiantesSinRude'
+        ));
     }
 
     /**

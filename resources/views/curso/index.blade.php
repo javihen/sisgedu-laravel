@@ -212,11 +212,11 @@
                                 </button>
                             </div>
                             <!-- Export General Report Button -->
-                            <button
+                            <a href="{{ route('curso.reporte-matricula') }}"
                                 class="h-10 px-4 bg-secondary text-on-secondary font-label-lg text-label-lg rounded-lg shadow-sm hover:opacity-95 transition-all flex items-center gap-2">
                                 <span class="material-symbols-outlined text-[18px]">download_for_offline</span>
                                 <span>Reporte General de Matrícula</span>
-                            </button>
+                            </a>
                         </div>
                     </div>
 
@@ -1023,15 +1023,15 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-3 w-full md:w-auto justify-end">
-                            <button
+                            <a href="{{ route('notas.index', ['id_gestion' => session('gestion_activa')]) }}"
                                 class="px-4 py-2 bg-surface-container-high text-on-surface rounded-lg font-label-lg text-label-lg font-semibold hover:bg-surface-variant transition-all">
                                 Historial de Actas
-                            </button>
-                            <button
+                            </a>
+                            <a href="{{ route('curso.validar-rude') }}"
                                 class="px-4 py-2 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg font-semibold hover:opacity-90 shadow-sm transition-all flex items-center gap-2">
                                 <span class="material-symbols-outlined text-[18px]">verified</span>
                                 <span>Validar Consistencia RUDE</span>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1044,8 +1044,16 @@
                     const searchInput = document.getElementById('courseSearchInput');
                     const btnManana = document.getElementById('btnTurnoManana');
                     const btnTarde = document.getElementById('btnTurnoTarde');
+                    const navigationCourses = @json($coursesForNavigation);
+                    const courseActionRoutes = {
+                        lista: @json(route('estudiante.curso', '__COURSE_ID__')),
+                        boletines: @json(route('notas.centralizador', '__COURSE_ID__')),
+                        riesgo: @json(route('curso.reprobaciones', '__COURSE_ID__')),
+                        a3: @json(route('curso.reprobaciones.centralizador', '__COURSE_ID__')),
+                    };
 
                     let currentFilter = 'secundaria'; // Default to secundaria as requested
+                    let currentTurno = 'M';
 
                     function updateCardVisibility() {
                         const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -1066,6 +1074,52 @@
                             }
                         });
                     }
+
+                    function getCardCourse(card, paralelo = null) {
+                        const niveles = {
+                            inicial: 0,
+                            primaria: 1,
+                            secundaria: 2,
+                        };
+                        const nivel = niveles[card.dataset.level];
+                        const gradeMatch = (card.dataset.name || '').match(/\d+/);
+                        const grado = Number(card.dataset.grade || gradeMatch?.[0] || 2);
+
+                        return navigationCourses.find(course =>
+                            course.nivel === nivel &&
+                            course.grado === grado &&
+                            course.turno === currentTurno &&
+                            (!paralelo || course.paralelo.toUpperCase() === paralelo.toUpperCase())
+                        );
+                    }
+
+                    function navigateToCourseAction(card, action, paralelo = null) {
+                        const curso = getCardCourse(card, paralelo);
+                        if (!curso) {
+                            const parallelText = paralelo ? ` paralelo ${paralelo}` : '';
+                            window.alert(`No existe el curso de grado ${card.dataset.name}${parallelText} en el turno seleccionado.`);
+                            return;
+                        }
+
+                        window.location.href = courseActionRoutes[action].replace('__COURSE_ID__', encodeURIComponent(curso.id));
+                    }
+
+                    document.addEventListener('click', event => {
+                        const button = event.target.closest('.course-card button');
+                        if (!button) return;
+
+                        const card = button.closest('.course-card');
+                        const actionBar = button.closest('.pt-table-row-standard');
+
+                        if (actionBar) {
+                            const action = ['lista', 'boletines', 'riesgo', 'a3'][Array.from(actionBar.children).indexOf(button)];
+                            if (action) navigateToCourseAction(card, action);
+                            return;
+                        }
+
+                        const parallel = button.querySelector('span')?.textContent.trim().match(/^Paralelo\s+(.+)$/)?.[1];
+                        if (parallel) navigateToCourseAction(card, 'lista', parallel);
+                    });
 
                     tabs.forEach(tab => {
                         tab.addEventListener('click', () => {
@@ -1091,6 +1145,7 @@
                     // Turn toggle styling
                     if (btnManana && btnTarde) {
                         btnManana.addEventListener('click', () => {
+                            currentTurno = 'M';
                             btnManana.className =
                                 'px-3 py-1.5 rounded-lg bg-surface-container-lowest font-label-md text-label-md font-semibold text-primary shadow-sm transition-all flex items-center gap-1.5';
                             btnTarde.className =
@@ -1098,6 +1153,7 @@
                         });
 
                         btnTarde.addEventListener('click', () => {
+                            currentTurno = 'T';
                             btnTarde.className =
                                 'px-3 py-1.5 rounded-lg bg-surface-container-lowest font-label-md text-label-md font-semibold text-primary shadow-sm transition-all flex items-center gap-1.5';
                             btnManana.className =
