@@ -10,6 +10,7 @@ use App\Http\Controllers\CursoController;
 use App\Http\Controllers\EntrevistaController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\GestionController;
+use App\Http\Controllers\HistorialBthController;
 use App\Http\Controllers\MateriaController;
 use App\Http\Controllers\NotaController;
 use App\Http\Controllers\PermisoController;
@@ -58,6 +59,10 @@ Route::get('/estudiante-curso/{id}', [EstudianteController::class, 'estudiantexc
 Route::get('/boletin/{idEstudiante}/json', [BoletinController::class, 'obtenerBoletin'])->name('boletin.obtener');
 Route::put('/boletin/{idEstudiante}/calificaciones', [BoletinController::class, 'actualizarCalificaciones'])
     ->name('boletin.calificaciones.actualizar');
+Route::get('/estudiante/{idEstudiante}/historial-bth', [HistorialBthController::class, 'obtener'])
+    ->name('estudiante.historial-bth.obtener');
+Route::put('/estudiante/{idEstudiante}/historial-bth', [HistorialBthController::class, 'actualizar'])
+    ->name('estudiante.historial-bth.actualizar');
 
 Route::get('/estudiante-asistencia/{id}', [EstudianteController::class, 'estudiantexasistencia'])->name('estudiante.asistencia');
 

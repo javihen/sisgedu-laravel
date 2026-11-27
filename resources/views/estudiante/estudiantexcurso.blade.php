@@ -106,6 +106,9 @@
                                 <a href="#"
                                     class="bg-[#888888] text-white text-xs px-2 py-2 rounded hover:text-[#888888] hover:bg-white border-2 border-[#888888] "><i
                                         class="fa-solid fa-list-check"></i> Asistencias</a>
+                                <a href="#historial-bth-modal" data-id="{{ $estudiante->id_estudiante }}"
+                                    class="btn-historial-bth bg-[#8B00FF] text-white text-xs px-2 py-2 rounded hover:text-[#8B00FF] hover:bg-white border-2 border-[#8B00FF]">
+                                    Historial BTH</a>
                                 <a href="#"
                                     class="bg-[#F62961] text-white text-xs px-2 py-2 rounded hover:text-[#F62961] hover:bg-white border-2 border-[#F62961] ">
                                     <i class="fa-solid fa-box"></i> Observaciones</a>
@@ -139,8 +142,7 @@
             </div>
             {{-- modal boletin de calificaciones nuevo --}}
 
-            <div aria-labelledby="modal-title" aria-modal="true"
-                aria-hidden="true"
+            <div aria-labelledby="modal-title" aria-modal="true" aria-hidden="true"
                 class="invisible pointer-events-none fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-slate-900/60 p-2 font-[poppins] opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out motion-reduce:transition-none sm:p-4 lg:p-6"
                 id="boletin-modal" role="dialog" tabindex="-1">
                 <div
@@ -160,12 +162,13 @@
                             <div>
                                 <h3 class="text-base font-bold text-white leading-tight" id="modal-title">Boletín de
                                     Calificaciones</h3>
-                                <p class="text-xs text-blue-100 font-normal mt-0.5" id="boletin-encabezado">Cargando datos...</p>
+                                <p class="text-xs text-blue-100 font-normal mt-0.5" id="boletin-encabezado">Cargando
+                                    datos...</p>
                             </div>
                         </div><button aria-label="Cerrar"
                             class="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-white/10 transition-colors"
-                            id="cerrar-boletin-superior" type="button"><svg class="w-5 h-5"
-                                fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+                            id="cerrar-boletin-superior" type="button"><svg class="w-5 h-5" fill="none"
+                                stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
                                 <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
                             </svg></button>
                     </div>
@@ -175,12 +178,14 @@
                                 <div class="sm:col-span-2"><span
                                         class="text-slate-400 block font-normal mb-0.5">Estudiante:</span>
                                     <div class="text-sm font-bold text-slate-900 flex items-center space-x-2"><span
-                                            class="text-slate-500 font-medium" id="boletin-codigo">—</span><span id="boletin-estudiante">Cargando...</span></div>
+                                            class="text-slate-500 font-medium" id="boletin-codigo">—</span><span
+                                            id="boletin-estudiante">Cargando...</span></div>
                                 </div>
                                 <div><span class="text-slate-400 block font-normal mb-0.5">Código RUDE:</span><span
                                         class="font-mono font-semibold text-slate-800" id="boletin-rude">—</span></div>
                                 <div><span class="text-slate-400 block font-normal mb-0.5">Estado de Gestión:</span><span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full border text-[11px] font-semibold" id="boletin-estado">Cargando...</span></div>
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full border text-[11px] font-semibold"
+                                        id="boletin-estado">Cargando...</span></div>
                                 <div><span class="text-slate-400 block font-normal mb-0.5">Curso y Paralelo:</span><span
                                         class="font-semibold text-slate-800" id="boletin-curso">—</span></div>
                                 <div><span class="text-slate-400 block font-normal mb-0.5">Nivel Educativo:</span><span
@@ -341,7 +346,8 @@
                             <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-center space-x-3">
                                 <div
                                     class="w-10 h-10 rounded-lg bg-blue-50 text-[#005edb] flex items-center justify-center font-bold text-sm border border-blue-100">
-                                    <span id="boletin-promedio">—</span></div>
+                                    <span id="boletin-promedio">—</span>
+                                </div>
                                 <div><span class="text-[11px] text-slate-400 block font-normal leading-none">Promedio
                                         General</span><span class="text-xs font-bold text-slate-800">Escala 1 a 100</span>
                                 </div>
@@ -349,17 +355,21 @@
                             <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-center space-x-3">
                                 <div
                                     class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-sm border border-emerald-100">
-                                    <span id="boletin-aprobadas">— / —</span></div>
+                                    <span id="boletin-aprobadas">— / —</span>
+                                </div>
                                 <div><span class="text-[11px] text-slate-400 block font-normal leading-none">Materias
-                                        Aprobadas</span><span class="text-xs font-bold text-slate-800" id="boletin-porcentaje">—</span>
+                                        Aprobadas</span><span class="text-xs font-bold text-slate-800"
+                                        id="boletin-porcentaje">—</span>
                                 </div>
                             </div>
                             <div class="bg-white rounded-lg border border-slate-200 p-3 flex items-center space-x-3">
                                 <div
                                     class="w-10 h-10 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-sm border border-rose-100">
-                                    <span id="boletin-reprobadas">—</span></div>
+                                    <span id="boletin-reprobadas">—</span>
+                                </div>
                                 <div><span class="text-[11px] text-slate-400 block font-normal leading-none">En Riesgo /
-                                        Reprobadas</span>                                        <span class="text-xs font-bold text-rose-600" id="boletin-riesgo-etiqueta">—</span></div>
+                                        Reprobadas</span> <span class="text-xs font-bold text-rose-600"
+                                        id="boletin-riesgo-etiqueta">—</span></div>
                             </div>
                         </div>
                         <div
@@ -372,7 +382,8 @@
                             </svg>
                             <div><span class="font-bold text-amber-900 block mb-0.5">Observaciones pedagógicas /
                                     Recomendación:</span>
-                                <p class="text-amber-800 leading-relaxed" id="boletin-observaciones">Cargando observaciones...</p>
+                                <p class="text-amber-800 leading-relaxed" id="boletin-observaciones">Cargando
+                                    observaciones...</p>
                             </div>
                         </div>
                     </div>
@@ -385,20 +396,73 @@
                             id="cerrar-boletin" type="button">Cerrar</button>
                         <div class="flex flex-wrap items-center justify-end gap-2.5"><button
                                 class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 rounded shadow-sm transition-colors"
-                                disabled id="editar-calificaciones" type="button">Modificar calificaciones</button><button
+                                disabled id="editar-calificaciones" type="button">Modificar
+                                calificaciones</button><button
                                 class="px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors shadow-2xs flex items-center space-x-1.5"
-                                id="descargar-boletin" type="button"><svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor"
-                                    stroke-width="2" viewbox="0 0 24 24">
+                                id="descargar-boletin" type="button"><svg class="w-4 h-4 text-slate-500" fill="none"
+                                    stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
                                     <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                                         stroke-linecap="round" stroke-linejoin="round"></path>
                                 </svg><span>Descargar PDF</span></button><button
                                 class="px-4 py-2 text-xs font-semibold text-white bg-[#00875a] hover:bg-[#00754e] rounded shadow-sm transition-colors flex items-center space-x-1.5"
-                                id="imprimir-boletin" type="button"><svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                    stroke-width="2" viewbox="0 0 24 24">
+                                id="imprimir-boletin" type="button"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
                                     <path
                                         d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
                                         stroke-linecap="round" stroke-linejoin="round"></path>
                                 </svg><span>Imprimir Boletín Oficial</span></button></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="historial-bth-modal" aria-labelledby="historial-bth-title" aria-modal="true" aria-hidden="true"
+                class="invisible pointer-events-none fixed inset-0 z-[10000] flex items-center justify-center overflow-y-auto bg-slate-900/60 p-2 opacity-0 backdrop-blur-sm transition-opacity duration-300 sm:p-4"
+                role="dialog" tabindex="-1">
+                <div
+                    class="my-auto flex max-h-[92vh] w-full max-w-6xl translate-y-4 scale-95 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white opacity-0 shadow-2xl transition-all duration-300">
+                    <div class="flex items-center justify-between bg-[#8B00FF] px-6 py-4 text-white">
+                        <div>
+                            <h2 id="historial-bth-title" class="text-base font-bold">Historial de promedios BTH</h2>
+                            <p id="historial-bth-estudiante" class="mt-1 text-xs text-purple-100">Cargando estudiante...</p>
+                        </div>
+                        <button id="cerrar-historial-bth" type="button" aria-label="Cerrar"
+                            class="rounded-lg p-2 text-purple-100 hover:bg-white/10 hover:text-white">&times;</button>
+                    </div>
+                    <div class="flex-1 overflow-auto bg-slate-50 p-4 sm:p-6">
+                        <p class="mb-4 text-sm text-slate-600">
+                            Registre o corrija los promedios anuales de cada materia. Estos datos se guardan por separado
+                            y no modifican las calificaciones ni los promedios del boletín actual.
+                        </p>
+                        <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+                            <table class="w-full min-w-[900px] text-sm">
+                                <thead class="bg-slate-100 text-center text-xs text-slate-700">
+                                    <tr>
+                                        <th class="px-3 py-3 text-left">Materia</th>
+                                        <th class="px-2 py-3">2022</th>
+                                        <th class="px-2 py-3">2023</th>
+                                        <th class="px-2 py-3">2024</th>
+                                        <th class="px-2 py-3">2025</th>
+                                        <th class="px-2 py-3">2026</th>
+                                        <th class="px-3 py-3">Promedio 2024–2026</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historial-bth-filas">
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-8 text-center text-slate-500">Seleccione un estudiante.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-white px-6 py-4">
+                        <div id="historial-bth-alerta" class="hidden rounded-md border px-3 py-2 text-xs" role="status"
+                            aria-live="polite"></div>
+                        <div class="ml-auto flex gap-2">
+                            <button id="cerrar-historial-bth-footer" type="button"
+                                class="rounded border border-slate-300 bg-white px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Cerrar</button>
+                            <button id="guardar-historial-bth" type="button" disabled
+                                class="rounded bg-[#8B00FF] px-4 py-2 text-sm font-semibold text-white hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50">Guardar promedios</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -816,8 +880,211 @@
         let modoEdicionCalificaciones = false;
         let temporizadorAlertaBoletin;
         document.body.appendChild(boletinModal);
+        const historialBthModal = document.getElementById('historial-bth-modal');
+        const historialBthPanel = historialBthModal.firstElementChild;
+        const historialBthFilas = document.getElementById('historial-bth-filas');
+        const historialBthGuardar = document.getElementById('guardar-historial-bth');
+        const historialBthAlerta = document.getElementById('historial-bth-alerta');
+        const historialBthRuta = '{{ route('estudiante.historial-bth.obtener', ['idEstudiante' => ':id']) }}';
+        let estudianteHistorialBthActual = null;
+        document.body.appendChild(historialBthModal);
         boletinFilas.innerHTML =
             '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Seleccione un estudiante para consultar sus calificaciones.</td></tr>';
+
+        document.addEventListener('click', event => {
+            const button = event.target.closest('.btn-historial-bth');
+            if (!button) {
+                return;
+            }
+
+            event.preventDefault();
+            abrirHistorialBth(button.dataset.id);
+        });
+
+        ['cerrar-historial-bth', 'cerrar-historial-bth-footer'].forEach(id => {
+            document.getElementById(id).addEventListener('click', cerrarHistorialBth);
+        });
+
+        historialBthModal.addEventListener('click', event => {
+            if (event.target === historialBthModal) {
+                cerrarHistorialBth();
+            }
+        });
+
+        historialBthFilas.addEventListener('input', event => {
+            if (event.target.matches('.historial-bth-input')) {
+                actualizarPromedioUltimasTres(event.target.dataset.materia);
+            }
+        });
+
+        historialBthGuardar.addEventListener('click', guardarHistorialBth);
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && historialBthModal.getAttribute('aria-hidden') === 'false') {
+                cerrarHistorialBth();
+            }
+        });
+
+        function mostrarHistorialBth() {
+            historialBthModal.classList.remove('invisible', 'pointer-events-none', 'opacity-0');
+            historialBthModal.classList.add('opacity-100');
+            historialBthModal.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('overflow-hidden');
+            requestAnimationFrame(() => {
+                historialBthPanel.classList.remove('translate-y-4', 'scale-95', 'opacity-0');
+                historialBthPanel.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+            });
+            historialBthModal.focus();
+        }
+
+        function cerrarHistorialBth() {
+            historialBthModal.classList.remove('opacity-100');
+            historialBthModal.classList.add('opacity-0', 'pointer-events-none');
+            historialBthPanel.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
+            historialBthPanel.classList.add('translate-y-4', 'scale-95', 'opacity-0');
+            historialBthModal.setAttribute('aria-hidden', 'true');
+            document.body.classList.remove('overflow-hidden');
+            window.setTimeout(() => {
+                if (historialBthModal.getAttribute('aria-hidden') === 'true') {
+                    historialBthModal.classList.add('invisible');
+                }
+            }, 300);
+        }
+
+        function mostrarAlertaHistorialBth(mensaje, error = false) {
+            historialBthAlerta.className = error ?
+                'rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700' :
+                'rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700';
+            historialBthAlerta.textContent = mensaje;
+        }
+
+        async function abrirHistorialBth(idEstudiante) {
+            estudianteHistorialBthActual = idEstudiante;
+            historialBthGuardar.disabled = true;
+            historialBthAlerta.className = 'hidden';
+            document.getElementById('historial-bth-estudiante').textContent = 'Cargando estudiante...';
+            historialBthFilas.innerHTML =
+                '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Cargando historial...</td></tr>';
+            mostrarHistorialBth();
+            await cargarHistorialBth();
+        }
+
+        async function cargarHistorialBth() {
+            const url = `${historialBthRuta.replace(':id', encodeURIComponent(estudianteHistorialBthActual))}?id_curso=${encodeURIComponent(cursoBoletinId)}`;
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                });
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    const validationError = data.errors ? Object.values(data.errors).flat()[0] : null;
+                    throw new Error(validationError || data.error || 'No se pudo cargar el historial BTH.');
+                }
+
+                document.getElementById('historial-bth-estudiante').textContent =
+                    `${data.estudiante.nombre} · Promedios anuales 2022-2026`;
+                if (!data.materias.length) {
+                    historialBthFilas.innerHTML =
+                        '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">No hay materias asignadas a este curso en la gestión activa.</td></tr>';
+                    return false;
+                }
+
+                historialBthFilas.innerHTML = data.materias.map(materia => {
+                    const celdas = data.anios.map(anio => {
+                        const valor = materia.promedios[anio] ?? '';
+
+                        return `<td class="px-2 py-2 text-center">
+                            <input aria-label="${escapeHtml(materia.materia)} ${anio}" class="historial-bth-input w-20 rounded border border-slate-300 px-2 py-1.5 text-center text-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                type="number" min="0" max="100" step="0.01" value="${escapeHtml(valor)}"
+                                data-materia="${escapeHtml(materia.id_materia)}" data-anio="${anio}">
+                        </td>`;
+                    }).join('');
+
+                    return `<tr class="border-t border-slate-200 hover:bg-slate-50">
+                        <td class="px-3 py-2 font-medium text-slate-800">${escapeHtml(materia.materia)}</td>
+                        ${celdas}
+                        <td class="px-3 py-2 text-center font-semibold text-purple-800" data-promedio-ultimas-tres="${escapeHtml(materia.id_materia)}">${materia.promedio_ultimas_tres ?? '-'}</td>
+                    </tr>`;
+                }).join('');
+                historialBthGuardar.disabled = false;
+                return true;
+            } catch (error) {
+                console.error('Error cargando historial BTH:', error);
+                historialBthFilas.innerHTML =
+                    '<tr><td colspan="7" class="px-4 py-8 text-center text-red-600">No se pudo cargar el historial BTH.</td></tr>';
+                mostrarAlertaHistorialBth(error.message, true);
+                return false;
+            }
+        }
+
+        function actualizarPromedioUltimasTres(idMateria) {
+            const valores = ['2024', '2025', '2026']
+                .map(anio => historialBthFilas.querySelector(
+                    `.historial-bth-input[data-materia="${CSS.escape(idMateria)}"][data-anio="${anio}"]`
+                )?.value)
+                .filter(valor => valor !== '' && Number.isFinite(Number(valor)))
+                .map(Number);
+            const promedio = valores.length ?
+                (valores.reduce((total, valor) => total + valor, 0) / valores.length).toFixed(2) :
+                '-';
+            const celda = historialBthFilas.querySelector(
+                `[data-promedio-ultimas-tres="${CSS.escape(idMateria)}"]`
+            );
+            if (celda) {
+                celda.textContent = promedio;
+            }
+        }
+
+        async function guardarHistorialBth() {
+            const promedios = {};
+            historialBthFilas.querySelectorAll('.historial-bth-input').forEach(input => {
+                const { materia, anio } = input.dataset;
+                promedios[materia] ??= {};
+                promedios[materia][anio] = input.value === '' ? null : input.value;
+            });
+
+            historialBthGuardar.disabled = true;
+            historialBthGuardar.textContent = 'Guardando...';
+            historialBthAlerta.className = 'hidden';
+
+            try {
+                const url = '{{ route('estudiante.historial-bth.actualizar', ['idEstudiante' => ':id']) }}'
+                    .replace(':id', encodeURIComponent(estudianteHistorialBthActual));
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({
+                        id_curso: cursoBoletinId,
+                        promedios,
+                    }),
+                });
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    const validationError = data.errors ? Object.values(data.errors).flat()[0] : null;
+                    throw new Error(validationError || data.error || data.message ||
+                        'No se pudieron guardar los promedios históricos.');
+                }
+
+                if (await cargarHistorialBth()) {
+                    mostrarAlertaHistorialBth(data.message || 'Los promedios históricos se guardaron correctamente.');
+                }
+            } catch (error) {
+                console.error('Error guardando historial BTH:', error);
+                mostrarAlertaHistorialBth(error.message, true);
+            } finally {
+                historialBthGuardar.textContent = 'Guardar promedios';
+                historialBthGuardar.disabled = false;
+            }
+        }
 
         document.addEventListener('click', function(event) {
             const button = event.target.closest('.btn-ver-boletin');
@@ -1024,7 +1291,7 @@
                 E: ['Efectivo', 'bg-emerald-100', 'text-emerald-700', 'border-emerald-200'],
                 R: ['Retirado', 'bg-rose-100', 'text-rose-700', 'border-rose-200'],
                 A: ['Abandono', 'bg-slate-100', 'text-slate-700', 'border-slate-200'],
-            }[estudiante.estado] || ['No registrado', 'bg-slate-100', 'text-slate-700', 'border-slate-200'];
+            } [estudiante.estado] || ['No registrado', 'bg-slate-100', 'text-slate-700', 'border-slate-200'];
             const estadoElemento = document.getElementById('boletin-estado');
 
             estadoElemento.textContent = estado[0];
@@ -1082,7 +1349,8 @@
                 mostrarBoletin();
             }
 
-            const url = `${boletinRutaTemplate.replace(':id', encodeURIComponent(idEstudiante))}?id_curso=${encodeURIComponent(cursoBoletinId)}`;
+            const url =
+                `${boletinRutaTemplate.replace(':id', encodeURIComponent(idEstudiante))}?id_curso=${encodeURIComponent(cursoBoletinId)}`;
 
             return fetch(url, {
                     headers: {
